@@ -3,7 +3,7 @@
 /**
  * //@type {import('next').NextConfig}
  **/
- const config = {
+const config = {
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
   experimental: {
