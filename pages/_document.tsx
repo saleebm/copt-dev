@@ -3,7 +3,7 @@ import Document, { Head, Html, Main, NextScript } from 'next/document'
 class MyDocument extends Document {
   render() {
     return (
-      <Html lang='en'>
+      <Html className='text-gray-900 leading-tight' lang='en'>
         <Head>
           <meta charSet='utf-8' />
           <meta content={'#b24c81'} name={'msapplication-TileColor'} />
@@ -51,7 +51,7 @@ class MyDocument extends Document {
             crossOrigin='anonymous'
           />
         </Head>
-        <body>
+        <body className='bg-white dark:bg-black text-white dark:text-black'>
           <Main />
           <NextScript />
         </body>
