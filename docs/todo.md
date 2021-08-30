@@ -1,10 +1,10 @@
 # TODO
 
-## Setup
+## Initiation
 
-- [ ] Integrate tailwinds theme and styles
-- [ ] Use https://github.com/alexmacarthur/typeit for some cool effects.
+- [x] Integrate tailwinds theme and styles
+- [x] Integrate next-themes
 - [ ] Start blogging in data directory, integrating MDX
-- [ ] Set up simple data structure for displaying work
-- [ ] Connect to apis for github, spotify, fun data experiments..
-- [ ] Integrate next-themes
+- [ ] Set up simple data structure for displaying work, experience, education
+- [ ] Figure out design system and integrate animations appropriately
+- [ ] Connect to APIs for github, spotify, fun data experiments..
