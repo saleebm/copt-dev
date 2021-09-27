@@ -2,6 +2,5 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npm run format
-git add --all
 npm run lint
 npm run type-check
