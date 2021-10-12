@@ -4,14 +4,14 @@
   "private": true,
   "license": "MIT",
   "author": {
-    "name": "COPT",
+    "name": "Mina Saleeb",
     "email": "saleebmina@copt.dev"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p ${PORT:=3000}",
     "build": "next build",
     "format": "prettier --write .",
-    "start": "next start",
+    "start": "next start -p ${PORT:=3000}",
     "lint": "next lint",
     "prepare": "husky install",
     "type-check": "tsc --noEmit"

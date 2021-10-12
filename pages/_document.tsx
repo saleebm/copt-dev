@@ -3,15 +3,17 @@ import Document, { Head, Html, Main, NextScript } from 'next/document'
 class MyDocument extends Document {
   render() {
     return (
-      <Html className='text-gray-900 leading-tight' lang='en'>
+      <Html lang='en'>
         <Head>
           <meta charSet='utf-8' />
-          <meta content={'#b24c81'} name={'msapplication-TileColor'} />
+          <meta content={'#692222'} name={'msapplication-TileColor'} />
           <meta
             content={'/static/images/favicons/browserconfig.xml'}
             name={'msapplication-config'}
           />
-          <meta content={'#b24c81'} name={'theme-color'} />
+          <meta content={'#692222'} name={'theme-color'} />
+          <meta name='apple-mobile-web-app-title' content='Copt' />
+          <meta name='application-name' content='Copt' />
           <link
             href={'/static/images/favicons/apple-touch-icon.png'}
             rel={'apple-touch-icon'}
@@ -31,7 +33,7 @@ class MyDocument extends Document {
           />
           <link href={'/static/images/favicons/site.webmanifest'} rel={'manifest'} />
           <link
-            color={'#999999'}
+            color={'#fff'}
             href={'/static/images/favicons/safari-pinned-tab.svg'}
             rel={'mask-icon'}
           />
@@ -51,7 +53,7 @@ class MyDocument extends Document {
             crossOrigin='anonymous'
           />
         </Head>
-        <body className='bg-white dark:bg-black text-white dark:text-black'>
+        <body className='bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100'>
           <Main />
           <NextScript />
         </body>

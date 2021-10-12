@@ -109,8 +109,81 @@ explicitly, e.g.
   src: url("/static/fonts/Inter.var.woff2?v=3.19") format("woff2");
 } */
 
-html {
+/* variables */
+:root {
+  --shadow-color: 0deg 0% 42%;
+}
+
+html.dark :root {
+  --shadow-color: 0deg 0% 69%;
+}
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  height: auto;
+}
+
+html,
+body {
   scroll-behavior: smooth;
+  height: 100%;
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #692222 #201c29;
+  font-size: clamp(12px, calc(0.8rem + 0.25vw), 20px);
+  font-weight: 400;
+  line-height: 1.7;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: default;
+  text-rendering: optimizeLegibility;
+  -webkit-font-feature-settings: 'kern' 1, 'liga' 1, 'clig' 1, 'calt' 1;
+  -moz-font-feature-settings: 'kern' 1, 'liga' 1, 'clig' 1, 'calt' 1;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'clig' 1, 'calt' 1;
+  -webkit-font-kerning: normal;
+  font-kerning: normal;
+
+  /* word wrapping */
+  white-space: pre-wrap;
+  word-break: break-word;
+  word-wrap: normal;
+  overflow-wrap: normal;
+  hyphens: auto;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: 1px 2px 2px hsl(var(--shadow-color) / 0.333),
+    2px 4px 4px hsl(var(--shadow-color) / 0.333), 3px 6px 6px hsl(var(--shadow-color) / 0.333);
+  box-shadow: 1px 2px 2px hsl(var(--shadow-color) / 0.333),
+    2px 4px 4px hsl(var(--shadow-color) / 0.333), 3px 6px 6px hsl(var(--shadow-color) / 0.333);
+  background-color: #201c29;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  background-color: #692222;
+  border-left: 1px solid #201c29;
+  box-shadow: 0.5px 1px 1px hsl(var(--shadow-color) / 0.7);
+  -webkit-box-shadow: 0.5px 1px 1px hsl(var(--shadow-color) / 0.7);
 }
 
 ::selection {
@@ -123,4 +196,19 @@ html {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+}
+
+button,
+button span,
+input,
+optgroup,
+select,
+textarea,
+a {
+  cursor: pointer;
 }
