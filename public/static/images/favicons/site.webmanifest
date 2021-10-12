@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "short_name": "",
+  "name": "Copt | Mina Saleeb",
+  "short_name": "Copt",
   "icons": [
     {
       "src": "/static/images/favicons/android-chrome-36x36.png",
@@ -48,6 +48,6 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#ffffff",
+  "theme_color": "#692222",
   "background_color": "#ffffff"
 }

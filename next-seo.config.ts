@@ -5,9 +5,9 @@ export const nextSeoConfig: NextSeoProps = {
     type: 'website',
     locale: 'en_US',
     url: 'https://www.copt.dev',
-    site_name: 'COPT',
-    title: 'Mina Saleeb 𓀖 COPT Dev Web Solutions for Orlando'
+    site_name: 'Copt',
+    title: 'Mina Saleeb 𓀖 Copt Web Dev'
   },
-  title: 'Mina Saleeb 𓀖 COPT Dev Web Solutions for Orlando',
+  title: 'Mina Saleeb 𓀖 Copt Web Dev',
   titleTemplate: 'Mina Saleeb 𓀖 %s'
 }

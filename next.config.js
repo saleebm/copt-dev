@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * //@type {import('next').NextConfig}
+ * @type {import('next').NextConfig}
  **/
 const config = {
   reactStrictMode: true,
@@ -12,11 +12,9 @@ const config = {
   eslint: {
     dirs: ['pages', 'components', 'lib'] // Only run ESLint on these directories during production builds (next build)
   },
+  // @ts-ignore
   images: {
-    domains: [
-      'i.scdn.co', // Spotify Album Art
-      'pbs.twimg.com' // Twitter Profile Picture
-    ]
+    domains: []
   },
   async headers() {
     return [
@@ -31,9 +29,8 @@ const config = {
 // https://securityheaders.com
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' *.youtube.com *.twitter.com cdn.usefathom.com;
-  child-src *.youtube.com *.google.com *.twitter.com;
-  style-src 'self' 'unsafe-inline' *.googleapis.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
   media-src 'none';
   connect-src *;
