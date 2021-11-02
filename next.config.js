@@ -6,11 +6,12 @@
 const config = {
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
+  swcMinify: true,
   experimental: {
-    stats: true
+    esmExternals: true
   },
   eslint: {
-    dirs: ['pages', 'components', 'lib'] // Only run ESLint on these directories during production builds (next build)
+    dirs: ['pages', 'components', 'lib', 'utilities', 'layouts'] // Only run ESLint on these directories during production builds (next build)
   },
   // @ts-ignore
   images: {

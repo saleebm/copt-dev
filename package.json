@@ -8,12 +8,15 @@
     "email": "saleebmina@copt.dev"
   },
   "scripts": {
-    "dev": "next dev -p ${PORT:=3000}",
     "build": "next build",
+    "dev": "next dev -p ${PORT:=3000}",
     "format": "prettier --write .",
-    "start": "next start -p ${PORT:=3000}",
+    "format:styles": "stylelint \"styles/**/*.scss\" \"components/**/*.scss\" \"layouts/**/*.scss\"",
+    "format:styles:fix": "stylelint --fix \"styles/**/*.scss\" \"components/**/*.scss\" \"layouts/**/*.scss\"",
+    "generate-sitemap": "node scripts/sitemap-generator.mjs",
     "lint": "next lint",
     "prepare": "husky install",
+    "start": "next start -p ${PORT:=3000}",
     "type-check": "tsc --noEmit"
   },
   "config": {
@@ -22,8 +25,10 @@
     }
   },
   "dependencies": {
+    "@tailwindcss/aspect-ratio": "^0.3.0",
     "@tailwindcss/typography": "^0.4.1",
-    "next": "canary",
+    "framer-motion": "^5.0.1",
+    "next": "12.0.2",
     "next-seo": "4.28.1",
     "next-themes": "^0.0.15",
     "react": "17.0.2",
@@ -31,8 +36,11 @@
     "tailwindcss": "^2.2.15"
   },
   "devDependencies": {
+    "@babel/cli": "7.16.0",
+    "@babel/core": "7.16.0",
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
+    "@sergeymyssak/nextjs-sitemap": "^2.0.3",
     "@types/node": "^16.9.6",
     "@types/react": "17.0.24",
     "@typescript-eslint/eslint-plugin": "^4.31.2",
@@ -42,11 +50,19 @@
     "critters": "^0.0.10",
     "cz-conventional-changelog": "^3.2.0",
     "eslint": "7.32.0",
-    "eslint-config-next": "canary",
+    "eslint-config-next": "12.0.2",
     "eslint-config-prettier": "^8.3.0",
+    "fiber": "^1.0.4",
     "husky": "^7.0.2",
     "postcss": "^8.3.7",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-preset-env": "^6.7.0",
     "prettier": "^2.4.1",
+    "sass": "^1.43.4",
+    "stylelint": "^14.0.1",
+    "stylelint-config-recommended-scss": "^5.0.0",
+    "stylelint-order": "^5.0.0",
+    "stylelint-scss": "^4.0.0",
     "typescript": "4.3.5"
   }
 }
