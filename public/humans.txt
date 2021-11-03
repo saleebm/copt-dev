@@ -1,0 +1,13 @@
+/* AUTHOR */
+    Author: Mina Saleeb
+    Site: https://www.copt.dev
+    Mail: saleebmina@copt.dev
+    Twitter: @meowinas
+    Location: Florida, USA
+    From: Cairo, Egypt
+
+/* SITE */
+	Last update: 2021/11/02
+	Language: English
+	Doctype: HTML5
+	IDE: Visual Studio Code
