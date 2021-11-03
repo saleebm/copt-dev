@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <>
       <Head
-        title='meoooow'
+        title='Welcome'
         description='Meet mina, he is a cat/web developer based in Orlando, FL.'
       />
     </>

@@ -12,6 +12,7 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      animation: ['hover', 'focus', 'motion-safe', 'motion-reduce'],
       color: {
         primary: 'var(--theme-accent)',
         secondary: 'var(--theme-accent-secondary)',
@@ -20,6 +21,7 @@ module.exports = {
       fontFamily: {
         sans: ['Inter var', ...fontFamily.sans]
       },
+      transform: ['hover', 'focus'],
       typography: theme => ({
         DEFAULT: {
           css: {

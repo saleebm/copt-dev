@@ -1,0 +1,6 @@
+Sitemap: https://www.copt.dev/sitemap.xml
+
+User-agent: *
+Allow: /*
+
+Disallow: /api/*
