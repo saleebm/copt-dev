@@ -5,7 +5,7 @@ import { Logo } from 'components/Logo'
 import { SocialLinks } from 'components/SocialLinks'
 import { transitionChildren, transitionParent } from 'utilities/animations/transitions'
 import { childrenVariants } from 'utilities/animations/variants'
-import styles from './app-layout.module.scss'
+import styles from './styles.module.scss'
 
 export interface AppLayoutProps {
   children: React.ReactNode
