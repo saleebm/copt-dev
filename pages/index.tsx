@@ -5,7 +5,7 @@ export default function Home() {
     <>
       <Head
         title='Welcome'
-        description='Meet mina, he is a cat/web developer based in Orlando, FL.'
+        description='Meet Mina, he is a cat/web developer based in Orlando, FL.'
       />
     </>
   )
