@@ -12,6 +12,8 @@ import {
   linkedinProfile,
   twitterProfile
 } from 'config/social-profiles'
+import emailIcon from 'public/static/images/brands/email.png'
+import emailIconDark from 'public/static/images/brands/email-dark.png'
 import linkedinIcon from 'public/static/images/brands/linkedin.png'
 import twitterIcon from 'public/static/images/brands/twitter.png'
 import instagramIcon from 'public/static/images/brands/instagram.png'
@@ -31,7 +33,7 @@ const SocialLinkWrapper = ({ children, href, name }: SocialLinkWrapperProps) => 
     target='_blank'
     href={href}
     className='inline-block relative w-8 h-8 mr-2 transition opacity-90 transform-gpu motion-safe:hover:-translate-y-1 hover:opacity-100'
-    title={`Link to my ${name} profile`}
+    title={`Link to ${name}`}
   >
     {children}
   </a>
@@ -46,6 +48,9 @@ export const SocialLinks = () => {
       transition={transitionChildren}
       className='flex flex-row flex-wrap items-center justify-center relative'
     >
+      <SocialLinkWrapper href='mailto:saleebmina@copt.dev' name='email me'>
+        <Image src={resolvedTheme === 'dark' ? emailIconDark : emailIcon} alt='email me' />
+      </SocialLinkWrapper>
       <SocialLinkWrapper name='GitHub' href={githubProfile}>
         <Image src={resolvedTheme === 'dark' ? githubIconDark : githubIcon} alt='github' />
       </SocialLinkWrapper>
