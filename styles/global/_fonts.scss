@@ -1,0 +1,106 @@
+/* -------------------------------------------------------
+  Regular font as backup to variable fonts
+*/
+/* extra light */
+@font-face {
+  font-display: swap;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 200;
+  src: local('Inter Extra Light'),
+    url('/static/fonts/Inter-ExtraLight.woff2?v=3.19') format('woff2'),
+    url('/static/fonts/Inter-ExtraLight.woff?v=3.19') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'Inter', sans-serif;
+  font-style: italic;
+  font-weight: 200;
+  src: local('Inter Extra Light Italic'),
+    url('/static/fonts/Inter-ExtraLightItalic.woff2?v=3.19') format('woff2'),
+    url('/static/fonts/Inter-ExtraLightItalic.woff?v=3.19') format('woff');
+}
+/* normal */
+@font-face {
+  font-display: swap;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  src: local('Inter Regular'), url('/static/fonts/Inter-Regular.woff2?v=3.19') format('woff2'),
+    url('/static/fonts/Inter-Regular.woff?v=3.19') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Inter', sans-serif;
+  font-style: italic;
+  font-weight: 400;
+  src: local('Inter Italic'), url('/static/fonts/Inter-Italic.woff2?v=3.19') format('woff2'),
+    url('/static/fonts/Inter-Italic.woff?v=3.19') format('woff');
+}
+/* bold */
+@font-face {
+  font-display: swap;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  src: local('Inter Bold'), url('/static/fonts/Inter-Bold.woff2?v=3.19') format('woff2'),
+    url('/static/fonts/Inter-Bold.woff?v=3.19') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'Inter', sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  src: local('Inter Bold Italic'),
+    url('/static/fonts/Inter-BoldItalic.woff2?v=3.19') format('woff2'),
+    url('/static/fonts/Inter-BoldItalic.woff?v=3.19') format('woff');
+}
+
+/* -------------------------------------------------------
+  Variable font.
+  Usage:
+  
+    html { font-family: 'Inter', sans-serif; }
+    @supports (font-variation-settings: normal) {
+      html { font-family: 'Inter var', sans-serif; }
+    }
+  */
+@font-face {
+  font-display: swap;
+  font-family: 'Inter var', sans-serif;
+  font-named-instance: 'Regular';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('/static/fonts/Inter-roman.var.woff2?v=3.19') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Inter var', sans-serif;
+  font-named-instance: 'Italic';
+  font-style: italic;
+  font-weight: 100 900;
+  src: url('/static/fonts/Inter-italic.var.woff2?v=3.19') format('woff2');
+}
+
+/* --------------------------------------------------------------------------
+  [EXPERIMENTAL] Multi-axis, single variable font.
+  
+  Slant axis is not yet widely supported (as of February 2019) and thus this
+  multi-axis single variable font is opt-in rather than the default.
+  
+  When using this, you will probably need to set font-variation-settings
+  explicitly, e.g.
+  
+    * { font-variation-settings: "slnt" 0deg }
+    .italic { font-variation-settings: "slnt" 10deg }
+  
+  */
+/* @font-face {
+    font-family: 'Inter var experimental';
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: oblique 0deg 10deg;
+    src: url("/static/fonts/Inter.var.woff2?v=3.19") format("woff2");
+  } */
