@@ -1,0 +1,96 @@
+// Adding utilities:
+// https://tailwindcss.com/docs/adding-new-utilities
+// Tailwinds Layers
+// https://tailwindcss.com/docs/functions-and-directives#layer
+
+@layer base {
+  h1 {
+    @apply text-3xl tracking-tighter mb-4 text-gray-800 dark:text-white md:text-5xl;
+    font-variation-settings: 'wght' 300;
+  }
+  h2 {
+    @apply text-2xl tracking-tight mb-4 text-gray-700 dark:text-gray-100 md:text-4xl;
+  }
+  h3 {
+    @apply text-xl tracking-normal mb-2 text-gray-600 dark:text-gray-200 md:text-3xl;
+  }
+  h4 {
+    @apply text-lg tracking-normal mb-2 text-gray-600 dark:text-gray-200 md:text-2xl;
+  }
+  p {
+    @apply text-base tracking-tight my-2 text-gray-700 dark:text-gray-200;
+  }
+  a {
+    @apply text-base tracking-tight text-red-700 dark:text-red-400;
+  }
+  li {
+    @apply relative text-base tracking-tight mb-1 text-gray-700 dark:text-gray-200;
+  }
+  ul {
+    @apply list-none block my-2 pl-6 mx-0;
+    & li::before {
+      @apply absolute -ml-4;
+      color: var(--theme-accent-contrast);
+      content: var(--list-item-style, '-');
+    }
+  }
+  ol {
+    @apply relative block list-none my-2 mx-0 px-0;
+
+    & li {
+      @apply pl-7;
+    }
+    & > li::before {
+      @apply absolute left-1;
+      color: var(--theme-accent-contrast);
+      content: counter(list-item, var(--list-counter-style, decimal)) '.';
+    }
+  }
+  pre {
+    @apply w-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-100 overflow-x-auto px-3 border-solid border-black dark:border-gray-50 border-2;
+
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    scrollbar-color: #f5f5f5 #050505;
+    // scrollbars
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      height: 5px;
+      width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: #050505;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #f5f5f5;
+      border-top: 1px solid #050505;
+    }
+    // spacing
+    & + & {
+      margin-top: 1.5rem;
+    }
+  }
+  code {
+    @apply bg-gray-700 text-white p-1;
+    border-radius: 3px;
+  }
+}
+
+@layer components {
+  // for the section wrap
+  .section-fluid {
+    @apply relative block min-w-full w-full m-auto;
+  }
+
+  // for the inner wrap
+  .container {
+    @apply relative block m-auto min-w-full w-full px-8 md:px-16;
+  }
+
+  .article {
+    @apply flex flex-col items-start justify-center w-full max-w-3xl mx-auto;
+  }
+}

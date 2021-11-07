@@ -1,11 +1,33 @@
 .logo {
+  display: inline-block;
   max-width: 420px;
+  position: inherit;
+  width: 100%;
 }
 
 .logoCls1 {
   fill: var(--theme-accent, #f2f9f9);
+
+  @media screen and (prefers-reduced-motion: no-preference) {
+    &:hover {
+      animation: logo-color-change 2.5s infinite;
+    }
+  }
 }
 
+// the borders are not visible in the svg, but they are used to create the illusion of a border
 .logoCls2 {
-  fill: var(--theme-accent-contrast, #2636b2);
+  fill: var(--theme-accent-secondary, #2636b2);
+}
+
+@keyframes logo-color-change {
+  0% {
+    fill: var(--theme-accent, #f2f9f9);
+  }
+  50% {
+    fill: var(--theme-accent-secondary, #2636b2);
+  }
+  100% {
+    fill: var(--theme-accent, #f2f9f9);
+  }
 }

@@ -3,16 +3,19 @@ const { spacing, fontFamily } = require('tailwindcss/defaultTheme')
 const typographyPlugin = require('@tailwindcss/typography')
 
 module.exports = {
-  mode: 'jit',
   purge: [
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
     './layouts/**/*.{js,ts,jsx,tsx}'
   ],
   darkMode: 'class',
+  variants: {
+    extend: {
+      animation: ['hover', 'focus', 'motion-safe', 'motion-reduce']
+    }
+  },
   theme: {
     extend: {
-      animation: ['hover', 'focus', 'motion-safe', 'motion-reduce'],
       color: {
         primary: 'var(--theme-accent)',
         secondary: 'var(--theme-accent-secondary)',
@@ -23,6 +26,9 @@ module.exports = {
       },
       transform: ['hover', 'focus'],
       typography: theme => ({
+        // this is for markdown content
+        // https://sergiodxa.com/articles/use-tailwindcss-typography-with-dark-mode-styles
+        // https://github.com/tailwindlabs/tailwindcss-typography
         DEFAULT: {
           css: {
             color: theme('colors.gray.700'),

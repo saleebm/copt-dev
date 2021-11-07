@@ -1,0 +1,18 @@
+/* variables */
+:root {
+  --theme-color: #420069;
+
+  /* tokens */
+  --shadow-color: 0deg 0% 42%;
+  --theme-accent: theme('colors.red.50');
+  --theme-accent-secondary: #c9b1bd;
+  --theme-accent-contrast: theme('colors.red.700');
+}
+
+html.dark {
+  /* tokens */
+  --shadow-color: 0deg 0% 69%;
+  --theme-accent: theme('colors.red.700');
+  --theme-accent-secondary: theme('colors.purple.800');
+  --theme-accent-contrast: theme('colors.red.50');
+}
