@@ -1,5 +1,8 @@
 // @ts-check
 
+// eslint-disable-next-line
+const withTM = require('next-transpile-modules')(['figlet'])
+
 /**
  * @type {import('next').NextConfig}
  **/
@@ -79,4 +82,4 @@ const securityHeaders = [
   }
 ]
 
-module.exports = config
+module.exports = withTM(config)

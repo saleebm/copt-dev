@@ -1,18 +1,18 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
-import { childrenVariants } from 'utilities/animations/variants'
+import { floatIn } from 'utilities/animations/variants'
 import { transitionChildren } from 'utilities/animations/transitions'
 import styles from './styles.module.scss'
 
 export const Logo = () => (
   <motion.div
     transition={transitionChildren}
-    variants={childrenVariants}
-    className='flex items-center justify-center'
+    variants={floatIn}
+    className='relative flex items-center justify-center'
   >
     <Link href='/'>
-      <a className='inline-block relative px-6 py-3 w-auto h-auto transform-gpu motion-safe:hover:scale-110 transition-transform'>
+      <a className='inline-block relative p-3 w-auto h-auto transform-gpu motion-safe:hover:scale-110 transition-transform'>
         <svg
           id='minasaleeb-logo'
           xmlns='http://www.w3.org/2000/svg'

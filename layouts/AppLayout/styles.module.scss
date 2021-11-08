@@ -1,13 +1,14 @@
 .wrap {
-  @apply h-screen opacity-100 flex flex-col items-stretch m-auto w-full;
+  @apply relative flex flex-col items-stretch m-auto h-screen w-full opacity-100;
 }
 
 .header {
-  @apply relative block w-full max-w-3xl mx-auto mb-8;
+  @apply relative block w-full min-w-full mb-8 p-3;
 }
 
 .headerInner {
-  @apply relative flex flex-col sm:flex-row flex-wrap justify-center sm:justify-between items-center w-full;
+  @apply relative flex flex-col flex-wrap justify-center items-center w-full mx-auto;
+  max-width: var(--max-width);
 }
 
 .skip {
@@ -15,5 +16,5 @@
 }
 
 .main {
-  @apply relative flex flex-col sm:flex-row flex-wrap justify-center sm:justify-between items-center w-full max-w-3xl mx-auto mb-16;
+  @apply relative flex flex-col sm:flex-row flex-wrap justify-center sm:justify-between items-center w-full m-0 p-0;
 }

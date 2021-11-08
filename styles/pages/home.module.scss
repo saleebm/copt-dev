@@ -1,1 +1,9 @@
 // home specific styles
+.banner {
+  @apply flex flex-col items-center justify-center relative;
+  height: 70vh;
+}
+.ascii {
+  @apply w-auto mx-auto text-center;
+  text-shadow: 0 0 10px var(--theme-accent);
+}

@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useTheme } from 'next-themes'
 
-import { childrenVariants } from 'utilities/animations/variants'
+import { floatIn } from 'utilities/animations/variants'
 import { transitionChildren } from 'utilities/animations/transitions'
 import {
   facebookProfile,
@@ -32,7 +32,7 @@ const SocialLinkWrapper = ({ children, href, name }: SocialLinkWrapperProps) => 
     rel='noreferrer noopener'
     target='_blank'
     href={href}
-    className='inline-block relative w-8 h-8 mr-2 transition opacity-90 transform-gpu motion-safe:hover:-translate-y-1 hover:opacity-100'
+    className='inline-block relative w-8 h-8 mr-2 opacity-90 transition transform-gpu motion-safe:hover:-translate-y-1 hover:opacity-100'
     title={`Link to ${name}`}
   >
     {children}
@@ -44,9 +44,9 @@ export const SocialLinks = () => {
 
   return (
     <motion.div
-      variants={childrenVariants}
+      variants={floatIn}
       transition={transitionChildren}
-      className='flex flex-row flex-wrap items-center justify-center relative'
+      className='relative flex flex-row flex-wrap items-center justify-center p-3'
     >
       <SocialLinkWrapper href='mailto:saleebmina@copt.dev' name='email me'>
         <Image src={resolvedTheme === 'dark' ? emailIconDark : emailIcon} alt='email me' />
