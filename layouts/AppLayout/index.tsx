@@ -23,16 +23,18 @@ export function AppLayout({ children }: AppLayoutProps) {
       className={styles.wrap}
     >
       <header className={styles.header}>
-        <motion.a
-          variants={childrenVariants}
-          transition={transitionChildren}
-          href='#main'
-          className={styles.skip}
-        >
-          Skip to content
-        </motion.a>
-        <Logo />
-        <SocialLinks />
+        <div className={styles.headerInner}>
+          <motion.a
+            variants={childrenVariants}
+            transition={transitionChildren}
+            href='#main'
+            className={styles.skip}
+          >
+            Skip to content
+          </motion.a>
+          <Logo />
+          <SocialLinks />
+        </div>
       </header>
       <main id='main' className={styles.main}>
         {children}

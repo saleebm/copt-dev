@@ -4,26 +4,28 @@
 /* extra light */
 @font-face {
   font-display: swap;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 200;
   src: local('Inter Extra Light'),
     url('/static/fonts/Inter-ExtraLight.woff2?v=3.19') format('woff2'),
     url('/static/fonts/Inter-ExtraLight.woff?v=3.19') format('woff');
 }
+
 @font-face {
   font-display: swap;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter';
   font-style: italic;
   font-weight: 200;
   src: local('Inter Extra Light Italic'),
     url('/static/fonts/Inter-ExtraLightItalic.woff2?v=3.19') format('woff2'),
     url('/static/fonts/Inter-ExtraLightItalic.woff?v=3.19') format('woff');
 }
+
 /* normal */
 @font-face {
   font-display: swap;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
   src: local('Inter Regular'), url('/static/fonts/Inter-Regular.woff2?v=3.19') format('woff2'),
@@ -32,7 +34,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter';
   font-style: italic;
   font-weight: 400;
   src: local('Inter Italic'), url('/static/fonts/Inter-Italic.woff2?v=3.19') format('woff2'),
@@ -41,7 +43,7 @@
 /* bold */
 @font-face {
   font-display: swap;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 700;
   src: local('Inter Bold'), url('/static/fonts/Inter-Bold.woff2?v=3.19') format('woff2'),
@@ -49,7 +51,7 @@
 }
 @font-face {
   font-display: swap;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter';
   font-style: italic;
   font-weight: 700;
   src: local('Inter Bold Italic'),
@@ -61,14 +63,14 @@
   Variable font.
   Usage:
   
-    html { font-family: 'Inter', sans-serif; }
+    html { font-family: 'Inter'; }
     @supports (font-variation-settings: normal) {
-      html { font-family: 'Inter var', sans-serif; }
+      html { font-family: 'Inter var'; }
     }
   */
 @font-face {
   font-display: swap;
-  font-family: 'Inter var', sans-serif;
+  font-family: 'Inter var';
   font-named-instance: 'Regular';
   font-style: normal;
   font-weight: 100 900;
@@ -77,7 +79,7 @@
 
 @font-face {
   font-display: swap;
-  font-family: 'Inter var', sans-serif;
+  font-family: 'Inter var';
   font-named-instance: 'Italic';
   font-style: italic;
   font-weight: 100 900;

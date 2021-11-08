@@ -6,16 +6,18 @@
 const config = {
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
-  swcMinify: true,
+  // swcMinify: true,
   experimental: {
-    esmExternals: true
+    esmExternals: true,
+    profiling: true,
+    workerThreads: true,
+    isrFlushToDisk: false
   },
   eslint: {
     dirs: ['pages', 'components', 'lib', 'utilities', 'layouts'] // Only run ESLint on these directories during production builds (next build)
   },
-  // @ts-ignore
   images: {
-    domains: []
+    domains: ['cdn2.thecatapi.com']
   },
   async headers() {
     return [

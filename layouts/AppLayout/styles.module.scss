@@ -3,7 +3,11 @@
 }
 
 .header {
-  @apply relative flex flex-col sm:flex-row flex-wrap justify-center sm:justify-between items-center w-full max-w-3xl mx-auto mb-8;
+  @apply relative block w-full max-w-3xl mx-auto mb-8;
+}
+
+.headerInner {
+  @apply relative flex flex-col sm:flex-row flex-wrap justify-center sm:justify-between items-center w-full;
 }
 
 .skip {

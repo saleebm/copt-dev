@@ -17,17 +17,17 @@
 
 // the borders are not visible in the svg, but they are used to create the illusion of a border
 .logoCls2 {
-  fill: var(--theme-accent-secondary, #2636b2);
+  fill: var(--theme-accent-secondary);
 }
 
 @keyframes logo-color-change {
   0% {
-    fill: var(--theme-accent, #f2f9f9);
+    fill: var(--theme-accent);
   }
   50% {
-    fill: var(--theme-accent-secondary, #2636b2);
+    fill: var(--theme-accent-secondary);
   }
   100% {
-    fill: var(--theme-accent, #f2f9f9);
+    fill: var(--theme-accent);
   }
 }

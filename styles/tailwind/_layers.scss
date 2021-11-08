@@ -21,7 +21,8 @@
     @apply text-base tracking-tight my-2 text-gray-700 dark:text-gray-200;
   }
   a {
-    @apply text-base tracking-tight text-red-700 dark:text-red-400;
+    @apply text-base tracking-tight;
+    color: var(--link-color);
   }
   li {
     @apply relative text-base tracking-tight mb-1 text-gray-700 dark:text-gray-200;
@@ -80,13 +81,13 @@
 }
 
 @layer components {
-  // for the section wrap
+  // for the container wrap
   .section-fluid {
     @apply relative block min-w-full w-full m-auto;
   }
 
   // for the inner wrap
-  .container {
+  .inner-container {
     @apply relative block m-auto min-w-full w-full px-8 md:px-16;
   }
 

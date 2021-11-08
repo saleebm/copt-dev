@@ -14,7 +14,7 @@ function FourOhFourPage({ catData }: Props) {
     <>
       <NextSeo title={'404'} noindex />
       <section className='section-fluid'>
-        <div className='container'>
+        <div className='inner-container'>
           <h1 className='text-center'>404</h1>
           <h2 className='text-center'>
             <i>Look, kitty!</i>&nbsp;

@@ -6,6 +6,10 @@
 
 body {
   font-family: 'Inter var', sans-serif;
+  font-feature-settings: 'case' 0, 'cpsp' 0, 'dlig' 0, 'frac' 0, 'dnom' 0, 'numr' 0, 'salt',
+    'subs' 0, 'sups' 0, 'tnum' 0, 'zero', 'ss01' 0, 'ss02', 'ss03' 0, 'ss04' 0, 'cv01' 0, 'cv02' 0,
+    'cv03' 0, 'cv04' 0, 'cv05' 0, 'cv06' 0, 'cv07' 0, 'cv08' 0, 'cv09' 0, 'cv10' 0, 'cv11' 0, 'calt',
+    'ccmp', 'kern';
   height: auto;
   position: relative;
 }
@@ -36,7 +40,7 @@ html {
   overflow-wrap: normal;
   overflow-x: hidden;
   overflow-y: auto;
-  scrollbar-color: var(--theme-accent) var(--theme-color);
+  scrollbar-color: var(--theme-accent) var(--theme-accent-contrast);
   scrollbar-width: thin;
   text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
@@ -54,7 +58,7 @@ html {
 
 // stylelint-disable-next-line no-descending-specificity
 ::-webkit-scrollbar-track {
-  background-color: var(--theme-color);
+  background-color: var(--theme-accent-contrast);
   -webkit-box-shadow: 1px 2px 2px hsl(var(--shadow-color) / 0.333),
     2px 4px 4px hsl(var(--shadow-color) / 0.333), 3px 6px 6px hsl(var(--shadow-color) / 0.333);
   box-shadow: 1px 2px 2px hsl(var(--shadow-color) / 0.333),
@@ -64,7 +68,7 @@ html {
 // stylelint-disable-next-line no-descending-specificity
 ::-webkit-scrollbar-thumb {
   background-color: var(--theme-accent);
-  border-left: 1px solid var(--theme-color);
+  border-left: 1px solid var(--theme-accent-contrast);
   border-radius: 6px;
   -webkit-box-shadow: 0.5px 1px 1px hsl(var(--shadow-color) / 0.7);
   box-shadow: 0.5px 1px 1px hsl(var(--shadow-color) / 0.7);
