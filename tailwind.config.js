@@ -3,6 +3,7 @@ const { spacing, fontFamily } = require('tailwindcss/defaultTheme')
 const typographyPlugin = require('@tailwindcss/typography')
 
 module.exports = {
+  mode: 'jit',
   purge: [
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
@@ -11,7 +12,7 @@ module.exports = {
   darkMode: 'class',
   variants: {
     extend: {
-      animation: ['hover', 'focus', 'motion-safe', 'motion-reduce']
+      animation: ['motion-safe', 'motion-reduce', 'hover', 'focus']
     }
   },
   theme: {

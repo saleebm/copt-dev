@@ -4,8 +4,13 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
-        <loc>https://copt.dev</loc>
-        <lastmod>2021-11-01</lastmod>
-		<xhtml:link rel="alternate" hreflang="en" href="https://copt.dev" />
+        <loc>https://www.copt.dev/404</loc>
+        <lastmod>2021-11-07</lastmod>
+		<xhtml:link rel="alternate" hreflang="en" href="https://www.copt.dev/404" />
+    </url>
+    <url>
+        <loc>https://www.copt.dev</loc>
+        <lastmod>2021-11-07</lastmod>
+		<xhtml:link rel="alternate" hreflang="en" href="https://www.copt.dev" />
     </url>
 </urlset>

@@ -10,6 +10,7 @@
       {
         "ignoreProperties": ["font-named-instance"]
       }
-    ]
+    ],
+    "no-invalid-position-at-import-rule": null
   }
 }

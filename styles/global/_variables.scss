@@ -1,18 +1,30 @@
 /* variables */
 :root {
-  --theme-color: #420069;
+  --background-color: theme('colors.gray.100');
+  --text-color-primary: theme('colors.gray.900');
+  --text-color-secondary: theme('colors.gray.800');
 
   /* tokens */
   --shadow-color: 0deg 0% 42%;
-  --theme-accent: theme('colors.red.50');
-  --theme-accent-secondary: #c9b1bd;
-  --theme-accent-contrast: theme('colors.red.700');
+  --theme-accent: #6a5acd;
+  --theme-accent-secondary: #e0c3fc;
+  --theme-accent-contrast: #080c3d;
+
+  /* colors */
+  --link-color: theme('colors.indigo.700');
 }
 
 html.dark {
+  --background-color: theme('colors.gray.900');
+  --text-color-primary: theme('colors.gray.100');
+  --text-color-secondary: theme('colors.gray.200');
+
   /* tokens */
   --shadow-color: 0deg 0% 69%;
-  --theme-accent: theme('colors.red.700');
-  --theme-accent-secondary: theme('colors.purple.800');
-  --theme-accent-contrast: theme('colors.red.50');
+  --theme-accent: #757bc8;
+  --theme-accent-secondary: #cbb2fe;
+  --theme-accent-contrast: #cabcc3;
+
+  /* colors */
+  --link-color: theme('colors.indigo.500');
 }

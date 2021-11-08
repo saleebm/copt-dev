@@ -1,9 +1,19 @@
-@import 'tailwind/_tailwind';
+@tailwind base;
+
+/* Start purging... */
+@tailwind components;
+/* Stop purging. */
+
+/* Write you own custom component styles here */
 
 // global styles
-@import 'global/_fonts';
+@import 'global/fonts';
 @import 'global/_variables';
 @import 'global/_global';
+
+/* Start purging... */
+@tailwind utilities;
+/* Stop purging. */
 
 // tailwind settings
 @import 'tailwind/_layers';
