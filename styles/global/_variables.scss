@@ -12,6 +12,10 @@
 
   /* colors */
   --link-color: theme('colors.indigo.700');
+  --link-color-hover: theme('colors.indigo.500');
+
+  /* size */
+  --max-width: theme('screens.xl');
 }
 
 html.dark {
@@ -27,4 +31,5 @@ html.dark {
 
   /* colors */
   --link-color: theme('colors.indigo.500');
+  --link-color-hover: theme('colors.indigo.300');
 }
