@@ -2,7 +2,7 @@ import { GetStaticProps } from 'next'
 import { motion } from 'framer-motion'
 
 import { transitionChildren } from 'utilities/animations/transitions'
-import { floatLeft } from 'utilities/animations/variants'
+import { floatIn, floatLeft } from 'utilities/animations/variants'
 import { Head } from 'components/Head'
 import { ASCII } from 'components/Ascii'
 // import { getIgPhotos } from 'lib/ig'
@@ -20,16 +20,28 @@ export default function Home() {
       />
       <section className='section-fluid'>
         <div className='container'>
-          <motion.div
-            transition={transitionChildren}
-            variants={floatLeft}
-            className={styles.banner}
-          >
-            <ASCII className={styles.ascii} rainbow text='hello,' />
-            <ASCII className={styles.ascii} rainbow text='world.' />
-          </motion.div>
-          <div className='relative flex space-x-4 space-y-4 flex-col md:flex-row flex-wrap'>
-            <motion.h1 transition={transitionChildren} variants={floatLeft}></motion.h1>
+          <div className={styles.banner}>
+            <div className={styles['ascii-wrap']}>
+              <ASCII className={styles['ascii-wrap__pre']} rainbow text='hello,' />
+              <ASCII className={styles['ascii-wrap__pre']} rainbow text='world.' />
+            </div>
+            <div className={styles['banner-info']}>
+              <motion.h1
+                className={styles['banner-info__title']}
+                transition={transitionChildren}
+                variants={floatLeft}
+              >
+                The Brief
+              </motion.h1>
+              <motion.p
+                className={styles['banner-info__text']}
+                transition={transitionChildren}
+                variants={floatIn}
+              >
+                I&apos;m a cat/web developer based in Orlando, FL. This is my <i>www</i> for showing
+                what I am up to and what I&apos;m working on.
+              </motion.p>
+            </div>
           </div>
         </div>
       </section>

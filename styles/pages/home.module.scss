@@ -1,9 +1,33 @@
 // home specific styles
 .banner {
-  @apply flex flex-col items-center justify-center relative;
-  height: 70vh;
+  @apply flex flex-col md:flex-row items-center justify-center relative space-y-8 md:space-y-0 space-x-0 md:space-x-4;
+  height: auto;
+  min-height: 50vh;
+
+  @media (min-width: theme('screens.md')) {
+    height: 80vh;
+  }
 }
-.ascii {
-  @apply w-auto mx-auto text-center;
+
+// ascii art: banner left, top on mobile
+.ascii-wrap {
+  @apply relative flex flex-col items-center justify-center h-auto md:h-full w-full md:w-1/2;
+}
+
+.ascii-wrap__pre {
+  @apply w-full min-w-full max-w-full mx-auto text-center;
   text-shadow: 0 0 10px var(--theme-accent);
+}
+
+// the content: banner right, bottom on mobile
+.banner-info {
+  @apply relative flex flex-col h-auto md:h-full w-full md:w-1/2 items-center justify-center;
+}
+
+.banner-info__title {
+  @apply relative inline-block w-full text-4xl md:text-5xl font-bold text-center md:text-left;
+}
+
+.banner-info__text {
+  @apply relative inline-block w-full text-xl md:text-2xl text-center md:text-left;
 }

@@ -35,6 +35,7 @@
   }
   ul {
     @apply list-none block my-2 pl-6 mx-0;
+
     & li::before {
       @apply absolute -ml-4;
       color: var(--theme-accent-contrast);
@@ -68,6 +69,6 @@
   }
 
   .article {
-    @apply flex flex-col items-start justify-center w-full max-w-2xl mx-auto;
+    @apply flex flex-col items-start justify-center w-full max-w-prose mx-auto;
   }
 }
