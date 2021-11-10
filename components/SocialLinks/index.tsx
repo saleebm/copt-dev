@@ -32,7 +32,7 @@ const SocialLinkWrapper = ({ children, href, name }: SocialLinkWrapperProps) => 
     rel='noreferrer noopener'
     target='_blank'
     href={href}
-    className='inline-block relative w-8 h-8 mr-2 opacity-90 transition transform-gpu motion-safe:hover:-translate-y-1 hover:opacity-100'
+    className='inline-block relative w-8 h-8 max-h-8 max-w-8 opacity-90 transition transform-gpu motion-safe:hover:-translate-y-1 hover:opacity-100'
     title={`Link to ${name}`}
   >
     {children}
@@ -46,7 +46,7 @@ export const SocialLinks = () => {
     <motion.div
       variants={floatIn}
       transition={transitionChildren}
-      className='relative flex flex-row flex-wrap items-center justify-center p-3'
+      className='relative flex flex-row flex-wrap items-baseline justify-center p-3 space-x-2 space-y-2'
     >
       <SocialLinkWrapper href='mailto:saleebmina@copt.dev' name='email me'>
         <Image src={resolvedTheme === 'dark' ? emailIconDark : emailIcon} alt='email me' />

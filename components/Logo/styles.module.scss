@@ -1,11 +1,22 @@
+// wrap
 .logo {
-  display: inline-block;
-  max-width: 420px;
-  position: inherit;
-  width: 100%;
+  @apply relative flex items-center justify-center;
 }
 
-.logoCls1 {
+// the link el
+.logo__anchor {
+  @apply relative inline-block w-auto h-auto transform-gpu motion-safe:hover:scale-110 transition-transform;
+}
+
+// the svg
+.logo__svg {
+  @apply w-full inline-block;
+  max-width: 420px;
+  min-width: 300px;
+  position: inherit;
+}
+
+.logo__svg--primary {
   fill: var(--theme-accent, #f2f9f9);
 
   @media screen and (prefers-reduced-motion: no-preference) {
@@ -16,7 +27,7 @@
 }
 
 // the borders are not visible in the svg, but they are used to create the illusion of a border
-.logoCls2 {
+.logo__svg--secondary {
   fill: var(--theme-accent-secondary);
 }
 
