@@ -1,6 +1,7 @@
 Sitemap: https://www.copt.dev/sitemap.xml
 
 User-agent: *
-Allow: /*
+Allow: /
 
-Disallow: /api/*
+Disallow: /api/
+Disallow: /_next
