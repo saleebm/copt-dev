@@ -46,7 +46,7 @@ export function KittyComponent({ meowData }: KittyProps) {
 
   return useMemo(
     () => (
-      <div className='w-full relative block my-3'>
+      <div className='image-wrapper my-3'>
         <Image
           src={cat?.url ?? backupKitty}
           blurDataURL={backupKitty?.blurDataURL}

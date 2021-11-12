@@ -71,4 +71,8 @@
   .article {
     @apply flex flex-col items-start justify-center w-full max-w-prose mx-auto;
   }
+
+  .image-wrapper {
+    @apply relative block w-full max-w-full mx-auto;
+  }
 }

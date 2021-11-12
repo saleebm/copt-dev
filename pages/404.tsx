@@ -4,6 +4,8 @@ import { KittyComponent } from 'components/Kitty'
 import { GetStaticProps } from 'next'
 import { fetchKitty } from 'lib/cats'
 
+import styles from 'styles/pages/404.module.scss'
+
 interface Props {
   catData: CatData | null
 }
@@ -22,7 +24,9 @@ function FourOhFourPage({ catData }: Props) {
               🐱
             </span>
           </h2>
-          <KittyComponent meowData={catData} />
+          <div className={styles.kitty}>
+            <KittyComponent meowData={catData} />
+          </div>
         </div>
       </section>
     </>
