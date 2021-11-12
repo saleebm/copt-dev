@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 
 import { transitionChildren } from 'utilities/animations/transitions'
 import { floatLeft } from 'utilities/animations/variants'
-// import { getIgPhotos } from 'lib/ig'
 
 export default function DesignSystem() {
   // testing out various typography elements

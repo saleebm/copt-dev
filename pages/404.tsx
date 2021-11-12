@@ -36,8 +36,8 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       props: {
         catData: catData
       },
-      // revalidate every 24 hours
-      revalidate: 86400
+      // don't re-generate the page
+      revalidate: false
     }
   } catch (e) {
     console.error(e)

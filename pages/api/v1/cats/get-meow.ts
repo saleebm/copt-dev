@@ -1,5 +1,5 @@
+import type { NextApiRequest, NextApiResponse } from 'next'
 import { fetchKitty } from 'lib/cats'
-import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function getMeow(req: NextApiRequest, res: NextApiResponse) {
   if (req.method?.toLowerCase() !== 'get') {
