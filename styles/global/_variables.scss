@@ -6,16 +6,19 @@
 
   /* tokens */
   --shadow-color: 0deg 0% 42%;
+  // overriden by dark mode
   --theme-accent: #6a5acd;
   --theme-accent-secondary: #e0c3fc;
   --theme-accent-contrast: #080c3d;
 
   /* colors */
+  // overriden by dark mode
   --link-color: theme('colors.indigo.700');
   --link-color-hover: theme('colors.indigo.500');
 
   /* size */
   --max-width: theme('screens.xl');
+  --header-height: 150px;
 }
 
 html.dark {

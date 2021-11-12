@@ -4,6 +4,7 @@
 
 .header {
   @apply relative block w-full min-w-full mb-8 p-3;
+  max-height: var(--header-height, 150px);
 }
 
 .headerInner {

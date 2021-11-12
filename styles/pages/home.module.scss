@@ -5,7 +5,7 @@
   min-height: 50vh;
 
   @media (min-width: theme('screens.md')) {
-    height: 80vh;
+    height: calc(90vh - var(--header-height));
   }
 }
 
@@ -29,5 +29,6 @@
 }
 
 .banner-info__text {
-  @apply relative inline-block w-full text-xl md:text-2xl text-center md:text-left;
+  @apply relative inline-block w-auto text-xl md:text-2xl text-center md:text-left;
+  max-width: 35ch;
 }
