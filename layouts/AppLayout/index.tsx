@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { Logo } from 'components/Logo'
 import { SocialLinks } from 'components/SocialLinks'
 import { transitionChildrenFast, transitionParent } from 'utilities/animations/transitions'
-import { floatIn } from 'utilities/animations/variants'
+import { floatInOut } from 'utilities/animations/variants'
 import styles from './styles.module.scss'
 
 export interface AppLayoutProps {
@@ -22,16 +22,16 @@ export function AppLayout({ children }: AppLayoutProps) {
       transition={transitionParent}
       className={styles.wrap}
     >
-      <header className={styles.header}>
+      <header className={`${styles.header} gutter-y gutter-x`}>
+        <motion.a
+          variants={floatInOut}
+          transition={transitionChildrenFast}
+          href='#main'
+          className={styles.skip}
+        >
+          Skip to content
+        </motion.a>
         <div className={styles.headerInner}>
-          <motion.a
-            variants={floatIn}
-            transition={transitionChildrenFast}
-            href='#main'
-            className={styles.skip}
-          >
-            Skip to content
-          </motion.a>
           <Logo />
           <SocialLinks />
         </div>

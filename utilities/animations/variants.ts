@@ -16,17 +16,30 @@ export const floatLeft: Variants = {
   }
 }
 
+// only floats in, no exit translate animation
 export const floatIn: Variants = {
   pageAnimate: {
     translateY: 0,
     opacity: 1
   },
   pageInitial: {
-    translateY: -10,
+    translateY: -20,
     opacity: 0
   },
   pageExit: {
-    translateY: -15,
     opacity: 0
+  }
+}
+
+export const floatInOut: Variants = {
+  ...floatIn,
+  pageExit: {
+    translateY: 5,
+    opacity: 0,
+    transition: {
+      translateY: {
+        restDelta: 0.5
+      }
+    }
   }
 }

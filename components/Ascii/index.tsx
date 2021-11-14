@@ -16,6 +16,7 @@ interface ASCIIProps {
   className?: string
 }
 
+// adapted from https://github.com/localjo/react-rainbow-ascii
 const ASCII: FC<ASCIIProps> = ({
   text = 'meow',
   rainbow = true,
@@ -92,16 +93,26 @@ const ASCII: FC<ASCIIProps> = ({
       variants={floatLeft}
     >
       {hasMounted ? (
-        <Fragment>
-          <style>{`.${uniqueClass} {width: 100%;} .${uniqueClass} pre {margin: 0; padding: 0; font-size: ${fontSize}px; line-height: 1.1;}`}</style>
-          {rainbow ? <Rainbow /> : <pre>{ascii}</pre>}
-        </Fragment>
+        <Fragment>{rainbow ? <Rainbow /> : <pre>{ascii}</pre>}</Fragment>
       ) : (
         createElement(fallback, null, [ascii])
       )}
       <pre ref={widthTest} style={measureStyle}>
         &nbsp;
       </pre>
+
+      <style global jsx>{`
+        .${uniqueClass} {
+          width: 100%;
+        }
+        .${uniqueClass} pre {
+          margin: 0;
+          padding: 0;
+          font-size: ${fontSize + 3}px;
+          line-height: 1;
+          display: block;
+        }
+      `}</style>
     </motion.div>
   )
 }

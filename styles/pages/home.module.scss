@@ -1,6 +1,7 @@
 // home specific styles
+// the first section is the banner
 .banner {
-  @apply flex flex-col md:flex-row items-center justify-center relative space-y-8 md:space-y-0 space-x-0 md:space-x-4;
+  @apply flex flex-col md:flex-row items-center justify-center relative space-y-16 md:space-y-0 space-x-0 md:space-x-4;
   height: auto;
   min-height: 50vh;
 
@@ -16,19 +17,27 @@
 
 .ascii-wrap__pre {
   @apply w-full min-w-full max-w-full mx-auto text-center;
-  text-shadow: 0 0 10px var(--theme-accent);
 }
 
-// the content: banner right, bottom on mobile
+// the content: banner right, bottom on mobile. contains the content and the button
 .banner-info {
-  @apply relative flex flex-col h-auto md:h-full w-full md:w-1/2 items-center justify-center;
+  @apply relative flex flex-col h-auto md:h-full w-full md:w-1/2 items-center justify-center space-y-6;
+}
+
+// wraps the title, subtitle, and text
+.banner-info__content {
+  @apply relative flex flex-col items-center justify-center;
 }
 
 .banner-info__title {
-  @apply relative inline-block w-full text-4xl md:text-5xl font-bold text-center md:text-left;
+  @apply relative inline-block w-full text-4xl md:text-5xl font-bold text-center;
+}
+
+.banner-info__subtitle {
+  @apply relative inline-block w-full text-2xl md:text-3xl font-bold text-center;
 }
 
 .banner-info__text {
-  @apply relative inline-block w-auto text-xl md:text-2xl text-center md:text-left;
+  @apply relative inline-block w-auto text-lg md:text-xl text-center md:text-left;
   max-width: 35ch;
 }

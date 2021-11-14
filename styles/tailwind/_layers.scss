@@ -5,23 +5,27 @@
 
 @layer base {
   h1 {
-    @apply text-3xl tracking-tighter mb-4 text-gray-800 dark:text-white md:text-5xl;
-    font-variation-settings: 'wght' 300;
+    @apply text-3xl tracking-tighter mb-4 md:text-5xl font-light;
+    color: var(--heading-primary-color);
   }
   h2 {
-    @apply text-2xl tracking-tight mb-4 text-gray-700 dark:text-gray-100 md:text-4xl;
+    @apply text-2xl tracking-tight mb-4  md:text-4xl font-normal;
+    color: var(--heading-secondary-color);
   }
   h3 {
-    @apply text-xl tracking-normal mb-2 text-gray-600 dark:text-gray-200 md:text-3xl;
+    @apply text-xl tracking-normal mb-2 md:text-3xl font-extralight;
+    color: var(--text-secondary-color);
   }
   h4 {
-    @apply text-lg tracking-normal mb-2 text-gray-600 dark:text-gray-200 md:text-2xl;
+    @apply text-lg tracking-normal mb-2 md:text-2xl font-bold;
+    color: var(--text-secondary-color);
   }
   p {
-    @apply text-base tracking-tight my-2 text-gray-700 dark:text-gray-200;
+    @apply text-base tracking-tight my-1 font-normal;
+    color: var(--text-primary-color);
   }
   a {
-    @apply text-base tracking-tight;
+    @apply text-base tracking-tight font-normal;
     color: var(--link-color);
     transition: color 0.2s ease-in-out;
 
@@ -31,7 +35,8 @@
     }
   }
   li {
-    @apply relative text-base tracking-tight mb-1 text-gray-700 dark:text-gray-200;
+    @apply relative font-normal text-base tracking-tight mb-1;
+    color: var(--text-primary-color);
   }
   ul {
     @apply list-none block my-2 pl-6 mx-0;
@@ -57,22 +62,85 @@
 }
 
 @layer components {
+  // fonts
+  .font-extralight {
+    font-variation-settings: 'wght' 100;
+  }
+
+  .font-thin {
+    font-variation-settings: 'wght' 200;
+  }
+
+  .font-light {
+    font-variation-settings: 'wght' 300;
+  }
+
+  .font-medium {
+    font-variation-settings: 'wght' 500;
+  }
+
+  .font-semibold {
+    font-variation-settings: 'wght' 600;
+  }
+
+  .font-bold {
+    font-variation-settings: 'wght' 700;
+  }
+
+  .font-extrabold {
+    font-variation-settings: 'wght' 800;
+  }
+
+  // containers
+  // wraps the whole page
+  .page-content {
+    @apply relative flex flex-col min-w-full w-full mx-auto space-y-8 md:space-y-16;
+  }
+
   // for the container wrap
   .section-fluid {
     @apply relative block min-w-full w-full mx-auto;
   }
 
+  .gutter-x {
+    padding-left: var(--gutter-x);
+    padding-right: var(--gutter-x);
+  }
+
+  .gutter-y {
+    padding-bottom: var(--gutter-y);
+    padding-top: var(--gutter-y);
+  }
+
   // for the inner wrap
   .container {
-    @apply relative block w-full mx-auto px-4 md:px-8;
+    @apply relative block w-full h-auto mx-auto;
     max-width: var(--max-width);
   }
 
   .article {
-    @apply flex flex-col items-start justify-center w-full max-w-prose mx-auto;
+    @apply relative flex flex-col items-start justify-center w-full max-w-prose mx-auto space-y-4 md:space-y-8;
   }
 
   .image-wrapper {
     @apply relative block w-full max-w-full mx-auto;
+  }
+
+  // buttons
+  .btn-primary {
+    @apply inline-block px-5 py-3.5 md:px-8 md:py-4 text-lg font-medium leading-5 transition duration-300 filter drop-shadow rounded-md;
+    background-color: var(--theme-accent);
+    color: var(--button-text-color);
+
+    &:focus {
+      outline: none;
+    }
+
+    &:hover,
+    &:focus {
+      @apply drop-shadow-lg;
+      background-color: var(--theme-accent-secondary);
+      color: var(--button-text-color-hover);
+    }
   }
 }
