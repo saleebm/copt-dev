@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
-import { floatIn } from 'utilities/animations/variants'
+import { floatInOut } from 'utilities/animations/variants'
 import { transitionChildren } from 'utilities/animations/transitions'
 import styles from './styles.module.scss'
 //
 export const Logo = () => (
-  <motion.div transition={transitionChildren} variants={floatIn} className={styles.logo}>
+  <motion.div transition={transitionChildren} variants={floatInOut} className={styles.logo}>
     <Link href='/'>
       <a className={styles.logo__anchor}>
         <svg

@@ -1,8 +1,11 @@
-import type { CatData } from 'lib/models/cats'
 import { NextSeo } from 'next-seo'
-import { KittyComponent } from 'components/Kitty'
 import { GetStaticProps } from 'next'
+import { motion } from 'framer-motion'
+import { floatInOut } from 'utilities/animations/variants'
+import { transitionChildren } from 'utilities/animations/transitions'
 import { fetchKitty } from 'lib/cats'
+import type { CatData } from 'lib/models/cats'
+import { KittyComponent } from 'components/Kitty'
 
 import styles from 'styles/pages/404.module.scss'
 
@@ -16,7 +19,11 @@ function FourOhFourPage({ catData }: Props) {
     <>
       <NextSeo title={'404'} noindex />
       <section className='section-fluid'>
-        <div className='inner-container'>
+        <motion.div
+          variants={floatInOut}
+          transition={transitionChildren}
+          className='container gutter-x gutter-y'
+        >
           <h1 className='text-center'>404</h1>
           <h2 className='text-center'>
             <i>Look, kitty!</i>&nbsp;
@@ -27,7 +34,7 @@ function FourOhFourPage({ catData }: Props) {
           <div className={styles.kitty}>
             <KittyComponent meowData={catData} />
           </div>
-        </div>
+        </motion.div>
       </section>
     </>
   )

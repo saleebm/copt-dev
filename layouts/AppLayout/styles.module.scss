@@ -3,12 +3,12 @@
 }
 
 .header {
-  @apply relative block w-full min-w-full mb-8 p-3;
-  max-height: var(--header-height, 150px);
+  @apply relative block w-full h-auto min-w-full;
 }
 
+// contains logo, social links, and nav links
 .headerInner {
-  @apply relative flex flex-col flex-wrap justify-center items-center w-full mx-auto;
+  @apply relative flex flex-col flex-wrap justify-center items-center w-full mx-auto space-y-4;
   max-width: var(--max-width);
 }
 

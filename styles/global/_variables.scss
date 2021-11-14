@@ -1,8 +1,11 @@
 /* variables */
 :root {
+  // base
   --background-color: theme('colors.gray.100');
-  --text-color-primary: theme('colors.gray.900');
-  --text-color-secondary: theme('colors.gray.800');
+  --text-primary-color: theme('colors.gray.800');
+  --text-secondary-color: theme('colors.gray.700');
+  --heading-primary-color: theme('colors.yellow.800');
+  --heading-secondary-color: theme('colors.yellow.900');
 
   /* tokens */
   --shadow-color: 0deg 0% 42%;
@@ -15,16 +18,24 @@
   // overriden by dark mode
   --link-color: theme('colors.indigo.700');
   --link-color-hover: theme('colors.indigo.500');
+  --button-text-color: theme('colors.gray.800');
+  --button-text-color-hover: theme('colors.gray.900');
 
   /* size */
   --max-width: theme('screens.xl');
-  --header-height: 150px;
+
+  /* spacing */
+  --gutter-y: theme('space.8');
+  --gutter-x: theme('space.4');
 }
 
 html.dark {
+  // base
   --background-color: theme('colors.gray.900');
-  --text-color-primary: theme('colors.gray.100');
-  --text-color-secondary: theme('colors.gray.200');
+  --text-primary-color: theme('colors.gray.200');
+  --text-secondary-color: theme('colors.gray.300');
+  --heading-primary-color: theme('colors.yellow.400');
+  --heading-secondary-color: theme('colors.yellow.300');
 
   /* tokens */
   --shadow-color: 0deg 0% 69%;
@@ -35,4 +46,6 @@ html.dark {
   /* colors */
   --link-color: theme('colors.indigo.500');
   --link-color-hover: theme('colors.indigo.300');
+  --button-text-color: theme('colors.gray.300');
+  --button-text-color-hover: theme('colors.gray.50');
 }
