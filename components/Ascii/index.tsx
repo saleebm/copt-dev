@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 
 import { transitionChildren } from 'utilities/animations/transitions'
 import { floatLeft } from 'utilities/animations/variants'
+import { Rainbow } from './rainbow'
 
 interface ASCIIProps {
   text?: string
@@ -57,26 +58,7 @@ const ASCII: FC<ASCIIProps> = ({
   }, [preWrap.current, text, font])
 
   const hasMounted = ascii !== text // If they're equal, figlet hasn't been applied
-  const Rainbow: FC = () => {
-    const lineColors = lines.map((_line, line) => {
-      return Array.from('rbg').map((_c, rbgi) => getPhaseRBG(line, (rbgi * Math.PI * 2) / 3))
-    })
-    function getPhaseRBG(rbgi: number, phase: number) {
-      return Math.floor(Math.sin((Math.PI / lines.length) * 2 * rbgi + phase) * 127) + 128
-    }
-    return (
-      <Fragment>
-        {lines.map((line, i) => {
-          const [red, blue, green] = lineColors[i]
-          return (
-            <pre key={i} style={{ color: `rgb(${red},${green},${blue})` }}>
-              {line}
-            </pre>
-          )
-        })}
-      </Fragment>
-    )
-  }
+
   const measureStyle: React.CSSProperties = {
     fontSize: `${measuredFontSize}px`,
     position: 'absolute',
@@ -93,7 +75,7 @@ const ASCII: FC<ASCIIProps> = ({
       variants={floatLeft}
     >
       {hasMounted ? (
-        <Fragment>{rainbow ? <Rainbow /> : <pre>{ascii}</pre>}</Fragment>
+        <Fragment>{rainbow ? <Rainbow lines={lines} /> : <pre>{ascii}</pre>}</Fragment>
       ) : (
         createElement(fallback, null, [ascii])
       )}
