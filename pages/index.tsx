@@ -6,6 +6,7 @@ import { transitionChildren } from 'utilities/animations/transitions'
 import { floatIn, floatLeft } from 'utilities/animations/variants'
 import { Head } from 'components/Head'
 import { ASCII } from 'components/Ascii'
+import { Eye } from 'components/Ascii/eye'
 
 import styles from 'styles/pages/home.module.scss'
 
@@ -23,6 +24,7 @@ export default function Home() {
           <div className='container gutter-y gutter-x'>
             <div className={styles.banner}>
               <div className={styles['ascii-wrap']}>
+                <Eye />
                 <ASCII className={styles['ascii-wrap__pre']} rainbow text='copt' />
                 <ASCII className={styles['ascii-wrap__pre']} rainbow text='dev' />
               </div>
