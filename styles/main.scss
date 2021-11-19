@@ -11,6 +11,10 @@
 @import 'global/_variables';
 @import 'global/_global';
 
+// pages
+@import 'pages/home';
+@import 'pages/404';
+
 /* Start purging... */
 @tailwind utilities;
 /* Stop purging. */
