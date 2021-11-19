@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import type { Prisma } from '@prisma/client'
 
 // Prevent multiple instances of Prisma Client in development
 const globalAny: typeof globalThis & { prisma?: PrismaClient } = global
@@ -17,7 +18,7 @@ const prisma =
 
 if (process.env.NODE_ENV === 'development' && !globalAny.prisma) {
   // method to find time for querying
-  prisma.$use(async (params, next) => {
+  prisma.$use(async (params: Prisma.MiddlewareParams, next: any) => {
     const before = Date.now()
 
     const result = await next(params)
