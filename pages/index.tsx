@@ -21,29 +21,51 @@ export default function Home() {
         <section className='section-fluid'>
           <div className='container gutter-y gutter-x'>
             <div className={'banner'}>
-              <div className={'ascii-wrap'}>
+              <div
+                className={
+                  'relative flex flex-col items-center justify-center h-auto md:h-full w-full md:w-1/2'
+                }
+              >
                 <Eye />
-                <ASCII className={'ascii-wrap__pre'} rainbow text='copt' />
-                <ASCII className={'ascii-wrap__pre'} rainbow text='dev' />
+                <ASCII
+                  className={'w-full min-w-full max-w-full mx-auto my-2 text-center'}
+                  rainbow
+                  text='copt'
+                />
+                <ASCII
+                  className={'w-full min-w-full max-w-full mx-auto text-center'}
+                  rainbow
+                  text='dev'
+                />
               </div>
-              <div className={'banner-info'}>
-                <div className={'banner-info__content'}>
+              <div
+                className={
+                  'relative flex flex-col h-auto md:h-full w-full md:w-1/2 items-center justify-center space-y-6'
+                }
+              >
+                <div className={'relative flex flex-col items-center justify-center'}>
                   <motion.h1
-                    className={'banner-info__title'}
+                    className={
+                      'relative inline-block w-full text-4xl md:text-5xl font-bold text-center'
+                    }
                     transition={transitionChildren}
                     variants={floatLeft}
                   >
                     Welcome, I&apos;m Mina
                   </motion.h1>
                   <motion.h2
-                    className={'banner-info__subtitle'}
+                    className={
+                      'relative inline-block w-full text-2xl md:text-3xl font-bold text-center'
+                    }
                     transition={transitionChildren}
                     variants={floatLeft}
                   >
                     The Brief
                   </motion.h2>
                   <motion.p
-                    className={'banner-info__text'}
+                    className={
+                      'relative inline-block w-auto text-lg md:text-xl text-left banner__text'
+                    }
                     transition={transitionChildren}
                     variants={floatLeft}
                   >

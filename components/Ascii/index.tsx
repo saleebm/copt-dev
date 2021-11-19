@@ -68,14 +68,20 @@ const ASCII: FC<ASCIIProps> = ({
   return (
     <motion.div
       ref={preWrap}
-      className={`${uniqueClass} ${className}`}
+      className={`${uniqueClass} ${className} w-full`}
       title={text}
       aria-label={text}
       transition={transitionChildren}
       variants={floatLeft}
     >
       {hasMounted ? (
-        <Fragment>{rainbow ? <Rainbow lines={lines} /> : <pre>{ascii}</pre>}</Fragment>
+        <Fragment>
+          {rainbow ? (
+            <Rainbow className='ascii-art__pre m-0 p-0 block' lines={lines} />
+          ) : (
+            <pre className='ascii-art__pre m-0 p-0 block'>{ascii}</pre>
+          )}
+        </Fragment>
       ) : (
         createElement(fallback, null, [ascii])
       )}
@@ -84,15 +90,9 @@ const ASCII: FC<ASCIIProps> = ({
       </pre>
 
       <style global jsx>{`
-        .${uniqueClass} {
-          width: 100%;
-        }
         .${uniqueClass} pre {
-          margin: 0;
-          padding: 0;
-          font-size: ${fontSize + 3}px;
-          line-height: 1;
-          display: block;
+          font-size: ${fontSize}px;
+          line-height: 0.8;
         }
       `}</style>
     </motion.div>

@@ -1,18 +1,7 @@
-// wrap
-.logo {
-  @apply relative flex items-center justify-center;
-}
-
-// the link el
-.logo__anchor {
-  @apply relative inline-block w-auto h-auto transform-gpu motion-safe:hover:scale-110 transition-transform;
-}
-
 // the svg
 .logo__svg {
-  @apply w-full inline-block;
   max-width: 420px;
-  min-width: 300px;
+  min-width: 250px;
   position: inherit;
 }
 

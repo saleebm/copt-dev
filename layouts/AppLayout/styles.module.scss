@@ -1,35 +1,9 @@
-.wrap {
-  @apply relative flex flex-col items-stretch m-auto h-screen w-full opacity-100;
-}
-
-.header {
-  @apply relative block w-full h-auto min-w-full;
-}
-
 // contains logo, social links, and nav links
 .headerInner {
-  @apply relative flex flex-col flex-wrap justify-center items-center w-full mx-auto space-y-4;
   max-width: var(--max-width);
 }
 
-.skip {
-  @apply sr-only focus:not-sr-only;
-}
-
-.main {
-  @apply relative flex flex-col sm:flex-row flex-wrap justify-center sm:justify-between items-center w-full m-0 p-0;
-}
-
-.nav {
-  @apply relative flex items-center justify-between flex-wrap;
-}
-
-.nav__items-wrap {
-  @apply relative w-full h-auto block flex-grow sm:flex items-center sm:w-auto;
-}
-
 .nav__item {
-  @apply relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2;
   color: var(--nav-item-color);
 
   &:hover,

@@ -4,19 +4,26 @@ import { motion } from 'framer-motion'
 import { floatInOut } from 'utilities/animations/variants'
 import { transitionChildren } from 'utilities/animations/transitions'
 import styles from './styles.module.scss'
-//
+
 export const Logo = () => (
-  <motion.div transition={transitionChildren} variants={floatInOut} className={styles.logo}>
+  <motion.div
+    transition={transitionChildren}
+    variants={floatInOut}
+    className={`relative flex items-center justify-center`}
+  >
     <Link href='/'>
-      <a className={styles.logo__anchor}>
+      <a
+        className={`relative inline-block w-auto h-auto transform-gpu motion-safe:hover:scale-110 transition-transform`}
+      >
         <svg
           id='minasaleeb-logo'
           xmlns='http://www.w3.org/2000/svg'
           xmlnsXlink='http://www.w3.org/1999/xlink'
           viewBox='0 0 2717.4 410.07'
           aria-label={'Mina Saleeb'}
-          width={300}
-          className={styles.logo__svg}
+          width={'100%'}
+          height={'100%'}
+          className={`inline-block w-full h-auto ${styles.logo__svg}`}
         >
           <defs>
             <linearGradient
