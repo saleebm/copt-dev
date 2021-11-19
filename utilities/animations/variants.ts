@@ -7,11 +7,11 @@ export const floatLeft: Variants = {
     opacity: 1
   },
   pageInitial: {
-    translateX: 40,
+    translateX: 0,
     opacity: 0
   },
   pageExit: {
-    translateX: -20,
+    translateX: -10,
     opacity: 0
   }
 }
@@ -23,7 +23,7 @@ export const floatIn: Variants = {
     opacity: 1
   },
   pageInitial: {
-    translateY: -20,
+    translateY: -5,
     opacity: 0
   },
   pageExit: {
@@ -35,11 +35,6 @@ export const floatInOut: Variants = {
   ...floatIn,
   pageExit: {
     translateY: 5,
-    opacity: 0,
-    transition: {
-      translateY: {
-        restDelta: 0.5
-      }
-    }
+    opacity: 0
   }
 }
