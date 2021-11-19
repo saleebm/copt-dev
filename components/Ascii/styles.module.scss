@@ -10,10 +10,17 @@
 
   & pre {
     display: block;
+    filter: contrast(110%) brightness(95%);
     font-size: 5px;
 
     line-height: 1;
     margin: 0;
     padding: 0;
+  }
+}
+
+.dark .ascii-eye {
+  & pre {
+    filter: contrast(110%) brightness(105%);
   }
 }

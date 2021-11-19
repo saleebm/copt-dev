@@ -9,7 +9,7 @@ export default function NowPage() {
   // make sure to put last updated date visible on this page
   return (
     <>
-      <Head title='Now' description='This is what I am up to these days. ' />
+      <Head title='Now' description='This is what I am up to nowadays, check it out.' />
       <div className='page-content'>
         <section className='section-fluid'>
           <article className='article gutter-y gutter-x'>
@@ -67,7 +67,46 @@ export default function NowPage() {
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Reading</h2>
               <ul>
-                <li>todo</li>
+                <li>
+                  <a
+                    title='See this book on goodreads'
+                    href='https://www.goodreads.com/book/show/4069.Man_s_Search_for_Meaning'
+                    rel='noopener noreferrer'
+                    target='_blank'
+                  >
+                    Man&apos;s Search for Meaning by Viktor E. Frankl
+                  </a>
+                </li>
+                <li>
+                  <a
+                    title='See this book on goodreads'
+                    href='https://www.nealstephenson.com/snow-crash.html'
+                    rel='noopener noreferrer'
+                    target='_blank'
+                  >
+                    Snow Crash by Neal Stephenson
+                  </a>
+                </li>
+                <li>
+                  <a
+                    title='See this book on goodreads'
+                    href='https://www.goodreads.com/book/show/12.The_Ultimate_Hitchhiker_s_Guide'
+                    rel='noopener noreferrer'
+                    target='_blank'
+                  >
+                    The Ultimate Hitchhiker&apos;s Guide to the Galaxy by Douglas Adams
+                  </a>
+                </li>
+                <li>
+                  <a
+                    title='See this book on goodreads'
+                    href='https://www.goodreads.com/book/show/34536488-principles'
+                    rel='noopener noreferrer'
+                    target='_blank'
+                  >
+                    Principles: Life and Work by Ray Dalio
+                  </a>
+                </li>
               </ul>
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>

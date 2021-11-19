@@ -25,8 +25,9 @@
     color: var(--text-primary-color);
   }
   a {
-    @apply text-base tracking-tight font-normal;
+    @apply tracking-tight font-normal;
     color: var(--link-color);
+    font-size: inherit;
     transition: color 0.2s ease-in-out;
 
     &:hover,
@@ -35,7 +36,7 @@
     }
   }
   li {
-    @apply relative font-normal text-base tracking-tight mb-1;
+    @apply relative font-normal text-lg tracking-normal mb-1.5;
     color: var(--text-primary-color);
   }
   ul {
@@ -94,12 +95,12 @@
   // containers
   // wraps the whole page
   .page-content {
-    @apply relative flex flex-col min-w-full w-full mx-auto space-y-8 md:space-y-16;
+    @apply relative flex flex-col min-w-full w-full h-auto mx-auto space-y-8 md:space-y-16;
   }
 
   // for the container wrap
   .section-fluid {
-    @apply relative block min-w-full w-full mx-auto;
+    @apply relative block min-w-full w-full h-auto mx-auto;
   }
 
   .gutter-x {
@@ -142,5 +143,10 @@
       background-color: var(--theme-accent-secondary);
       color: var(--button-text-color-hover);
     }
+  }
+
+  // text
+  .lead {
+    @apply text-lg font-medium leading-relaxed;
   }
 }

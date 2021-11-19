@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 
 import { Logo } from 'components/Logo'
@@ -34,6 +35,23 @@ export function AppLayout({ children }: AppLayoutProps) {
         <div className={styles.headerInner}>
           <Logo />
           <SocialLinks />
+          <motion.nav
+            variants={floatInOut}
+            transition={transitionChildrenFast}
+            className={styles.nav}
+          >
+            <div className={styles['nav__items-wrap']}>
+              <Link href='/'>
+                <a className={styles['nav__item']}>Root</a>
+              </Link>
+              <Link href='/now'>
+                <a className={styles['nav__item']}>Now</a>
+              </Link>
+              <Link href='/uses'>
+                <a className={styles['nav__item']}>Uses</a>
+              </Link>
+            </div>
+          </motion.nav>
         </div>
       </header>
       <main id='main' className={styles.main}>
