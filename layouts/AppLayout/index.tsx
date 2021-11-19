@@ -21,40 +21,59 @@ export function AppLayout({ children }: AppLayoutProps) {
       animate='pageAnimate'
       exit={shouldReduceMotion ? 'pageAnimate' : 'pageExit'}
       transition={transitionParent}
-      className={styles.wrap}
+      className={`relative flex flex-col items-stretch m-auto h-screen w-full opacity-100`}
     >
-      <header className={`${styles.header} gutter-y gutter-x`}>
+      <header className={`relative block w-full h-auto min-w-full gutter-y gutter-x`}>
         <motion.a
           variants={floatInOut}
           transition={transitionChildrenFast}
           href='#main'
-          className={styles.skip}
+          className={`sr-only focus:not-sr-only`}
         >
           Skip to content
         </motion.a>
-        <div className={styles.headerInner}>
+        <div
+          className={`${styles.headerInner} relative flex flex-col flex-wrap justify-center items-center w-full mx-auto space-y-4`}
+        >
           <Logo />
           <SocialLinks />
           <motion.nav
             variants={floatInOut}
             transition={transitionChildrenFast}
-            className={styles.nav}
+            className={`relative flex items-center justify-between flex-wrap`}
           >
-            <div className={styles['nav__items-wrap']}>
+            <div
+              className={`relative w-full h-auto block flex-grow sm:flex items-center sm:w-auto`}
+            >
               <Link href='/'>
-                <a className={styles['nav__item']}>Root</a>
+                <a
+                  className={`${styles['nav__item']} relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
+                >
+                  Root
+                </a>
               </Link>
               <Link href='/now'>
-                <a className={styles['nav__item']}>Now</a>
+                <a
+                  className={`${styles['nav__item']} relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
+                >
+                  Now
+                </a>
               </Link>
               <Link href='/uses'>
-                <a className={styles['nav__item']}>Uses</a>
+                <a
+                  className={`${styles['nav__item']} relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
+                >
+                  Uses
+                </a>
               </Link>
             </div>
           </motion.nav>
         </div>
       </header>
-      <main id='main' className={styles.main}>
+      <main
+        id='main'
+        className={`relative flex flex-col sm:flex-row flex-wrap justify-center sm:justify-between items-center w-full m-0 p-0`}
+      >
         {children}
       </main>
     </motion.div>

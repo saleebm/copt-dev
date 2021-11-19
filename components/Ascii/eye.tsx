@@ -27,10 +27,10 @@ export const Eye = () => {
     <motion.div
       transition={transitionChildren}
       variants={floatLeft}
-      className={'ascii-eye'}
+      className={'block mb-4 max-w-full min-w-full relative text-center w-full'}
       title='Egyptian eye in ascii characters'
     >
-      <Rainbow lines={eyeText} />
+      <Rainbow lines={eyeText} className='ascii-art__pre ascii-eye__pre block m-0 p-0' />
     </motion.div>
   )
 }

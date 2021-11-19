@@ -104,7 +104,7 @@
     min-height: 50vh;
 
     @media (min-width: theme('screens.md')) {
-      height: calc(80vh - 200px);
+      height: calc(75vh - 200px);
     }
   }
 
@@ -158,5 +158,14 @@
   // text
   .lead {
     @apply text-lg font-medium leading-relaxed;
+  }
+
+  // pre
+  .ascii-art__pre {
+    filter: contrast(110%) brightness(95%);
+  }
+
+  .dark .ascii-art__pre {
+    filter: contrast(110%) brightness(105%);
   }
 }
