@@ -49,18 +49,23 @@ export default function Home() {
                     transition={transitionChildren}
                     variants={floatLeft}
                   >
-                    I&apos;m a cat/web developer based in Orlando, FL. This is my <i>www</i> for
-                    showing what I am up to, as well as what I have learned and done with software.
+                    I&apos;m a cat/full stack application developer based in Orlando, FL. My core
+                    skills are in TypeScript and Node.js. I love to make things that are accessible,
+                    user-friendly, and performant. I&apos;m always looking to learn new things and
+                    improve my skills.
                   </motion.p>
                 </div>
                 <motion.div transition={transitionChildren} variants={floatIn}>
-                  <Link href='/about' passHref>
-                    <button className='btn-primary'>More info</button>
+                  <Link href='/now' passHref>
+                    <button className='btn-primary'>What am I doing now?</button>
                   </Link>
                 </motion.div>
               </div>
             </div>
           </div>
+        </section>
+        <section className='section-fluid'>
+          <div className='container gutter-y gutter-x'>{/* todo */}</div>
         </section>
       </div>
     </>

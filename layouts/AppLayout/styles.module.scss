@@ -19,3 +19,22 @@
 .main {
   @apply relative flex flex-col sm:flex-row flex-wrap justify-center sm:justify-between items-center w-full m-0 p-0;
 }
+
+.nav {
+  @apply relative flex items-center justify-between flex-wrap;
+}
+
+.nav__items-wrap {
+  @apply relative w-full h-auto block flex-grow sm:flex items-center sm:w-auto;
+}
+
+.nav__item {
+  @apply relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2;
+  color: var(--nav-item-color);
+
+  &:hover,
+  &:focus {
+    background-color: var(--theme-accent-transparent);
+    color: var(--nav-item-color-hover);
+  }
+}

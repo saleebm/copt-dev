@@ -8,16 +8,16 @@ import { transitionChildren } from 'utilities/animations/transitions'
 import {
   facebookProfile,
   githubProfile,
-  instagramProfile,
+  // instagramProfile,
   linkedinProfile,
-  polyworkProfile,
-  twitterProfile
+  polyworkProfile
+  // twitterProfile
 } from 'config/social-profiles'
 import emailIcon from 'public/static/images/brands/email.png'
 import emailIconDark from 'public/static/images/brands/email-dark.png'
 import linkedinIcon from 'public/static/images/brands/linkedin.png'
-import twitterIcon from 'public/static/images/brands/twitter.png'
-import instagramIcon from 'public/static/images/brands/instagram.png'
+// import twitterIcon from 'public/static/images/brands/twitter.png'
+// import instagramIcon from 'public/static/images/brands/instagram.png'
 import githubIcon from 'public/static/images/brands/github.png'
 import githubIconDark from 'public/static/images/brands/github-dark.png'
 import facebookIcon from 'public/static/images/brands/facebook.png'
@@ -61,12 +61,12 @@ export const SocialLinks = () => {
       <SocialLinkWrapper name='Facebook' href={facebookProfile}>
         <Image src={facebookIcon} alt='facebook' />
       </SocialLinkWrapper>
-      <SocialLinkWrapper name='Instagram' href={instagramProfile}>
+      {/* <SocialLinkWrapper name='Instagram' href={instagramProfile}>
         <Image src={instagramIcon} alt='instagram' />
       </SocialLinkWrapper>
       <SocialLinkWrapper name='Twitter' href={twitterProfile}>
         <Image src={twitterIcon} alt='twitter' />
-      </SocialLinkWrapper>
+      </SocialLinkWrapper> */}
       <SocialLinkWrapper name='Polywork' href={polyworkProfile}>
         <svg
           className='fill-current'
