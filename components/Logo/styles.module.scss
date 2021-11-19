@@ -28,7 +28,7 @@
 
 // the borders are not visible in the svg, but they are used to create the illusion of a border
 .logo__svg--secondary {
-  fill: var(--theme-accent-secondary);
+  fill: var(--background-color);
 }
 
 @keyframes logo-color-change {
@@ -36,7 +36,7 @@
     fill: var(--theme-accent);
   }
   50% {
-    fill: var(--theme-accent-secondary);
+    fill: var(--background-color);
   }
   100% {
     fill: var(--theme-accent);
