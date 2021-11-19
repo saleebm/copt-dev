@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { transitionChildren } from 'utilities/animations/transitions'
 import { floatLeft } from 'utilities/animations/variants'
 
-import asciiStyles from 'components/Ascii/styles.module.scss'
 import { Rainbow } from 'components/Ascii/rainbow'
 
 const eyeText = `
@@ -28,7 +27,7 @@ export const Eye = () => {
     <motion.div
       transition={transitionChildren}
       variants={floatLeft}
-      className={asciiStyles['ascii-eye']}
+      className={'ascii-eye'}
       title='Egyptian eye in ascii characters'
     >
       <Rainbow lines={eyeText} />

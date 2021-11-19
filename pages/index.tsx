@@ -8,8 +8,6 @@ import { Head } from 'components/Head'
 import { ASCII } from 'components/Ascii'
 import { Eye } from 'components/Ascii/eye'
 
-import styles from 'styles/pages/home.module.scss'
-
 // interface Props {}
 
 export default function Home() {
@@ -23,29 +21,29 @@ export default function Home() {
         <section className='section-fluid'>
           <div className='container gutter-y gutter-x'>
             <div className={'banner'}>
-              <div className={styles['ascii-wrap']}>
+              <div className={'ascii-wrap'}>
                 <Eye />
-                <ASCII className={styles['ascii-wrap__pre']} rainbow text='copt' />
-                <ASCII className={styles['ascii-wrap__pre']} rainbow text='dev' />
+                <ASCII className={'ascii-wrap__pre'} rainbow text='copt' />
+                <ASCII className={'ascii-wrap__pre'} rainbow text='dev' />
               </div>
-              <div className={styles['banner-info']}>
-                <div className={styles['banner-info__content']}>
+              <div className={'banner-info'}>
+                <div className={'banner-info__content'}>
                   <motion.h1
-                    className={styles['banner-info__title']}
+                    className={'banner-info__title'}
                     transition={transitionChildren}
                     variants={floatLeft}
                   >
                     Welcome, I&apos;m Mina
                   </motion.h1>
                   <motion.h2
-                    className={styles['banner-info__subtitle']}
+                    className={'banner-info__subtitle'}
                     transition={transitionChildren}
                     variants={floatLeft}
                   >
                     The Brief
                   </motion.h2>
                   <motion.p
-                    className={styles['banner-info__text']}
+                    className={'banner-info__text'}
                     transition={transitionChildren}
                     variants={floatLeft}
                   >

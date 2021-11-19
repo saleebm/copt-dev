@@ -7,8 +7,6 @@ import { fetchKitty } from 'lib/cats'
 import type { CatData } from 'lib/models/cats'
 import { KittyComponent } from 'components/Kitty'
 
-import styles from 'styles/pages/404.module.scss'
-
 interface Props {
   catData: CatData | null
 }
@@ -31,7 +29,7 @@ function FourOhFourPage({ catData }: Props) {
               🐱
             </span>
           </h2>
-          <div className={styles.kitty}>
+          <div className={'kitty'}>
             <KittyComponent meowData={catData} />
           </div>
         </motion.div>
