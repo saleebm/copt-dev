@@ -98,6 +98,16 @@
     @apply relative flex flex-col min-w-full w-full h-auto mx-auto space-y-8 md:space-y-16;
   }
 
+  .banner {
+    @apply flex flex-col md:flex-row items-center justify-center relative space-y-16 md:space-y-0 space-x-0 md:space-x-4;
+    height: auto;
+    min-height: 50vh;
+
+    @media (min-width: theme('screens.md')) {
+      height: calc(80vh - 200px);
+    }
+  }
+
   // for the container wrap
   .section-fluid {
     @apply relative block min-w-full w-full h-auto mx-auto;

@@ -22,7 +22,7 @@ export default function Home() {
       <div className='page-content'>
         <section className='section-fluid'>
           <div className='container gutter-y gutter-x'>
-            <div className={styles.banner}>
+            <div className={'banner'}>
               <div className={styles['ascii-wrap']}>
                 <Eye />
                 <ASCII className={styles['ascii-wrap__pre']} rainbow text='copt' />
