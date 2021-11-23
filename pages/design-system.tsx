@@ -1,5 +1,5 @@
 import { NextSeo } from 'next-seo'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
 import { transitionChildren } from 'utilities/animations/transitions'
 import { floatLeft } from 'utilities/animations/variants'
@@ -20,15 +20,15 @@ export default function DesignSystem() {
         <section className='section-fluid'>
           <div className='gutter-y gutter-x'>
             <article className='article divide-opacity-10 divide-y-2 divide-gray-200 dark:divide-gray-700'>
-              <motion.div
+              <m.div
                 transition={transitionChildren}
                 variants={floatLeft}
                 className='relative block py-4'
               >
                 <h1>(h1) Lorem Ipsum</h1>
                 <p>0123456789</p>
-              </motion.div>
-              <motion.div
+              </m.div>
+              <m.div
                 transition={transitionChildren}
                 variants={floatLeft}
                 className='relative block py-4'
@@ -39,8 +39,8 @@ export default function DesignSystem() {
                   veniam ea eaque debitis excepturi officia, provident porro magni saepe rem eos nam
                   ratione. Quos tempora ipsam numquam obcaecati!
                 </p>
-              </motion.div>
-              <motion.div
+              </m.div>
+              <m.div
                 transition={transitionChildren}
                 variants={floatLeft}
                 className='relative block py-4'
@@ -49,8 +49,8 @@ export default function DesignSystem() {
                 <p>
                   I dare you to <a href='#'>click me</a>.
                 </p>
-              </motion.div>
-              <motion.div
+              </m.div>
+              <m.div
                 transition={transitionChildren}
                 variants={floatLeft}
                 className='relative block py-4'
@@ -72,14 +72,14 @@ export default function DesignSystem() {
                   <li>Broccoli</li>
                   <li>Pepper</li>
                 </ol>
-              </motion.div>
-              <motion.div
+              </m.div>
+              <m.div
                 transition={transitionChildren}
                 variants={floatLeft}
                 className='relative block py-4 w-full'
               >
                 <Eye />
-              </motion.div>
+              </m.div>
             </article>
           </div>
         </section>

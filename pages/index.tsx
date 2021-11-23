@@ -1,6 +1,6 @@
 import type { GetStaticProps } from 'next'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
 import { transitionChildren } from 'utilities/animations/transitions'
 import { floatIn, floatLeft } from 'utilities/animations/variants'
@@ -44,7 +44,7 @@ export default function Home() {
                 }
               >
                 <div className={'relative flex flex-col items-center justify-center'}>
-                  <motion.h1
+                  <m.h1
                     className={
                       'relative inline-block w-full text-4xl md:text-5xl font-bold text-center'
                     }
@@ -52,8 +52,8 @@ export default function Home() {
                     variants={floatLeft}
                   >
                     Welcome, I&apos;m Mina
-                  </motion.h1>
-                  <motion.h2
+                  </m.h1>
+                  <m.h2
                     className={
                       'relative inline-block w-full text-2xl md:text-3xl font-bold text-center'
                     }
@@ -61,8 +61,8 @@ export default function Home() {
                     variants={floatLeft}
                   >
                     The Brief
-                  </motion.h2>
-                  <motion.p
+                  </m.h2>
+                  <m.p
                     className={
                       'relative inline-block w-auto text-lg md:text-xl text-left banner__text'
                     }
@@ -73,13 +73,13 @@ export default function Home() {
                     skills are in TypeScript and Node.js. I love to make things that are accessible,
                     user-friendly, and performant. I&apos;m always looking to learn new things and
                     improve my skills.
-                  </motion.p>
+                  </m.p>
                 </div>
-                <motion.div transition={transitionChildren} variants={floatIn}>
+                <m.div transition={transitionChildren} variants={floatIn}>
                   <Link href='/now' passHref>
                     <button className='btn-primary'>What am I doing now?</button>
                   </Link>
-                </motion.div>
+                </m.div>
               </div>
             </div>
           </div>

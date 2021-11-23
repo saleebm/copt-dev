@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
 import { transitionChildren } from 'utilities/animations/transitions'
 import { floatLeft } from 'utilities/animations/variants'
@@ -13,10 +13,10 @@ export default function NowPage() {
       <div className='page-content'>
         <section className='section-fluid'>
           <article className='article gutter-y gutter-x'>
-            <motion.h1 variants={floatLeft} transition={transitionChildren}>
+            <m.h1 variants={floatLeft} transition={transitionChildren}>
               What am I doing now?
-            </motion.h1>
-            <motion.div variants={floatLeft} transition={transitionChildren}>
+            </m.h1>
+            <m.div variants={floatLeft} transition={transitionChildren}>
               <h2>Personal Projects</h2>
               <ul>
                 <li>
@@ -28,15 +28,15 @@ export default function NowPage() {
                   working on the frontend and backend.
                 </li>
               </ul>
-            </motion.div>
-            <motion.div variants={floatLeft} transition={transitionChildren}>
+            </m.div>
+            <m.div variants={floatLeft} transition={transitionChildren}>
               <h2>Work</h2>
               <p>
                 I am helping build the future of rental technology at Rentivity, a startup based in
                 Orlando, Florida. I work mostly on the backend using Node.js and Express.js.
               </p>
-            </motion.div>
-            <motion.div variants={floatLeft} transition={transitionChildren}>
+            </m.div>
+            <m.div variants={floatLeft} transition={transitionChildren}>
               <h2>Learning</h2>
               <ul>
                 <li>
@@ -63,8 +63,8 @@ export default function NowPage() {
                   , I am learning how to create a 3D environment using WebGL and React.
                 </li>
               </ul>
-            </motion.div>
-            <motion.div variants={floatLeft} transition={transitionChildren}>
+            </m.div>
+            <m.div variants={floatLeft} transition={transitionChildren}>
               <h2>Reading</h2>
               <ul>
                 <li>
@@ -108,17 +108,17 @@ export default function NowPage() {
                   </a>
                 </li>
               </ul>
-            </motion.div>
-            <motion.div variants={floatLeft} transition={transitionChildren}>
+            </m.div>
+            <m.div variants={floatLeft} transition={transitionChildren}>
               <h2>What is a now page?</h2>
-              <motion.p variants={floatLeft} transition={transitionChildren}>
+              <m.p variants={floatLeft} transition={transitionChildren}>
                 This is based on Derek Siver&apos;s{' '}
                 <a target='_blank' href='https://nownownow.com/about' rel='noreferrer'>
                   now movement
                 </a>
                 .
-              </motion.p>
-            </motion.div>
+              </m.p>
+            </m.div>
           </article>
         </section>
       </div>

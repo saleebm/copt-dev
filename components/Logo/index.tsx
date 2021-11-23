@@ -1,12 +1,12 @@
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
 import { floatInOut } from 'utilities/animations/variants'
 import { transitionChildren } from 'utilities/animations/transitions'
 import styles from './styles.module.scss'
 
 export const Logo = () => (
-  <motion.div
+  <m.div
     transition={transitionChildren}
     variants={floatInOut}
     className={`relative flex items-center justify-center`}
@@ -34,7 +34,7 @@ export const Logo = () => (
               y2='226.16'
               gradientUnits='userSpaceOnUse'
             >
-              <motion.stop
+              <m.stop
                 offset='0'
                 initial={{ stopColor: '#6d0222' }}
                 animate={{
@@ -46,7 +46,7 @@ export const Logo = () => (
                   duration: 2
                 }}
               />
-              <motion.stop
+              <m.stop
                 offset='1'
                 initial={{ stopColor: '#1a4a04' }}
                 animate={{
@@ -67,7 +67,7 @@ export const Logo = () => (
               y2='205.03'
               gradientUnits='userSpaceOnUse'
             >
-              <motion.stop
+              <m.stop
                 stopColor='#2B00FF'
                 animate={{
                   stopColor: ['#2B00FF', '#93ae48', '#48ae6d', '#026226']
@@ -79,7 +79,7 @@ export const Logo = () => (
                 }}
                 offset='25%'
               />
-              <motion.stop
+              <m.stop
                 stopColor='#0055FF'
                 animate={{
                   stopColor: ['#0055FF', '#93ae48', '#48ae6d', '#2B00FF']
@@ -91,7 +91,7 @@ export const Logo = () => (
                 }}
                 offset='50%'
               />
-              <motion.stop
+              <m.stop
                 stopColor='#D4504C'
                 animate={{
                   stopColor: ['#D4504C', '#93ae48', '#2B00FF', '#026226']
@@ -103,7 +103,7 @@ export const Logo = () => (
                 }}
                 offset='75%'
               />
-              <motion.stop
+              <m.stop
                 initial={{
                   stopColor: '#FF7744'
                 }}
@@ -217,13 +217,14 @@ export const Logo = () => (
             </linearGradient>
           </defs>
           <g aria-label={'mina'} id='mina'>
-            <motion.g
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'m'}
             >
-              <motion.polygon
+              <m.polygon
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -246,14 +247,15 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M409.25,362H283.7V269.16L248.16,362h-87l-35.6-92.83V362H0V0H135.09l69.64,190.15L279,0h130.3ZM291,354.62H401.91V7.34H284L204.51,210.89,130,7.34H7.34V354.62H118.21V229.51l48,125.11h76.91L291,229.47Z'
               />
-            </motion.g>
-            <motion.g
+            </m.g>
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'i'}
             >
-              <motion.polygon
+              <m.polygon
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -279,14 +281,15 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M545.18,347.1H438.35v-308H545.18Zm-100.59-6.25h94.34V45.35H444.59Z'
               />
-            </motion.g>
-            <motion.g
+            </m.g>
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'n'}
             >
-              <motion.polygon
+              <m.polygon
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -309,14 +312,15 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M835.36,347.1H740.81L685.49,238.31V347.1H585.71V39.1h98.57L739.6,147.89V39.1h95.76Zm-90.72-6.25h84.47V45.35H745.85V174L680.45,45.35H592v295.5h87.29V212.25Z'
               />
-            </motion.g>
-            <motion.g
+            </m.g>
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'a'}
             >
-              <motion.polygon
+              <m.polygon
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -339,16 +343,17 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M1142.35,347.1h-107.1l-6.76-22.54H956.12l-6.77,22.54H842.25l92.45-308h115.2Zm-102.45-6.25H1134l-88.7-295.5H939.35l-88.71,295.5H944.7l6.77-22.54h81.66Zm-29.05-96.76h-37.1l18.55-61.8Zm-28.7-6.25h20.31L992.3,204Z'
               />
-            </motion.g>
+            </m.g>
           </g>
           <g id='saleeb'>
-            <motion.g
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'s'}
             >
-              <motion.path
+              <m.path
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -371,14 +376,15 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M1341.32,363.26h0a108.58,108.58,0,0,1-48.92-11.58l-64.85-32.39L1273,228.2l56.33,27.92a7.93,7.93,0,0,0,10.52-3.5,7.84,7.84,0,0,0-3.51-10.51l-47-23.28A109.69,109.69,0,0,1,1338.45,11a108.61,108.61,0,0,1,48.92,11.58L1452.22,55l-45.5,91.11-57-28.51a8,8,0,0,0-10.51,3.51,7.83,7.83,0,0,0,3.51,10.51l47.71,23.85a109.69,109.69,0,0,1-49.08,207.81ZM1237.13,316.1l58.46,29.19a102.45,102.45,0,0,0,137.53-45.91,102.65,102.65,0,0,0-45.91-137.54L1339.49,138a15,15,0,0,1,6.71-28.38,14.82,14.82,0,0,1,6.68,1.58l50.64,25.31,39.12-78.32L1384.18,29a102.52,102.52,0,0,0-143.06,124.18,101.82,101.82,0,0,0,51.44,59.26l47,23.28a15,15,0,1,1-13.37,26.81l-49.94-24.76Z'
               />
-            </motion.g>
-            <motion.g
+            </m.g>
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'a'}
             >
-              <motion.polygon
+              <m.polygon
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -401,14 +407,15 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M1738.24,359.69h-107.1l-6.77-22.54H1552l-6.77,22.54h-107.1l92.45-308h115.2Zm-102.45-6.24h94.06L1641.14,58H1535.23l-88.7,295.5h94.06l6.77-22.55H1629Zm-29-96.76h-37.1l18.55-61.81ZM1578,250.44h20.32l-10.16-33.83Z'
               />
-            </motion.g>
-            <motion.g
+            </m.g>
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'l'}
             >
-              <motion.polygon
+              <m.polygon
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -431,14 +438,15 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M1935.81,359.69H1728.4V51.7h106.82V262.92h100.59Zm-201.17-6.24h194.92V269.17H1829V58h-94.34Z'
               />
-            </motion.g>
-            <motion.g
+            </m.g>
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'e'}
             >
-              <motion.polygon
+              <m.polygon
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -461,14 +469,15 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M2143.21,359.69h-207.4V51.7h207.4v96.77H2045.4v13.87h83.23v86.71H2045.4v13.87h97.81Zm-201.16-6.24H2137V269.17h-97.81V242.8h83.23V168.59h-83.23V142.22H2137V58H1942.05Z'
               />
-            </motion.g>
-            <motion.g
+            </m.g>
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'e'}
             >
-              <motion.polygon
+              <m.polygon
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -491,14 +500,15 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M2387.12,359.69h-207.4V51.7h207.4v96.77h-97.81v13.87h83.23v86.71h-83.23v13.87h97.81ZM2186,353.45h194.92V269.17h-97.81V242.8h83.23V168.59h-83.23V142.22h97.81V58H2186Z'
               />
-            </motion.g>
-            <motion.g
+            </m.g>
+            <m.g
               whileHover={'activeInteraction'}
               whileFocus={'activeInteraction'}
+              whileTap={'activeInteraction'}
               initial={'paused'}
               aria-label={'b'}
             >
-              <motion.path
+              <m.path
                 variants={{
                   activeInteraction: {
                     fill: 'url(#linear-gradient-fast)'
@@ -521,10 +531,10 @@ export const Logo = () => (
                 className={styles['logo__svg--secondary']}
                 d='M2562.53,359.69H2398.48V51.7h164.4a93.84,93.84,0,0,1,93.3,93.65v10.06a93.27,93.27,0,0,1-14.64,50.29A93.22,93.22,0,0,1,2656.18,256v10.06A93.75,93.75,0,0,1,2562.53,359.69Zm-157.8-6.24h157.8a87.5,87.5,0,0,0,87.41-87.4V256a87.09,87.09,0,0,0-14.72-48.56l-1.17-1.73,1.17-1.74a87.08,87.08,0,0,0,14.72-48.55V145.35A87.57,87.57,0,0,0,2562.87,58H2404.73Zm97.1-84.28v-31.4H2550a15.7,15.7,0,1,1,0,31.39l-.06-3.13v3.13Zm48.07-6.25h.24A9.46,9.46,0,0,0,2550,244h-41.89v18.9Zm-48.07-89.3v-31.4h48.08a15.7,15.7,0,1,1,.05,31.39l-.06-3.13v3.12Zm48.07-6.25h.23a9.45,9.45,0,0,0-.17-18.9h-41.89v18.9Z'
               />
-            </motion.g>
+            </m.g>
           </g>
         </svg>
       </a>
     </Link>
-  </motion.div>
+  </m.div>
 )

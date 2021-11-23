@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 
 import { Logo } from 'components/Logo'
 import { SocialLinks } from 'components/SocialLinks'
@@ -16,7 +16,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const shouldReduceMotion = useReducedMotion()
 
   return (
-    <motion.div
+    <m.div
       initial={shouldReduceMotion ? 'pageAnimate' : 'pageInitial'}
       animate='pageAnimate'
       exit={shouldReduceMotion ? 'pageAnimate' : 'pageExit'}
@@ -24,20 +24,20 @@ export function AppLayout({ children }: AppLayoutProps) {
       className={`relative flex flex-col items-stretch m-auto h-screen w-full opacity-100`}
     >
       <header className={`relative block w-full h-auto min-w-full gutter-y gutter-x`}>
-        <motion.a
+        <m.a
           variants={floatInOut}
           transition={transitionChildrenFast}
           href='#main'
           className={`sr-only focus:not-sr-only`}
         >
           Skip to content
-        </motion.a>
+        </m.a>
         <div
           className={`${styles.headerInner} relative flex flex-col flex-wrap justify-center items-center w-full mx-auto space-y-4`}
         >
           <Logo />
           <SocialLinks />
-          <motion.nav
+          <m.nav
             variants={floatInOut}
             transition={transitionChildrenFast}
             className={`relative flex items-center justify-between flex-wrap`}
@@ -67,7 +67,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 </a>
               </Link>
             </div>
-          </motion.nav>
+          </m.nav>
         </div>
       </header>
       <main
@@ -76,6 +76,6 @@ export function AppLayout({ children }: AppLayoutProps) {
       >
         {children}
       </main>
-    </motion.div>
+    </m.div>
   )
 }

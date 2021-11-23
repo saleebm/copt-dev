@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
 import { transitionChildren } from 'utilities/animations/transitions'
 import { floatIn, floatLeft } from 'utilities/animations/variants'
@@ -16,22 +16,22 @@ export default function UsesPage() {
         <div className='section-fluid'>
           <div className='article gutter-y gutter-x'>
             <section>
-              <motion.h1 variants={floatLeft} transition={transitionChildren}>
+              <m.h1 variants={floatLeft} transition={transitionChildren}>
                 Uses
-              </motion.h1>
-              <motion.p className='lead' variants={floatLeft} transition={transitionChildren}>
+              </m.h1>
+              <m.p className='lead' variants={floatLeft} transition={transitionChildren}>
                 Check out{' '}
                 <a href='https://uses.tech/' target='_blank' rel='noreferrer'>
                   uses.tech
                 </a>{' '}
                 for more info about what a &quot;<i>uses</i>&quot; page is.
-              </motion.p>
+              </m.p>
             </section>
             <section>
-              <motion.h2 variants={floatLeft} transition={transitionChildren}>
+              <m.h2 variants={floatLeft} transition={transitionChildren}>
                 Software
-              </motion.h2>
-              <motion.ul variants={floatIn} transition={transitionChildren}>
+              </m.h2>
+              <m.ul variants={floatIn} transition={transitionChildren}>
                 <li>MacOS Big Sur</li>
                 <li>iOS</li>
                 <li>
@@ -127,13 +127,13 @@ export default function UsesPage() {
                     Windscribe
                   </a>
                 </li>
-              </motion.ul>
+              </m.ul>
             </section>
             <section>
-              <motion.h2 variants={floatLeft} transition={transitionChildren}>
+              <m.h2 variants={floatLeft} transition={transitionChildren}>
                 Hardware
-              </motion.h2>
-              <motion.ul variants={floatIn} transition={transitionChildren}>
+              </m.h2>
+              <m.ul variants={floatIn} transition={transitionChildren}>
                 <li>2018 MacBook Pro with the Touchbar</li>
                 <li>Alienware Aurora R7 Desktop</li>
                 <li>
@@ -158,7 +158,7 @@ export default function UsesPage() {
                   </a>{' '}
                   for my home automation
                 </li>
-              </motion.ul>
+              </m.ul>
             </section>
           </div>
         </div>

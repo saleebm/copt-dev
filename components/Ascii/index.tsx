@@ -2,7 +2,7 @@ import { FC, useState, useEffect, useRef, createElement, Fragment } from 'react'
 import figlet from 'figlet'
 // @ts-ignore
 import computer from 'figlet/importable-fonts/Computer'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
 import { transitionChildren } from 'utilities/animations/transitions'
 import { floatLeft } from 'utilities/animations/variants'
@@ -66,7 +66,7 @@ const ASCII: FC<ASCIIProps> = ({
   }
   const uniqueClass = `responsive-ascii${id ? `-${id}` : ''}`
   return (
-    <motion.div
+    <m.div
       ref={preWrap}
       className={`${uniqueClass} ${className} w-full`}
       title={text}
@@ -95,7 +95,7 @@ const ASCII: FC<ASCIIProps> = ({
           line-height: 0.8;
         }
       `}</style>
-    </motion.div>
+    </m.div>
   )
 }
 
