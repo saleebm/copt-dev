@@ -9,12 +9,17 @@ const withTM = require('next-transpile-modules')(['figlet'])
 const config = {
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
-  // swcMinify: true,
+  swcMinify: true,
   experimental: {
     esmExternals: true,
     profiling: true,
     workerThreads: true,
-    isrFlushToDisk: false
+    isrFlushToDisk: false,
+    removeConsole: {
+      exclude: ['table', 'error', 'warn']
+    },
+    scrollRestoration: true,
+    optimizeCss: true
   },
   eslint: {
     dirs: ['pages', 'components', 'lib', 'utilities', 'layouts'] // Only run ESLint on these directories during production builds (next build)
