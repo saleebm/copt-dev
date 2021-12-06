@@ -31,7 +31,7 @@ export default function NowPage() {
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Work</h2>
-              <p>
+              <p className='lead'>
                 I am helping build the future of rental technology at Rentivity, a startup based in
                 Orlando, Florida. I work mostly on the backend using Node.js and Express.js.
               </p>
@@ -91,7 +91,7 @@ export default function NowPage() {
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>What is a now page?</h2>
-              <motion.p variants={floatLeft} transition={transitionChildren}>
+              <motion.p className='lead' variants={floatLeft} transition={transitionChildren}>
                 This is based on Derek Siver&apos;s{' '}
                 <a target='_blank' href='https://nownownow.com/about' rel='noreferrer'>
                   now movement

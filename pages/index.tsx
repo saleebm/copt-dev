@@ -71,8 +71,7 @@ export default function Home() {
                   >
                     I&apos;m a full stack application developer based in Orlando, FL. My core skills
                     are in TypeScript and Node.js. I love to make accessible, user-friendly, and
-                    performant apps. I&apos;m always looking to learn new things and improve my
-                    skills.
+                    performant apps.
                   </motion.p>
                 </div>
                 <motion.div transition={transitionChildren} variants={floatIn}>
