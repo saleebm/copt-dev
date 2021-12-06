@@ -50,7 +50,7 @@ export default function AboutPage() {
               applications on a{' '}
               <a href='https://www.linode.com/' target='_blank' rel='noreferrer'>
                 Linode
-              </a>
+              </a>{' '}
               server using an Ubuntu OS. However, in the past I primarily used AWS and Google Cloud
               Compute services for large-scale application deployment.
             </motion.p>
