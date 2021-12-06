@@ -80,31 +80,11 @@ export default function NowPage() {
                 <li>
                   <a
                     title='See this book on goodreads'
-                    href='https://www.nealstephenson.com/snow-crash.html'
+                    href='https://www.nealstephenson.com/seveneves.html'
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    Snow Crash by Neal Stephenson
-                  </a>
-                </li>
-                <li>
-                  <a
-                    title='See this book on goodreads'
-                    href='https://www.goodreads.com/book/show/12.The_Ultimate_Hitchhiker_s_Guide'
-                    rel='noopener noreferrer'
-                    target='_blank'
-                  >
-                    The Ultimate Hitchhiker&apos;s Guide to the Galaxy by Douglas Adams
-                  </a>
-                </li>
-                <li>
-                  <a
-                    title='See this book on goodreads'
-                    href='https://www.goodreads.com/book/show/34536488-principles'
-                    rel='noopener noreferrer'
-                    target='_blank'
-                  >
-                    Principles: Life and Work by Ray Dalio
+                    Seveneves by Neal Stephenson
                   </a>
                 </li>
               </ul>
