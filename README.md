@@ -21,4 +21,4 @@ I personally have this deployed using a reverse-proxy with NGINX to take advanta
 
 ## Pull Requests
 
-The project uses `husky` and `commitizen`/`commitlint` to check for any linting or type issues before a commit. If you run into an issue when trying to commit that says something like, `git: cz is not a command`, then just install commitizen globally with `npm i -g commitizen`
+The project uses `husky` and `commitizen`/`commitlint` to check for any linting or type issues before a commit. If you run into an issue when trying to commit that says something like, `git: cz is not a command`, then just install commitizen globally with `npm i -g commitizen`. Before commit, format code `npm run format`.
