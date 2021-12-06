@@ -28,13 +28,9 @@ export default function AboutPage() {
               After getting a degree in my first passion, Criminology, I found myself seeking to
               learn a new trait. In 2017, it came across to me how technically-oriented I became and
               my fascination with technology led me to learn the principles of computer science
-              through the pursuit of a new degree in Information Systems Technology. When I first
-              saw the potential in being able to create applications and the excitement of bringing
-              that openly to the world, I eagerly and passionately developed my first game,{' '}
-              <a href='https://github.com/saleebm/galaxy_monkey' target='_blank' rel='noreferrer'>
-                Galaxy Monkey
-              </a>
-              .
+              through the pursuit of a new degree in Information Systems Technology. It was then
+              that I first saw the potential in being able to create applications and the excitement
+              of bringing that openly to the world.
             </motion.p>
             <motion.p variants={floatLeft} transition={transitionChildren}>
               My fascination with developing websites, especially my eagerness to develop
