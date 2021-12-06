@@ -10,7 +10,7 @@
   "scripts": {
     "build": "NODE_ENV=production next build",
     "dev": "next dev -p ${PORT:=3000}",
-    "format": "prettier --write .",
+    "format": "prettier --write . && npm run format:styles",
     "format:styles": "stylelint --fix \"styles/**/*.scss\" \"components/**/*.scss\" \"layouts/**/*.scss\"",
     "generate-sitemap": "node scripts/sitemap-generator.mjs",
     "generate:prisma": "prisma generate",
