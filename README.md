@@ -6,13 +6,13 @@ To get started with this project locally, you need to have Node.js, at least ver
 
 ## Development
 
-This project is based on Next.js and TypeScript. Simply run `npm install` then run `npm run dev` to start developing on `localhost:3000`. You can optionally set the `PORT` environment variable to change the port number this project runs on.
+This project is based on Next.js and TypeScript. To get started, copy the `.env.example` to `.env.local` and fill it out. You can get an API key for the cat api [here](thecatapi.com), which is used for the 404 page. Then, simply run `npm install` then run `npm run dev` to start developing on `localhost:3000`. You can optionally set the `PORT` environment variable to change the port number this project runs on.
 
 ## Production
 
 To create an optimized build and deploy, install `pm2` globally then follow these instructions:
 
-1. Make sure the node modules are installed (`npm install`)
+1. Make sure the node modules are installed (`npm install`), and then create a `.env.production` file with values accordingly.
 2. Run `pm2 start ecosystem.config.js`
 3. Optionally, set `pm2` to work with your `systemd` controller to automatically startup by running `pm2 startup`
 4. Run `pm2 save` to save the pm2 tasks.
