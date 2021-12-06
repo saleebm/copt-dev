@@ -4,7 +4,7 @@ import path from 'path'
 // utility for generating sitemap
 const Sitemap = configureSitemap({
   domains: [{ domain: 'www.copt.dev', defaultLocale: 'en', http: false }],
-  exclude: ['/api/*', '/design-system', '/404'],
+  exclude: ['/api/*', '/design-system', '/404', /* todo: remove once complete */ '/portfolio'],
   // excludeIndex: true,
   // pagesConfig: {
   //   '/projects/*': {
