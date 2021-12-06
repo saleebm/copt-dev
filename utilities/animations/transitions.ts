@@ -10,12 +10,10 @@ export const transitionParent: Transition = {
 
 export const transitionChildren: Transition = {
   type: 'tween',
-  duration: 0.42,
-  ease: [0.25, 1, 0.5, 1]
+  duration: 0.42
 }
 
 export const transitionChildrenFast: Transition = {
   type: 'tween',
-  duration: 0.2,
-  ease: [0.25, 1, 0.5, 1]
+  duration: 0.2
 }

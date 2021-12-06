@@ -67,12 +67,12 @@ export default function Home() {
                       'relative inline-block w-auto text-lg md:text-xl text-left banner__text'
                     }
                     transition={transitionChildren}
-                    variants={floatLeft}
+                    variants={floatIn}
                   >
-                    I&apos;m a cat/full stack application developer based in Orlando, FL. My core
-                    skills are in TypeScript and Node.js. I love to make things that are accessible,
-                    user-friendly, and performant. I&apos;m always looking to learn new things and
-                    improve my skills.
+                    I&apos;m a full stack application developer based in Orlando, FL. My core skills
+                    are in TypeScript and Node.js. I love to make accessible, user-friendly, and
+                    performant apps. I&apos;m always looking to learn new things and improve my
+                    skills.
                   </motion.p>
                 </div>
                 <motion.div transition={transitionChildren} variants={floatIn}>
