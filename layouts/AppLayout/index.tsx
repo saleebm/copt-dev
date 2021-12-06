@@ -52,6 +52,13 @@ export function AppLayout({ children }: AppLayoutProps) {
                   Root
                 </a>
               </Link>
+              <Link href='/about'>
+                <a
+                  className={`${styles['nav__item']} relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
+                >
+                  About
+                </a>
+              </Link>
               <Link href='/now'>
                 <a
                   className={`${styles['nav__item']} relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}

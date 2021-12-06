@@ -10,7 +10,7 @@ Utilities and structured methodology to load data.
 
 #### Current Data Types
 
-1. now page,
+1. now page
 2. my uses list
 3. spotify playback history (Want to collect daily, and try to do some visualizations)
 4. my anime list
@@ -19,7 +19,7 @@ Utilities and structured methodology to load data.
 
 7. Use `data/static/*.json` files storing the JSON objects containing the structured data
 8. Use `prisma/scripts/*.ts` files with methods to update the database
-9. Run scripts programmatically in pre-build/production script
+9. Run scripts programmatically in pre-build/production script (sitemap, any preloading of markdown, etc.)
 
 ### Dynamic data
 
