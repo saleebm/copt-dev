@@ -24,16 +24,19 @@ export default function NowPage() {
                   projects and share what I learn along the way.
                 </li>
                 <li>
-                  Building a music player that allows for remote collaboration. I am currently
-                  working on the frontend and backend.
+                  I am building a music player that allows for remote collaboration, but with a
+                  twist. It is still in the early stages of planning and development.
                 </li>
               </ul>
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Work</h2>
               <p className='lead'>
-                I am helping build the future of rental technology at Rentivity, a startup based in
-                Orlando, Florida. I work mostly on the backend using Node.js and Express.js.
+                I am currently working as a Server Engineer at{' '}
+                <a href='https://www.sightplan.com/' target='_blank' rel='noopener noreferrer'>
+                  SightPlan
+                </a>
+                .
               </p>
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>
