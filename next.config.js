@@ -1,6 +1,10 @@
 // @ts-check
 
 // eslint-disable-next-line
+const withPlugins = require('next-compose-plugins') // @ts-ignore
+// eslint-disable-next-line
+const { withContentlayer } = require('next-contentlayer')
+// eslint-disable-next-line
 const withTM = require('next-transpile-modules')(['figlet'])
 
 /**
@@ -26,6 +30,15 @@ const config = {
   },
   images: {
     domains: ['cdn2.thecatapi.com']
+  },
+  async redirects() {
+    return [
+      {
+        source: '/about',
+        destination: '/story',
+        permanent: true
+      }
+    ]
   },
   async headers() {
     return [
@@ -87,4 +100,4 @@ const securityHeaders = [
   }
 ]
 
-module.exports = withTM(config)
+module.exports = withPlugins([withContentlayer, withTM], config)

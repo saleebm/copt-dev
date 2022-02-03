@@ -36,7 +36,8 @@ export default function NowPage() {
                 <a href='https://www.sightplan.com/' target='_blank' rel='noopener noreferrer'>
                   SightPlan
                 </a>
-                .
+                , an innovative software company that provides a platform for operating real estate
+                properties.
               </p>
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>
@@ -73,21 +74,21 @@ export default function NowPage() {
                 <li>
                   <a
                     title='See this book on goodreads'
-                    href='https://www.goodreads.com/book/show/4069.Man_s_Search_for_Meaning'
+                    href='https://www.goodreads.com/book/show/13651.The_Dispossessed'
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    Man&apos;s Search for Meaning by Viktor E. Frankl
+                    The Dispossessed by Ursula K. Le Guin
                   </a>
                 </li>
                 <li>
                   <a
                     title='See this book on goodreads'
-                    href='https://www.nealstephenson.com/seveneves.html'
+                    href='https://www.goodreads.com/book/show/6900.Tuesdays_with_Morrie'
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    Seveneves by Neal Stephenson
+                    Tuesdays with Morrie by Mitch Albom
                   </a>
                 </li>
               </ul>
