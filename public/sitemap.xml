@@ -4,9 +4,9 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
-        <loc>https://www.copt.dev/about</loc>
+        <loc>https://www.copt.dev/story</loc>
         <lastmod>2021-12-06</lastmod>
-		<xhtml:link rel="alternate" hreflang="en" href="https://www.copt.dev/about" />
+		<xhtml:link rel="alternate" hreflang="en" href="https://www.copt.dev/story" />
     </url>
     <url>
         <loc>https://www.copt.dev</loc>

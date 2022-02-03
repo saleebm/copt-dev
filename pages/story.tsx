@@ -9,14 +9,14 @@ export default function AboutPage() {
   return (
     <>
       <Head
-        title='About me'
-        description='I strive to build elegant, structured content for the web using my expertise in software application development.'
+        title='My Story'
+        description='I strive to make knowledge about software development accessible to everyone.'
       />
       <div className='page-content'>
         <section className='section-fluid'>
           <article className='article gutter-y gutter-x'>
             <motion.h1 variants={floatLeft} transition={transitionChildren}>
-              About me
+              My Story
             </motion.h1>
             <motion.p className='lead' variants={floatLeft} transition={transitionChildren}>
               Hi, my name is Mina Saleeb. I am a Software Engineer based in Orlando, Florida.

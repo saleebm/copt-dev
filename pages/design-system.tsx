@@ -13,7 +13,6 @@ export default function DesignSystem() {
         title='Design System'
         description='Here is my page dedicated to getting the colors and styles I want for this site, sort of like a storybook except sloppier, but simple.'
         noindex
-        disableGooglebot
         nofollow
       />
       <div className='page-content'>

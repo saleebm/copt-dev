@@ -27,6 +27,7 @@
   --button-text-color-hover: theme('colors.gray.200');
   --nav-item-color: theme('colors.purple.600');
   --nav-item-color-hover: theme('colors.purple.700');
+  --nav-item-active-color: theme('colors.purple.900');
 
   /* size */
   --max-width: theme('screens.xl');
@@ -58,4 +59,5 @@ html.dark {
   --button-text-color-hover: theme('colors.gray.50');
   --nav-item-color: theme('colors.purple.100');
   --nav-item-color-hover: theme('colors.gray.300');
+  --nav-item-active-color: theme('colors.blue.300');
 }

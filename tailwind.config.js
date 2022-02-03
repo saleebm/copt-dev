@@ -3,10 +3,11 @@ const { spacing, fontFamily } = require('tailwindcss/defaultTheme')
 const typographyPlugin = require('@tailwindcss/typography')
 
 module.exports = {
-  purge: [
+  content: [
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
-    './layouts/**/*.{js,ts,jsx,tsx}'
+    './layouts/**/*.{js,ts,jsx,tsx}',
+    './styles/**/*.{scss,css}'
   ],
   darkMode: 'class',
   theme: {

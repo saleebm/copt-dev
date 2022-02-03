@@ -5,27 +5,27 @@
 
 @layer base {
   h1 {
-    @apply text-3xl tracking-tighter mb-4 md:text-5xl font-light break-words;
+    @apply text-4xl tracking-tighter mb-4 md:text-5xl font-light break-words;
     color: var(--heading-primary-color);
     word-wrap: normal;
   }
   h2 {
-    @apply text-2xl tracking-tight mb-4  md:text-4xl font-normal;
+    @apply text-3xl tracking-tight mb-4  md:text-4xl font-normal;
     color: var(--heading-secondary-color);
     word-wrap: normal;
   }
   h3 {
-    @apply text-xl tracking-normal mb-2 md:text-3xl font-semibold;
+    @apply text-2xl tracking-normal mb-2 md:text-3xl font-semibold;
     color: var(--heading-primary-color);
     word-wrap: normal;
   }
   h4 {
-    @apply text-lg tracking-normal mb-2 md:text-2xl font-bold;
+    @apply text-xl tracking-normal mb-2 md:text-2xl font-bold;
     color: var(--text-primary-color);
     word-wrap: normal;
   }
   p {
-    @apply text-base tracking-tight my-1 font-normal;
+    @apply text-lg tracking-tight my-1 font-normal;
     color: var(--text-primary-color);
     word-wrap: normal;
   }
@@ -41,14 +41,14 @@
     }
   }
   button {
-    @apply tracking-tight font-normal inline-block px-5 py-3.5 md:px-8 md:py-4 rounded-md;
+    @apply text-base tracking-tight font-normal inline-block px-5 py-3.5 md:px-8 md:py-4 rounded-md;
 
     &:focus {
       outline: none;
     }
   }
   li {
-    @apply relative font-normal text-lg tracking-normal mb-1.5 break-words;
+    @apply text-base relative font-normal text-lg tracking-normal mb-1.5 break-words;
     color: var(--text-primary-color);
     word-wrap: normal;
   }
@@ -166,7 +166,7 @@
 
   // text
   .lead {
-    @apply text-lg font-medium leading-relaxed;
+    @apply text-xl font-medium leading-relaxed;
   }
 
   // pre
