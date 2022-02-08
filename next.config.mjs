@@ -1,11 +1,9 @@
 // @ts-check
-
+import withPlugins from 'next-compose-plugins' // @ts-ignore
 // eslint-disable-next-line
-const withPlugins = require('next-compose-plugins') // @ts-ignore
+import { withContentlayer } from 'next-contentlayer'
 // eslint-disable-next-line
-const { withContentlayer } = require('next-contentlayer')
-// eslint-disable-next-line
-const withTM = require('next-transpile-modules')(['figlet'])
+import withTM from 'next-transpile-modules'
 
 /**
  * @type {import('next').NextConfig}
@@ -100,4 +98,4 @@ const securityHeaders = [
   }
 ]
 
-module.exports = withPlugins([withContentlayer, withTM], config)
+export default withPlugins([withContentlayer, withTM(['figlet'])], config)
