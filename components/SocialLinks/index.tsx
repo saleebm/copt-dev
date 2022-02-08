@@ -40,7 +40,7 @@ const SocialLinkWrapper = ({ children, href, name }: SocialLinkWrapperProps) => 
   </a>
 )
 
-export const SocialLinks = () => {
+const SocialLinks = () => {
   const { resolvedTheme = 'dark' } = useTheme()
 
   return (
@@ -81,3 +81,5 @@ export const SocialLinks = () => {
     </motion.div>
   )
 }
+
+export default SocialLinks
