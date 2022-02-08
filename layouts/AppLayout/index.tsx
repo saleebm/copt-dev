@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { motion, useReducedMotion } from 'framer-motion'
 
 import { Logo } from 'components/Logo'
-import { SocialLinks } from 'components/SocialLinks'
 import { transitionChildrenFast, transitionParent } from 'utilities/animations/transitions'
 import { floatInOut } from 'utilities/animations/variants'
 import styles from './styles.module.scss'
 
+const SocialLinks = dynamic(() => import('components/SocialLinks'), { ssr: false })
 export interface AppLayoutProps {
   children: React.ReactNode
 }
@@ -17,9 +18,6 @@ export function AppLayout({ children }: AppLayoutProps) {
   const shouldReduceMotion = useReducedMotion()
   const { asPath } = useRouter()
 
-  useEffect(() => {
-    console.warn(asPath)
-  })
   return (
     <motion.div
       initial={shouldReduceMotion ? 'pageAnimate' : 'pageInitial'}
@@ -52,28 +50,36 @@ export function AppLayout({ children }: AppLayoutProps) {
             >
               <Link href='/'>
                 <a
-                  className={`${styles['nav__item']} ${asPath === '/' ? styles.active : ''} relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
+                  className={`${styles['nav__item']} ${
+                    asPath === '/' ? styles.active : ''
+                  } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
                 >
                   Root
                 </a>
               </Link>
               <Link href='/story'>
                 <a
-                  className={`${styles['nav__item']} ${asPath === '/story' ? styles.active : ''} relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
+                  className={`${styles['nav__item']} ${
+                    asPath === '/story' ? styles.active : ''
+                  } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
                 >
                   Story
                 </a>
               </Link>
               <Link href='/now'>
                 <a
-                  className={`${styles['nav__item']} ${asPath === '/now' ? styles.active : ''} relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
+                  className={`${styles['nav__item']} ${
+                    asPath === '/now' ? styles.active : ''
+                  } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
                 >
                   Now
                 </a>
               </Link>
               <Link href='/uses'>
                 <a
-                  className={`${styles['nav__item']} ${asPath === '/uses' ? styles.active : ''} relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
+                  className={`${styles['nav__item']} ${
+                    asPath === '/uses' ? styles.active : ''
+                  } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
                 >
                   Uses
                 </a>
