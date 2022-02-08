@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <>
       <Head
-        title='Welcome'
+        title='Mina Saleeb'
         description="Hi, I'm Mina, a cat/web developer based in Orlando, FL. This is my www for showing what I am up to."
       />
       <div className='page-content'>
@@ -51,7 +51,7 @@ export default function Home() {
                     transition={transitionChildren}
                     variants={floatLeft}
                   >
-                    Welcome, I&apos;m Mina
+                    Yello, I&apos;m Mina
                   </motion.h1>
                   <motion.h2
                     className={
@@ -69,9 +69,7 @@ export default function Home() {
                     transition={transitionChildren}
                     variants={floatIn}
                   >
-                    I&apos;m a full stack application developer based in Orlando, FL. My core skills
-                    are in TypeScript and Node.js. I love to make accessible, user-friendly, and
-                    performant apps.
+                    I&apos;m a full stack application developer based in Orlando, FL.
                   </motion.p>
                 </div>
                 <motion.div transition={transitionChildren} variants={floatIn}>
