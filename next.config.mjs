@@ -1,10 +1,3 @@
-// @ts-check
-import withPlugins from 'next-compose-plugins' // @ts-ignore
-// eslint-disable-next-line
-// import { withContentlayer } from 'next-contentlayer'
-// eslint-disable-next-line
-import withTM from 'next-transpile-modules'
-
 /**
  * @type {import('next').NextConfig}
  **/
@@ -18,7 +11,8 @@ const config = {
     workerThreads: true,
     isrFlushToDisk: false,
     scrollRestoration: true,
-    optimizeCss: true
+    optimizeCss: true,
+    transpilePackages: ['figlet']
   },
   eslint: {
     dirs: ['pages', 'components', 'lib', 'utilities', 'layouts'] // Only run ESLint on these directories during production builds (next build)
@@ -95,4 +89,4 @@ const securityHeaders = [
   }
 ]
 
-export default withPlugins([/*withContentlayer,**/withTM(['figlet'])], config)
+export default config;
