@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <>
       <Head
-        title='Mina Saleeb'
+        title='Meow'
         description="Hi, I'm Mina, a cat/web developer based in Orlando, FL. This is my www for showing what I am up to."
       />
       <div className='page-content'>

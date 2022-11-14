@@ -17,9 +17,6 @@ const config = {
     profiling: true,
     workerThreads: true,
     isrFlushToDisk: false,
-    removeConsole: {
-      exclude: ['table', 'error', 'warn']
-    },
     scrollRestoration: true,
     optimizeCss: true
   },
