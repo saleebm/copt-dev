@@ -1,11 +1,12 @@
 import { NextSeo } from 'next-seo'
 import { GetStaticProps } from 'next'
 import { motion } from 'framer-motion'
-import { floatInOut } from 'utilities/animations/variants'
+import { floatInOut, floatLeft } from 'utilities/animations/variants'
 import { transitionChildren } from 'utilities/animations/transitions'
 import { fetchKitty } from 'lib/cats'
 import type { CatData } from 'lib/models/cats'
 import { KittyComponent } from 'components/Kitty'
+import { Eye } from '../components/Ascii/eye'
 
 interface Props {
   catData: CatData | null
@@ -32,6 +33,13 @@ function FourOhFourPage({ catData }: Props) {
           <div className={'kitty'}>
             <KittyComponent meowData={catData} />
           </div>
+        </motion.div>
+        <motion.div
+          transition={transitionChildren}
+          variants={floatLeft}
+          className='relative block py-4 w-full'
+        >
+          <Eye />
         </motion.div>
       </section>
     </>

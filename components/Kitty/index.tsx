@@ -8,6 +8,7 @@ interface KittyProps {
 }
 
 export function KittyComponent({ meowData }: KittyProps) {
+  // fuck why did I over engineer a kitty component!?
   const [cat, setCat] = useState<CatData | null>(() =>
     // server side meow
     typeof meowData === 'object' ? meowData : null
@@ -50,12 +51,13 @@ export function KittyComponent({ meowData }: KittyProps) {
         <Image
           src={cat?.url ?? backupKitty}
           blurDataURL={backupKitty?.blurDataURL}
-          height={420}
-          width={420}
-          layout={'responsive'}
-          objectFit={'cover'}
           unoptimized
+          width={420}
+          height={420}
           alt={'kitty'}
+          style={{
+            objectFit: 'contain'
+          }}
         />
       </div>
     ),

@@ -4,6 +4,7 @@ import { transitionChildren } from 'utilities/animations/transitions'
 import { floatIn, floatLeft } from 'utilities/animations/variants'
 
 import { Head } from 'components/Head'
+import { Eye } from '../components/Ascii/eye'
 
 export default function UsesPage() {
   return (
@@ -160,6 +161,13 @@ export default function UsesPage() {
                 </li>
               </motion.ul>
             </section>
+            <motion.div
+              transition={transitionChildren}
+              variants={floatLeft}
+              className='relative block py-4 w-full'
+            >
+              <Eye />
+            </motion.div>
           </div>
         </div>
       </div>

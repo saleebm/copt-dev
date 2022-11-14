@@ -4,6 +4,7 @@ import { transitionChildren } from 'utilities/animations/transitions'
 import { floatLeft } from 'utilities/animations/variants'
 
 import { Head } from 'components/Head'
+import { Eye } from '../components/Ascii/eye'
 
 export default function NowPage() {
   // make sure to put last updated date visible on this page
@@ -18,21 +19,16 @@ export default function NowPage() {
             </motion.h1>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Personal Projects</h2>
-              <ul>
-                <li>
-                  I am currently working on a new website for myself to be able to keep track of my
-                  projects and share what I learn along the way.
-                </li>
-                <li>
-                  I am building a music player that allows for remote collaboration, but with a
-                  twist. It is still in the early stages of planning and development.
-                </li>
-              </ul>
+              <p className='lead'>
+                I am currently working on completing this website for myself to be able to keep
+                track of my projects and share what I learn along the way. I plan on starting
+                simple, sharing my experiences and diving deeper as I go.
+              </p>
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Work</h2>
               <p className='lead'>
-                I am currently working as a Server Engineer at{' '}
+                I am currently working as a Software Engineer at{' '}
                 <a href='https://www.sightplan.com/' target='_blank' rel='noopener noreferrer'>
                   SightPlan
                 </a>
@@ -42,29 +38,64 @@ export default function NowPage() {
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Learning</h2>
+              <p className='lead'>
+                I am currently learning Golang, devoting a couple 2 hour{' '}
+                <a
+                  href={'https://www.timeblockplanner.com/'}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  time-block
+                </a>{' '}
+                sessions per week for practice.
+              </p>
+              <p className={'lead'}>
+                Some resources I take advantage of (thankful to the creators 😺):
+              </p>
               <ul>
                 <li>
-                  I am currently learning Rust, a statically typed software language, by going in
-                  depth on{' '}
-                  <a target='_blank' href='https://github.com/rust-lang/rustlings' rel='noreferrer'>
-                    rustlings
-                  </a>{' '}
-                  and reading various{' '}
                   <a
+                    href='https://www.amazon.com/Programming-Language-Addison-Wesley-Professional-Computing/dp/0134190440/'
                     target='_blank'
-                    href='https://lborb.github.io/book/title-page.html'
-                    rel='noreferrer'
+                    rel='noopener noreferrer'
                   >
-                    Rust resources
+                    Go Programming Language, The (Addison-Wesley Professional Computing Series) 1st
+                    Edition
+                  </a>{' '}
+                  by{' '}
+                  <a href='https://github.com/adonovan' target='_blank' rel='noopener noreferrer'>
+                    Alan Donovan
                   </a>
-                  .
                 </li>
                 <li>
-                  Thanks to{' '}
-                  <a target='_blank' href='https://threejs-journey.com' rel='noreferrer'>
-                    Three.js Journey
+                  <a
+                    href='https://quii.gitbook.io/learn-go-with-tests'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    Learn Go with Tests
+                  </a>{' '}
+                  by{' '}
+                  <a href='https://twitter.com/quii' target='_blank' rel='noopener noreferrer'>
+                    @quii
                   </a>
-                  , I am learning how to create a 3D environment using WebGL and React.
+                </li>
+              </ul>
+              <p className={'lead'}>And references:</p>
+              <ul>
+                <li>
+                  <a
+                    href='https://go.dev/doc/effective_go'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    Effective Go
+                  </a>
+                </li>
+                <li>
+                  <a href='https://go.dev/ref/spec' target='_blank' rel='noopener noreferrer'>
+                    The Go Programming Language Specification
+                  </a>
                 </li>
               </ul>
             </motion.div>
@@ -72,23 +103,8 @@ export default function NowPage() {
               <h2>Reading</h2>
               <ul>
                 <li>
-                  <a
-                    title='See this book on goodreads'
-                    href='https://www.goodreads.com/book/show/13651.The_Dispossessed'
-                    rel='noopener noreferrer'
-                    target='_blank'
-                  >
-                    The Dispossessed by Ursula K. Le Guin
-                  </a>
-                </li>
-                <li>
-                  <a
-                    title='See this book on goodreads'
-                    href='https://www.goodreads.com/book/show/6900.Tuesdays_with_Morrie'
-                    rel='noopener noreferrer'
-                    target='_blank'
-                  >
-                    Tuesdays with Morrie by Mitch Albom
+                  <a href='https://www.sacred-texts.com/eso/kyb/index.htm' target='_blank' rel='noopener noreferrer'>
+                    The Kybalion by Three Initiates
                   </a>
                 </li>
               </ul>
@@ -104,6 +120,13 @@ export default function NowPage() {
               </motion.p>
             </motion.div>
           </article>
+          <motion.div
+            transition={transitionChildren}
+            variants={floatLeft}
+            className='relative block py-4 w-full'
+          >
+            <Eye />
+          </motion.div>
         </section>
       </div>
     </>

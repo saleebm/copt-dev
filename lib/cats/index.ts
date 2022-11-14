@@ -5,12 +5,11 @@ export async function fetchKitty() {
   if (!process.env.CAT_API_KEY) {
     throw new Error('CAT_API_KEY is not set')
   }
-  let catData = await fetch(
+  const catData = await fetch(
     `https://api.thecatapi.com/v1/images/search?size=full&api_key=${process.env.CAT_API_KEY}`,
     {
       mode: 'cors'
     }
-  )
-  catData = await catData.json()
+  ).then(d => d.json());
   return Array.isArray(catData) ? (catData[0] as CatData) : null
 }
