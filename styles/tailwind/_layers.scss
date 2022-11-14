@@ -151,10 +151,11 @@
   }
 
   // buttons
-  .btn-primary {
-    @apply text-lg font-medium leading-5 transition duration-300 filter drop-shadow;
+  .btn-primary > button {
+    @apply text-lg font-medium leading-5 drop-shadow;
     background-color: var(--theme-accent);
     color: var(--button-text-color);
+    will-change: background-color, color;
 
     &:hover,
     &:focus {

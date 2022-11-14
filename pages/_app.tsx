@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
     <ErrorBoundary>
       <DefaultSeo {...nextSeoConfig} />
       <ThemeProvider disableTransitionOnChange attribute='class'>
-        <AnimatePresence exitBeforeEnter>
+        <AnimatePresence mode='wait'>
           <AppLayout key={router.route}>
             <Component {...pageProps} />
           </AppLayout>

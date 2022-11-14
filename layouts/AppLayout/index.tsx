@@ -48,41 +48,41 @@ export function AppLayout({ children }: AppLayoutProps) {
             <div
               className={`relative w-full h-auto block flex-grow sm:flex items-center sm:w-auto`}
             >
-              <Link href='/'>
-                <a
-                  className={`${styles['nav__item']} ${
-                    asPath === '/' ? styles.active : ''
-                  } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
-                >
+              <Link
+                href='/'
+                className={`${styles['nav__item']} ${
+                  asPath === '/' ? styles.active : ''
+                } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}>
+                
                   Root
-                </a>
+                
               </Link>
-              <Link href='/story'>
-                <a
-                  className={`${styles['nav__item']} ${
-                    asPath === '/story' ? styles.active : ''
-                  } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
-                >
+              <Link
+                href='/story'
+                className={`${styles['nav__item']} ${
+                  asPath === '/story' ? styles.active : ''
+                } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}>
+                
                   Story
-                </a>
+                
               </Link>
-              <Link href='/now'>
-                <a
-                  className={`${styles['nav__item']} ${
-                    asPath === '/now' ? styles.active : ''
-                  } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
-                >
+              <Link
+                href='/now'
+                className={`${styles['nav__item']} ${
+                  asPath === '/now' ? styles.active : ''
+                } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}>
+                
                   Now
-                </a>
+                
               </Link>
-              <Link href='/uses'>
-                <a
-                  className={`${styles['nav__item']} ${
-                    asPath === '/uses' ? styles.active : ''
-                  } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}
-                >
+              <Link
+                href='/uses'
+                className={`${styles['nav__item']} ${
+                  asPath === '/uses' ? styles.active : ''
+                } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}>
+                
                   Uses
-                </a>
+                
               </Link>
             </div>
           </motion.nav>
@@ -95,5 +95,5 @@ export function AppLayout({ children }: AppLayoutProps) {
         {children}
       </main>
     </motion.div>
-  )
+  );
 }
