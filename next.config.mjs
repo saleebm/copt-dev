@@ -11,9 +11,16 @@ const config = {
     workerThreads: true,
     isrFlushToDisk: false,
     scrollRestoration: true,
-    optimizeCss: true,
-    transpilePackages: ['figlet']
+    optimizeCss: true
   },
+  compiler: {
+    removeConsole: {
+      exclude: ['error']
+    }
+  },
+  transpilePackages: [
+    'figlet'
+  ],
   eslint: {
     dirs: ['pages', 'components', 'lib', 'utilities', 'layouts'] // Only run ESLint on these directories during production builds (next build)
   },

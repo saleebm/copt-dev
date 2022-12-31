@@ -100,7 +100,7 @@ export default function UsesPage() {
                   for editing photos
                 </li>
                 <li>
-                  I depend on
+                  I depend on{' '}
                   <a href='https://folivora.ai/' target='_blank' rel='noreferrer'>
                     BetterTouchTool
                   </a>{' '}
