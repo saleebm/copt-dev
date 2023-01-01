@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
+import Image from "next/legacy/image";
 import { CatData } from 'lib/models/cats'
 import backupKitty from 'public/static/images/kitty/image000000.jpg'
 

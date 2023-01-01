@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import Image from 'next/image'
+import Image from "next/legacy/image";
 import { motion } from 'framer-motion'
 import { useTheme } from 'next-themes'
 
