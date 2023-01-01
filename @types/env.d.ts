@@ -13,5 +13,7 @@ namespace NodeJS {
     SPOTIFY_CLIENT_ID: string
     SPOTIFY_CLIENT_SECRET: string
     SPOTIFY_CLIENT_CODE: string
+    SILLY_SECRET: string
+    STATE_SECRET: string
   }
 }

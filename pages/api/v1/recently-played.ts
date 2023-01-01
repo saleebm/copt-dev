@@ -3,6 +3,14 @@ import * as querystring from 'querystring'
 import prisma from 'lib/prisma'
 
 export default async function getRecentlyPlayed(req: NextApiRequest, res: NextApiResponse) {
+  if (!process.env.SILLY_SECRET) {
+    throw new Error('configure your silly secret')
+  }
+  if (!req.query || req.query?.sillySecret !== process.env.SILLY_SECRET) {
+    res.status(400).end()
+    return
+  }
+  
   if (req.method?.toLowerCase() !== 'get') {
     res.status(405).end()
     return
@@ -39,7 +47,6 @@ export default async function getRecentlyPlayed(req: NextApiRequest, res: NextAp
       grant_type: 'refresh_token',
       refresh_token: refresh_token
     })}`
-    console.log(refreshUrl)
 
     const auth = await fetch(refreshUrl, {
       method: 'POST',

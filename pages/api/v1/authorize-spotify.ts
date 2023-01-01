@@ -1,6 +1,6 @@
 import * as querystring from 'querystring'
-import { NextApiRequest, NextApiResponse } from 'next'
-import { serialize, CookieSerializeOptions } from 'cookie'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { CookieSerializeOptions, serialize } from 'cookie'
 
 /**
  * This sets `cookie` using the `res` object
@@ -36,22 +36,35 @@ const generateRandomString = (length: number) => {
   return text
 }
 
-const stateKey = 'spotify_auth_state';
-
 /**
  * Redirects to Spotify auth page
- * @param _req
+ * @param req
  * @param res
  */
-export default async function authorizeSpotify(_req: NextApiRequest, res: NextApiResponse) {
-  const state = generateRandomString(16);
-  setCookie(res, stateKey, state, { path: '/', maxAge: 2592000 })
+export default async function authorizeSpotify(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method?.toLowerCase() !== 'get') {
+    res.status(405).end()
+    return
+  }
+
+  const stateKey = process.env.STATE_SECRET
   
+  if (!process.env.SILLY_SECRET || !stateKey) {
+    throw new Error('configure your silly secret')
+  }
+  if (!req.query || req.query?.sillySecret !== process.env.SILLY_SECRET) {
+    res.status(400).end()
+    return
+  }
+  
+  const state = generateRandomString(16)
+  setCookie(res, stateKey, state, { path: '/', maxAge: 2592000, httpOnly: true })
+
   const scope = 'user-read-private user-read-email user-read-recently-played'
 
   const clientID = process.env.SPOTIFY_CLIENT_ID
   const host = process.env.NEXT_PUBLIC_HOST
-  
+
   if (!clientID || !host) {
     throw new Error('Misconfigured env dude')
   }

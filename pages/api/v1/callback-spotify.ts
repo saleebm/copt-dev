@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import * as querystring from 'querystring'
 import prisma from 'lib/prisma'
 
@@ -9,10 +9,14 @@ import prisma from 'lib/prisma'
  */
 export default async function callbackSpotify(req: NextApiRequest, res: NextApiResponse) {
   const code = req.query.code
-  if (!code) {
-    console.error('Missing code from callback')
+  const state = req.query.state
+  const stateKey = process.env.STATE_SECRET
+  if (!code || !state) {
+    console.error('Missing code or state from callback')
     res.status(500).end()
     return
+  } else if (!req.cookies || !!req.cookies && state !== req.cookies[stateKey]) {
+    res.status(400).end()
   } else {
     res.status(200).end()
   }
