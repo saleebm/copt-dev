@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { motion } from 'framer-motion'
 import { useTheme } from 'next-themes'
 
@@ -41,19 +41,43 @@ const SocialLinks = () => {
       className='relative flex flex-row flex-wrap items-baseline justify-center space-x-2 space-y-2'
     >
       <SocialLinkWrapper href='mailto:saleebmina@copt.dev' name='email me'>
-        <Image src={resolvedTheme === 'dark' ? emailIconDark : emailIcon} alt='email me' />
+        <Image
+          src={resolvedTheme === 'dark' ? emailIconDark : emailIcon}
+          alt='email me'
+          style={{
+            maxWidth: "100%",
+            height: "auto"
+          }} />
       </SocialLinkWrapper>
       <SocialLinkWrapper name='GitHub' href={githubProfile}>
-        <Image src={resolvedTheme === 'dark' ? githubIconDark : githubIcon} alt='github' />
+        <Image
+          src={resolvedTheme === 'dark' ? githubIconDark : githubIcon}
+          alt='github'
+          style={{
+            maxWidth: "100%",
+            height: "auto"
+          }} />
       </SocialLinkWrapper>
       <SocialLinkWrapper name='LinkedIn' href={linkedinProfile}>
-        <Image src={linkedinIcon} alt='linkedin' />
+        <Image
+          src={linkedinIcon}
+          alt='linkedin'
+          style={{
+            maxWidth: "100%",
+            height: "auto"
+          }} />
       </SocialLinkWrapper>
       <SocialLinkWrapper name='Facebook' href={facebookProfile}>
-        <Image src={facebookIcon} alt='facebook' />
+        <Image
+          src={facebookIcon}
+          alt='facebook'
+          style={{
+            maxWidth: "100%",
+            height: "auto"
+          }} />
       </SocialLinkWrapper>
     </motion.div>
-  )
+  );
 }
 
 export default SocialLinks

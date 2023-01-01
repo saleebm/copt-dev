@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { CatData } from 'lib/models/cats'
 import backupKitty from 'public/static/images/kitty/image000000.jpg'
 
@@ -56,11 +56,12 @@ export function KittyComponent({ meowData }: KittyProps) {
           height={420}
           alt={'kitty'}
           style={{
-            objectFit: 'contain'
-          }}
-        />
+            objectFit: 'contain',
+            maxWidth: "100%",
+            height: "auto"
+          }} />
       </div>
     ),
     [cat?.url]
-  )
+  );
 }
