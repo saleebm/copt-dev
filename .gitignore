@@ -116,3 +116,6 @@ igPhotos.json
 
 # Contentlayer
 .contentlayer
+
+# ts
+tsconfig.tsbuildinfo
