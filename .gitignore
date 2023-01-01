@@ -119,3 +119,5 @@ igPhotos.json
 
 # ts
 tsconfig.tsbuildinfo
+
+*.db
