@@ -6,6 +6,32 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
+}
+
+model SpotifyUser {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  username     String   @unique
+  refreshToken String
+  accessToken  String
+  tokenType    String
+  scope        String
+}
+
+model Song {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  name        String?
+  playedAt    DateTime?
+  uri         String?
+  previewUrl  String?
+  songId      String?
+  href        String?
+  albumArtUrl String?
+  ablumName   String?
+  artistName  String?
+  artistHref  String?
 }
