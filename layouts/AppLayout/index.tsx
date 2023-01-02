@@ -1,15 +1,14 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import { motion, useReducedMotion } from 'framer-motion'
 
+import { SocialLinks } from '../../components/SocialLinks'
 import { Logo } from 'components/Logo'
 import { transitionChildrenFast, transitionParent } from 'utilities/animations/transitions'
 import { floatInOut } from 'utilities/animations/variants'
 import styles from './styles.module.scss'
 
-const SocialLinks = dynamic(() => import('components/SocialLinks'), { ssr: false })
 export interface AppLayoutProps {
   children: React.ReactNode
 }

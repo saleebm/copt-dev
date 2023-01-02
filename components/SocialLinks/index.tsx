@@ -31,7 +31,7 @@ const SocialLinkWrapper = ({ children, href, name }: SocialLinkWrapperProps) => 
   </a>
 )
 
-const SocialLinks = () => {
+export const SocialLinks = () => {
   const { resolvedTheme = 'dark' } = useTheme()
 
   return (
@@ -80,4 +80,3 @@ const SocialLinks = () => {
   );
 }
 
-export default SocialLinks
