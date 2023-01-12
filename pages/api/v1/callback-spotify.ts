@@ -15,10 +15,9 @@ export default async function callbackSpotify(req: NextApiRequest, res: NextApiR
     console.error('Missing code or state from callback')
     res.status(500).end()
     return
-  } else if (!req.cookies || !!req.cookies && state !== req.cookies[stateKey]) {
+  } else if (!req.cookies || (!!req.cookies && state !== req.cookies[stateKey])) {
     res.status(400).end()
-  } else {
-    res.status(200).end()
+    return
   }
 
   const username = process.env.NEXT_PUBLIC_SPOTIFY_USER_ID
@@ -67,7 +66,9 @@ export default async function callbackSpotify(req: NextApiRequest, res: NextApiR
       }
     })
     console.log(`created user ${user.username} with id ${user.id}`)
+    res.status(200).end()
   } catch (e) {
     console.error(e)
+    res.status(500).end()
   }
 }
