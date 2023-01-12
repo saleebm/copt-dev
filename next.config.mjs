@@ -10,16 +10,16 @@ export default async (_phase, { defaultConfig: _ }) => {
     productionBrowserSourceMaps: true,
     swcMinify: true,
     experimental: {
-      esmExternals: true,
-      profiling: true,
-      workerThreads: true,
-      isrFlushToDisk: false,
+      // esmExternals: true,
+      // profiling: true,
+      // workerThreads: true,
+      // isrFlushToDisk: false,
       scrollRestoration: true,
       optimizeCss: true
     },
-    compiler: {
+    // compiler: {
       // removeConsole
-    },
+    // },
     transpilePackages: [
       'figlet'
     ],
