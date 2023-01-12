@@ -1,13 +1,7 @@
 // noinspection JSFileReferences
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js'
 
-export default async (phase, { defaultConfig }) => {
-  let removeConsole = {
-    exclude: ['error']
-  }
-  if (phase === PHASE_DEVELOPMENT_SERVER) {
-    removeConsole = false
-  }
+export default async (_phase, { defaultConfig: _ }) => {
   /**
    * @type {import('next').NextConfig}
    **/
@@ -24,7 +18,7 @@ export default async (phase, { defaultConfig }) => {
       optimizeCss: true
     },
     compiler: {
-      removeConsole
+      // removeConsole
     },
     transpilePackages: [
       'figlet'

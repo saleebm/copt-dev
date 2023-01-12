@@ -1,4 +1,3 @@
-import type { Prisma } from '@prisma/client'
 import querystring from 'querystring'
 import prisma from '../../lib/prisma'
 
@@ -83,7 +82,7 @@ export async function getSpotifyData() {
   })
 
   // store data
-  let promises: Prisma.Enumerable<Prisma.SongCreateManyInput> = []
+  let promises: any = []
   for (const item of recentlyPlayed.items) {
     // todo concat artist names if more than 1?
     const artistNames = Array.isArray(item?.track?.artists)
@@ -98,7 +97,7 @@ export async function getSpotifyData() {
       continue
     }
 
-    const creationData: Prisma.SongCreateManyInput = {
+    const creationData: any = {
       ablumName: item?.track?.album?.name,
       albumArtUrl: albumImage?.url,
       artistHref: artist?.external_urls?.spotify,

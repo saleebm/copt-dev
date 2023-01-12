@@ -18,6 +18,7 @@
     "lint:styles": "stylelint \"styles/**/*.scss\" \"components/**/*.scss\" \"layouts/**/*.scss\"",
     "migrate": "prisma migrate dev",
     "migrate:prod": "prisma migrate deploy",
+    "migrate:reset": "prisma migrate reset",
     "prepare": "husky install",
     "production": "npm run build && npm run start",
     "start": "NODE_OPTIONS='--max-old-space-size=4096' NODE_ENV=production next start -p ${PORT:=3000}",
