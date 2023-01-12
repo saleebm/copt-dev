@@ -8,7 +8,7 @@ interface KittyProps {
 }
 
 export function KittyComponent({ meowData }: KittyProps) {
-  // fuck why did I over engineer a kitty component!?
+  // fuck why did I over-engineer a kitty component!?
   const [cat, setCat] = useState<CatData | null>(() =>
     // server side meow
     typeof meowData === 'object' ? meowData : null

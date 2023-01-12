@@ -6,32 +6,35 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model SpotifyUser {
-  id           Int      @id @default(autoincrement())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  username     String   @unique
-  refreshToken String
-  accessToken  String
-  tokenType    String
-  scope        String
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  username       String   @unique
+  refreshToken   String
+  accessToken    String
+  tokenType      String
+  scope          String
+  recentlyPlayed Song[]
 }
 
 model Song {
-  id          String    @id @default(uuid())
-  createdAt   DateTime  @default(now())
-  name        String?
-  playedAt    DateTime?
-  uri         String?
-  previewUrl  String?
-  songId      String?
-  href        String?
-  albumArtUrl String?
-  ablumName   String?
-  artistName  String?
-  artistHref  String?
+  id            String      @id @default(uuid())
+  createdAt     DateTime    @default(now())
+  name          String?
+  playedAt      DateTime?
+  uri           String?
+  previewUrl    String?
+  songId        String?
+  href          String?
+  albumArtUrl   String?
+  ablumName     String?
+  artistName    String?
+  artistHref    String?
+  spotifyUser   SpotifyUser @relation(fields: [spotifyUserId], references: [id])
+  spotifyUserId Int
 }

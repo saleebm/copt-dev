@@ -5,9 +5,9 @@ import { floatLeft } from 'utilities/animations/variants'
 
 import { Head } from 'components/Head'
 import { Eye } from '../components/Ascii/eye'
+import { GetStaticProps } from 'next'
 
-export default function NowPage() {
-  // make sure to put last updated date visible on this page
+export default function NowPage({ builtAt }: { builtAt: string }) {
   return (
     <>
       <Head title='Now' description='This is what I am up to nowadays, check it out.' />
@@ -103,12 +103,17 @@ export default function NowPage() {
               <h2>Reading</h2>
               <ul>
                 <li>
-                  <a href='https://www.sacred-texts.com/eso/kyb/index.htm' target='_blank' rel='noopener noreferrer'>
+                  <a
+                    href='https://www.sacred-texts.com/eso/kyb/index.htm'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
                     The Kybalion by Three Initiates
                   </a>
                 </li>
               </ul>
             </motion.div>
+            <motion.p>Last updated at {builtAt}</motion.p>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>What is a now page?</h2>
               <motion.p className='lead' variants={floatLeft} transition={transitionChildren}>
@@ -131,4 +136,27 @@ export default function NowPage() {
       </div>
     </>
   )
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+  const now = new Date()
+  try {
+    return {
+      props: {
+        builtAt: now.toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit'
+        })
+      },
+      revalidate: false
+    }
+  } catch (err) {
+    console.error(err)
+  }
+  return {
+    props: {}
+  }
 }
