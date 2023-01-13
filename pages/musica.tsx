@@ -55,8 +55,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     return {
       props: {
         songs: JSON.stringify(songs)
-      },
-      revalidate: 600
+      }
     }
   } catch (err) {
     console.error(err)
