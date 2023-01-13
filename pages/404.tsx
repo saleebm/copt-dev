@@ -1,9 +1,7 @@
 import { NextSeo } from 'next-seo'
-import { GetStaticProps } from 'next'
 import { motion } from 'framer-motion'
 import { floatInOut, floatLeft } from 'utilities/animations/variants'
 import { transitionChildren } from 'utilities/animations/transitions'
-import { fetchKitty } from 'lib/cats'
 import type { CatData } from 'lib/models/cats'
 import { KittyComponent } from 'components/Kitty'
 import { Eye } from '../components/Ascii/eye'
@@ -44,26 +42,6 @@ function FourOhFourPage({ catData }: Props) {
       </section>
     </>
   )
-}
-
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  try {
-    const catData = await fetchKitty()
-    return {
-      props: {
-        catData: catData
-      },
-      // don't re-generate the page
-      revalidate: false
-    }
-  } catch (e) {
-    console.error(e)
-    return {
-      props: {
-        catData: null
-      }
-    }
-  }
 }
 
 export default FourOhFourPage

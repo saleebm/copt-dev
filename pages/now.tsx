@@ -5,7 +5,7 @@ import { floatLeft } from 'utilities/animations/variants'
 
 import { Head } from 'components/Head'
 import { Eye } from '../components/Ascii/eye'
-import { GetStaticProps } from 'next'
+// import { GetStaticProps } from 'next'
 
 export default function NowPage({ builtAt }: { builtAt: string }) {
   return (
@@ -138,25 +138,25 @@ export default function NowPage({ builtAt }: { builtAt: string }) {
   )
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const now = new Date()
-  try {
-    return {
-      props: {
-        builtAt: now.toLocaleDateString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit'
-        })
-      },
-      revalidate: false
-    }
-  } catch (err) {
-    console.error(err)
-  }
-  return {
-    props: {}
-  }
-}
+// export const getStaticProps: GetStaticProps = async () => {
+//   const now = new Date()
+//   try {
+//     return {
+//       props: {
+//         // builtAt: now.toLocaleDateString('en-US', {
+//         //   month: 'long',
+//         //   day: 'numeric',
+//         //   year: 'numeric',
+//         //   hour: 'numeric',
+//         //   minute: '2-digit'
+//         // })
+//       },
+//       // revalidate: false
+//     }
+//   } catch (err) {
+//     console.error(err)
+//   }
+//   return {
+//     props: {}
+//   }
+// }

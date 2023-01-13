@@ -1,5 +1,4 @@
 // noinspection JSFileReferences
-import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js'
 
 export default async (_phase, { defaultConfig: _ }) => {
   /**
@@ -15,7 +14,7 @@ export default async (_phase, { defaultConfig: _ }) => {
       // workerThreads: true,
       // isrFlushToDisk: false,
       scrollRestoration: true,
-      optimizeCss: true
+      // optimizeCss: true
     },
     // compiler: {
       // removeConsole
