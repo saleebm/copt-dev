@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -16,7 +16,7 @@ model SpotifyUser {
   updatedAt      DateTime @updatedAt
   username       String   @unique
   refreshToken   String
-  accessToken    String
+  accessToken    String   @db.Char(255)
   tokenType      String
   scope          String
   recentlyPlayed Song[]
