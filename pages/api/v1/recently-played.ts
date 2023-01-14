@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getSpotifyData } from 'utilities/spotify/get-spotify-data'
+import { getSpotifyData } from 'lib/spotify/get-spotify-data'
 
 export default async function recentlyPlayed(req: NextApiRequest, res: NextApiResponse) {
   if (!process.env.SILLY_SECRET) {

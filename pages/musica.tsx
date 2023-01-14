@@ -1,7 +1,7 @@
 import type { Song } from '@prisma/client'
 import { Head } from 'components/Head'
 import { GetServerSideProps } from 'next'
-import { getSpotifyData } from '../utilities/spotify/get-spotify-data'
+import { getSpotifyData } from 'lib/spotify/get-spotify-data'
 import prisma from '../lib/prisma'
 
 type SongParsed = Song & { playedAt: string }

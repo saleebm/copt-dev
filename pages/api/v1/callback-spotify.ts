@@ -67,7 +67,7 @@ export default async function callbackSpotify(req: NextApiRequest, res: NextApiR
       }
     })
     console.log(`created user ${user.username} with id ${user.id}`)
-    res.status(200).end()
+    res.status(200).redirect('/musica')
   } catch (e) {
     console.error(e)
     res.status(500).end()

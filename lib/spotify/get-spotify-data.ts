@@ -84,34 +84,31 @@ export async function getSpotifyData() {
   // store data
   let promises: any = []
   for (const item of recentlyPlayed.items) {
-    // todo concat artist names if more than 1?
     const artistNames = Array.isArray(item?.track?.artists)
       ? item.track.artists.map(artist => artist.name).join(', ')
       : null
     const artist = Array.isArray(item?.track?.artists) ? item.track.artists[0] : null
-    console.log(artistNames)
     const album = item?.track?.album
     const albumImage = Array.isArray(album?.images) ? album.images[0] : null
     const playedAt = new Date(item?.played_at)
     const trackName = item?.track.name
-    if (!trackName || promises[promises.length - 1] === trackName) {
+    if (!trackName || promises[promises.length - 1]?.name === trackName) {
       continue
     }
-    promises = promises.concat(trackName)
-
-    await prisma.song.create({
-      data: {
-        ablumName: item?.track?.album?.name,
-        albumArtUrl: albumImage?.url,
-        artistHref: artist?.external_urls?.spotify,
-        artistName: artistNames,
-        href: item?.track?.href,
-        name: trackName,
-        playedAt: playedAt,
-        songId: item.track.id,
-        uri: item.track.uri,
-        spotifyUserId: user.id
-      }
+    promises = promises.concat({
+      ablumName: item?.track?.album?.name,
+      albumArtUrl: albumImage?.url,
+      artistHref: artist?.external_urls?.spotify,
+      artistName: artistNames,
+      href: item?.track?.href,
+      name: trackName,
+      playedAt: playedAt,
+      songId: item.track.id,
+      uri: item.track.uri,
+      spotifyUserId: user.id
     })
   }
+  await prisma.song.createMany({
+    data: promises
+  })
 }
