@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import type { Song } from '@prisma/client'
 import { Head } from 'components/Head'
-import { GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import { getSpotifyData } from 'lib/spotify/get-spotify-data'
 import prisma from '../lib/prisma'
 import { floatLeft } from '../utilities/animations/variants'
@@ -60,7 +60,7 @@ export default function SongsPage({ songs }: { songs: string }) {
   )
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   try {
     await getSpotifyData()
     const username = process.env.NEXT_PUBLIC_SPOTIFY_USER_ID
