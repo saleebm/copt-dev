@@ -47,7 +47,6 @@ export default async function callbackSpotify(req: NextApiRequest, res: NextApiR
       redirect: 'follow'
     }).then(result => result.json())
 
-    console.log(auth.access_token.length)
     const user = await prisma.spotifyUser.upsert({
       where: {
         username
