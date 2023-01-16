@@ -10,7 +10,6 @@ export default async (_phase, { defaultConfig: _ }) => {
     swcMinify: true,
     experimental: {
       esmExternals: true,
-      profiling: true,
       workerThreads: true,
       isrFlushToDisk: false,
       scrollRestoration: true,

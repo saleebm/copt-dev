@@ -12,8 +12,7 @@ export const setCookie = (
   value: unknown,
   options: CookieSerializeOptions = {}
 ) => {
-  const stringValue =
-    typeof value === 'object' ? 'j:' + JSON.stringify(value) : String(value)
+  const stringValue = typeof value === 'object' ? 'j:' + JSON.stringify(value) : String(value)
 
   if (typeof options.maxAge === 'number') {
     options.expires = new Date(Date.now() + options.maxAge * 1000)
@@ -48,7 +47,7 @@ export default async function authorizeSpotify(req: NextApiRequest, res: NextApi
   }
 
   const stateKey = process.env.STATE_SECRET
-  
+
   if (!process.env.SILLY_SECRET || !stateKey) {
     throw new Error('configure your silly secret')
   }
@@ -56,11 +55,12 @@ export default async function authorizeSpotify(req: NextApiRequest, res: NextApi
     res.status(400).end()
     return
   }
-  
+
   const state = generateRandomString(16)
   setCookie(res, stateKey, state, { path: '/', maxAge: 2592000, httpOnly: true })
 
-  const scope = 'user-read-private user-read-email user-read-recently-played'
+  const scope =
+    'user-read-private user-read-email user-read-recently-played user-read-currently-playing'
 
   const clientID = process.env.SPOTIFY_CLIENT_ID
   const host = process.env.NEXT_PUBLIC_HOST

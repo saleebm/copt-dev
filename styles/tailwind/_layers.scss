@@ -184,7 +184,7 @@
   .song-wrapper {
     display: flex;
     align-items: stretch;
-    flex-flow: column;
+    flex-flow: row wrap;
     justify-content: space-evenly;
     max-width: 100%;
     min-width: 100%;
@@ -195,8 +195,11 @@
   .song-item {
     display: flex;
     position: relative;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
+    max-width: 420px;
+    margin: auto;
+    padding: 10px;
   }
 
   .song-image {

@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import type { Song } from '@prisma/client'
 import { Head } from 'components/Head'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 import { getSpotifyData } from 'lib/spotify/get-spotify-data'
 import prisma from '../lib/prisma'
 import { floatLeft } from '../utilities/animations/variants'
@@ -19,7 +19,11 @@ export default function SongsPage({ songs }: { songs: string }) {
           <motion.h1 variants={floatLeft} transition={transitionChildren}>
             Recently Played
           </motion.h1>
-          <div className={'song-wrapper'}>
+          <motion.div
+            variants={floatLeft}
+            transition={transitionChildren}
+            className={'song-wrapper'}
+          >
             {Array.isArray(data)
               ? data.map((item, index) => (
                   <div className={'song-item'} key={index}>
@@ -33,9 +37,9 @@ export default function SongsPage({ songs }: { songs: string }) {
                       />
                     ) : null}
                     <div>
-                      <p>{item.name}</p>
+                      <p className={'lead'}>{item.name}</p>
                       <p>{item.artistName}</p>
-                      <p>
+                      <p className={'text-sm'}>
                         Played at{' '}
                         {new Date(item.playedAt).toLocaleDateString('en-US', {
                           month: 'long',
@@ -49,14 +53,14 @@ export default function SongsPage({ songs }: { songs: string }) {
                   </div>
                 ))
               : null}
-          </div>
+          </motion.div>
         </section>
       </div>
     </>
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   try {
     await getSpotifyData()
     const username = process.env.NEXT_PUBLIC_SPOTIFY_USER_ID
@@ -74,7 +78,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
     return {
       props: {
         songs: JSON.stringify(songs)
-      }
+      },
+      revalidate: 600
     }
   } catch (err) {
     console.error(err)
