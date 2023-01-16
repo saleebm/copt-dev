@@ -113,10 +113,6 @@ fabric.properties
 # instagram example res
 igPhotos.json
 
-
-# Contentlayer
-.contentlayer
-
 # ts
 tsconfig.tsbuildinfo
 
