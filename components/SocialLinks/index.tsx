@@ -1,17 +1,16 @@
 import type { ReactNode } from 'react'
-import Image from "next/image";
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useTheme } from 'next-themes'
 
 import { floatInOut } from 'utilities/animations/variants'
 import { transitionChildren } from 'utilities/animations/transitions'
-import { facebookProfile, githubProfile, linkedinProfile } from 'config/social-profiles'
+import { githubProfile, linkedinProfile } from 'config/social-profiles'
 import emailIcon from 'public/static/images/brands/email.png'
 import emailIconDark from 'public/static/images/brands/email-dark.png'
 import linkedinIcon from 'public/static/images/brands/linkedin.png'
 import githubIcon from 'public/static/images/brands/github.png'
 import githubIconDark from 'public/static/images/brands/github-dark.png'
-import facebookIcon from 'public/static/images/brands/facebook.png'
 
 interface SocialLinkWrapperProps {
   href: string
@@ -45,38 +44,31 @@ export const SocialLinks = () => {
           src={resolvedTheme === 'dark' ? emailIconDark : emailIcon}
           alt='email me'
           style={{
-            maxWidth: "100%",
-            height: "auto"
-          }} />
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        />
       </SocialLinkWrapper>
       <SocialLinkWrapper name='GitHub' href={githubProfile}>
         <Image
           src={resolvedTheme === 'dark' ? githubIconDark : githubIcon}
           alt='github'
           style={{
-            maxWidth: "100%",
-            height: "auto"
-          }} />
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        />
       </SocialLinkWrapper>
       <SocialLinkWrapper name='LinkedIn' href={linkedinProfile}>
         <Image
           src={linkedinIcon}
           alt='linkedin'
           style={{
-            maxWidth: "100%",
-            height: "auto"
-          }} />
-      </SocialLinkWrapper>
-      <SocialLinkWrapper name='Facebook' href={facebookProfile}>
-        <Image
-          src={facebookIcon}
-          alt='facebook'
-          style={{
-            maxWidth: "100%",
-            height: "auto"
-          }} />
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        />
       </SocialLinkWrapper>
     </motion.div>
-  );
+  )
 }
-

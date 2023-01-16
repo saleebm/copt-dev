@@ -1,3 +1,4 @@
+import type { GetStaticProps } from 'next'
 import { motion } from 'framer-motion'
 
 import { transitionChildren } from 'utilities/animations/transitions'
@@ -5,7 +6,6 @@ import { floatLeft } from 'utilities/animations/variants'
 
 import { Head } from 'components/Head'
 import { Eye } from '../components/Ascii/eye'
-// import { GetStaticProps } from 'next'
 
 export default function NowPage({ builtAt }: { builtAt: string }) {
   return (
@@ -19,11 +19,7 @@ export default function NowPage({ builtAt }: { builtAt: string }) {
             </motion.h1>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Personal Projects</h2>
-              <p className='lead'>
-                I am currently working on completing this website for myself to be able to keep
-                track of my projects and share what I learn along the way. I plan on starting
-                simple, sharing my experiences and diving deeper as I go.
-              </p>
+              <p className='lead'>WIP: Building my digital garden here</p>
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Work</h2>
@@ -39,7 +35,7 @@ export default function NowPage({ builtAt }: { builtAt: string }) {
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Learning</h2>
               <p className='lead'>
-                I am currently learning Golang, devoting a couple 2 hour{' '}
+                I am currently learning Golang, devoting two weekly 2 hour{' '}
                 <a
                   href={'https://www.timeblockplanner.com/'}
                   target='_blank'
@@ -47,11 +43,9 @@ export default function NowPage({ builtAt }: { builtAt: string }) {
                 >
                   time-block
                 </a>{' '}
-                sessions per week for practice.
+                sessions per week for practice/building applications.
               </p>
-              <p className={'lead'}>
-                Some resources I take advantage of (thankful to the creators 😺):
-              </p>
+              <p className={'lead'}>Helpful resources for learning Golang:</p>
               <ul>
                 <li>
                   <a
@@ -81,34 +75,17 @@ export default function NowPage({ builtAt }: { builtAt: string }) {
                   </a>
                 </li>
               </ul>
-              <p className={'lead'}>And references:</p>
-              <ul>
-                <li>
-                  <a
-                    href='https://go.dev/doc/effective_go'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    Effective Go
-                  </a>
-                </li>
-                <li>
-                  <a href='https://go.dev/ref/spec' target='_blank' rel='noopener noreferrer'>
-                    The Go Programming Language Specification
-                  </a>
-                </li>
-              </ul>
             </motion.div>
             <motion.div variants={floatLeft} transition={transitionChildren}>
               <h2>Reading</h2>
               <ul>
                 <li>
                   <a
-                    href='https://www.sacred-texts.com/eso/kyb/index.htm'
+                    href='https://www.amazon.com/Emerald-Tablets-Thoth-Atlantean/dp/B0BMJHBX21/'
                     target='_blank'
                     rel='noopener noreferrer'
                   >
-                    The Kybalion by Three Initiates
+                    The Emerald Tablets of Thoth The Atlantean
                   </a>
                 </li>
               </ul>
@@ -138,25 +115,25 @@ export default function NowPage({ builtAt }: { builtAt: string }) {
   )
 }
 
-// export const getStaticProps: GetStaticProps = async () => {
-//   const now = new Date()
-//   try {
-//     return {
-//       props: {
-//         // builtAt: now.toLocaleDateString('en-US', {
-//         //   month: 'long',
-//         //   day: 'numeric',
-//         //   year: 'numeric',
-//         //   hour: 'numeric',
-//         //   minute: '2-digit'
-//         // })
-//       },
-//       // revalidate: false
-//     }
-//   } catch (err) {
-//     console.error(err)
-//   }
-//   return {
-//     props: {}
-//   }
-// }
+export const getStaticProps: GetStaticProps = async () => {
+  const now = new Date()
+  try {
+    return {
+      props: {
+        builtAt: now.toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit'
+        })
+      },
+      revalidate: false
+    }
+  } catch (err) {
+    console.error(err)
+  }
+  return {
+    props: {}
+  }
+}

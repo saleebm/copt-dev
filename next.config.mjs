@@ -9,24 +9,22 @@ export default async (_phase, { defaultConfig: _ }) => {
     productionBrowserSourceMaps: true,
     swcMinify: true,
     experimental: {
-      // esmExternals: true,
-      // profiling: true,
-      // workerThreads: true,
-      // isrFlushToDisk: false,
+      esmExternals: true,
+      profiling: true,
+      workerThreads: true,
+      isrFlushToDisk: false,
       scrollRestoration: true,
-      // optimizeCss: true
+      optimizeCss: true
     },
     // compiler: {
-      // removeConsole
+    // removeConsole
     // },
-    transpilePackages: [
-      'figlet'
-    ],
+    transpilePackages: ['figlet'],
     eslint: {
       dirs: ['pages', 'components', 'lib', 'utilities', 'layouts'] // Only run ESLint on these directories during production builds (next build)
     },
     images: {
-      domains: ['cdn2.thecatapi.com']
+      domains: ['cdn2.thecatapi.com', 'i.scdn.co']
     },
     async redirects() {
       return [
@@ -99,4 +97,3 @@ export default async (_phase, { defaultConfig: _ }) => {
 
   return config
 }
-

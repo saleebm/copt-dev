@@ -1,8 +1,12 @@
+import Image from 'next/image'
 import type { Song } from '@prisma/client'
 import { Head } from 'components/Head'
 import { GetServerSideProps } from 'next'
 import { getSpotifyData } from 'lib/spotify/get-spotify-data'
 import prisma from '../lib/prisma'
+import { floatLeft } from '../utilities/animations/variants'
+import { transitionChildren } from '../utilities/animations/transitions'
+import { motion } from 'framer-motion'
 
 type SongParsed = Song & { playedAt: string }
 export default function SongsPage({ songs }: { songs: string }) {
@@ -12,25 +16,40 @@ export default function SongsPage({ songs }: { songs: string }) {
       <Head title='Musica' description='This is what I have been listening to' />
       <div className='page-content'>
         <section className='section-fluid'>
-          <br />
-          {Array.isArray(data)
-            ? data.map((item, index) => (
-                <div key={index}>
-                  <p>{item.name}</p>
-                  <p>{item.artistName}</p>
-                  <p>
-                    {new Date(item.playedAt).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                  <hr />
-                </div>
-              ))
-            : null}
+          <motion.h1 variants={floatLeft} transition={transitionChildren}>
+            Recently Played
+          </motion.h1>
+          <div className={'song-wrapper'}>
+            {Array.isArray(data)
+              ? data.map((item, index) => (
+                  <div className={'song-item'} key={index}>
+                    {!!item.albumArtUrl ? (
+                      <Image
+                        className={'song-image'}
+                        width={300}
+                        height={300}
+                        src={item.albumArtUrl}
+                        alt={`album art for ${item.ablumName} ${item.name}`}
+                      />
+                    ) : null}
+                    <div>
+                      <p>{item.name}</p>
+                      <p>{item.artistName}</p>
+                      <p>
+                        Played at{' '}
+                        {new Date(item.playedAt).toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: 'numeric',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              : null}
+          </div>
         </section>
       </div>
     </>

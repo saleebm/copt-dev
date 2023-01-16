@@ -40,12 +40,14 @@ export default function AboutPage() {
               Node.js and the engines that interpret the code on the web.
             </motion.p>
             <motion.p variants={floatLeft} transition={transitionChildren}>
-              Now, I pursue learning how to engineer solutions with better design principles. I am thankful to have a
-              team where we continuously reflect on what worked well and what could be better. Software Engineering, as
-              I have learned the hard way before, involves much more decision making than it does code. I aspire to
-              learn from my senior leaders to understand how to think of the process and solution thoroughly, looking at
-              all of the options available, and at the end of the day, keeping it simple and stupid (KISS). This has
-              guided me to think critically and come down to the solutions that make the most sense.
+              Now, I pursue learning how to engineer solutions with better design principles. I am
+              thankful to have a team where we continuously reflect on what worked well and what
+              could be better. Software Engineering, as I have learned the hard way before, involves
+              much more decision making than it does code. I aspire to learn from my senior leaders
+              to understand how to think of the process and solution thoroughly, looking at all of
+              the options available, and at the end of the day, keeping it simple and stupid (KISS).
+              This has guided me to think critically and come down to the solutions that make the
+              most sense.
             </motion.p>
             <motion.p variants={floatLeft} transition={transitionChildren}>
               I enjoy creating elegant, structured content on the web. It is of my great interest to
@@ -56,8 +58,7 @@ export default function AboutPage() {
               <a href='https://www.linode.com/' target='_blank' rel='noreferrer'>
                 Linode
               </a>{' '}
-              server using an Ubuntu OS. However, in the past I primarily used AWS and Google Cloud
-              Compute services for large-scale application deployment.
+              server using an Ubuntu OS.
             </motion.p>
           </article>
           <motion.div

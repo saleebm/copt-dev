@@ -33,7 +33,12 @@ export default function UsesPage() {
                 Software
               </motion.h2>
               <motion.ul variants={floatIn} transition={transitionChildren}>
-                <li>MacOS Big Sur</li>
+                <li>MacOS</li>
+                <li>
+                  <a href='https://kde.or' target='_blank' rel='noreferrer'>
+                    KDE
+                  </a>
+                </li>
                 <li>iOS</li>
                 <li>
                   <a href='https://code.visualstudio.com/' target='_blank' rel='noreferrer'>
@@ -41,13 +46,12 @@ export default function UsesPage() {
                   </a>{' '}
                   is my go-to editor
                 </li>
-                <li>In the terminal, I use vim for editing files</li>
+                <li>Vim</li>
                 <li>
-                  I use{' '}
                   <a href='https://www.iterm2.com/' target='_blank' rel='noreferrer'>
                     iTerm2
                   </a>{' '}
-                  as my main terminal app
+                  is my main terminal app
                 </li>
                 <li>
                   <a
@@ -89,18 +93,6 @@ export default function UsesPage() {
                   for writing journal entries in an intertwined digital garden
                 </li>
                 <li>
-                  Adobe{' '}
-                  <a
-                    href='https://www.adobe.com/products/photoshop.html'
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    Photoshop
-                  </a>{' '}
-                  for editing photos
-                </li>
-                <li>
-                  I depend on{' '}
                   <a href='https://folivora.ai/' target='_blank' rel='noreferrer'>
                     BetterTouchTool
                   </a>{' '}
@@ -113,20 +105,19 @@ export default function UsesPage() {
                   for listening to music
                 </li>
                 <li>
-                  I keep my links clean using{' '}
                   <a
                     href='https://github.com/rknightuk/TrackerZapper'
                     target='_blank'
                     rel='noreferrer'
                   >
-                    TrackerZapper
+                    TrackerZapper to zap trackers
                   </a>
                 </li>
                 <li>
-                  My VPN provider is{' '}
                   <a href='https://windscribe.com/' target='_blank' rel='noreferrer'>
                     Windscribe
-                  </a>
+                  </a>{' '}
+                  for VPN service
                 </li>
               </motion.ul>
             </section>
@@ -136,18 +127,6 @@ export default function UsesPage() {
               </motion.h2>
               <motion.ul variants={floatIn} transition={transitionChildren}>
                 <li>2018 MacBook Pro with the Touchbar</li>
-                <li>Alienware Aurora R7 Desktop</li>
-                <li>
-                  <a
-                    href='https://www.logitech.com/en-us/mx/master-series.html'
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    Logitech MX Master
-                  </a>{' '}
-                  Mouse
-                </li>
-                <li>One Samsung 27&quot; monitor to extend my laptop display</li>
                 <li>An Acer 30&quot; monitor for my desktop</li>
                 <li>
                   <a

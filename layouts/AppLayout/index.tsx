@@ -13,6 +13,9 @@ export interface AppLayoutProps {
   children: React.ReactNode
 }
 
+const LINK_CLASSES =
+  'relative block sm:inline-block rounded-md sm:mt-0 mt-3 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-3 py-1'
+
 export function AppLayout({ children }: AppLayoutProps) {
   const shouldReduceMotion = useReducedMotion()
   const { asPath } = useRouter()
@@ -35,7 +38,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           Skip to content
         </motion.a>
         <div
-          className={`${styles.headerInner} relative flex flex-col flex-wrap justify-center items-center w-full mx-auto space-y-4`}
+          className={`${styles.headerInner} relative flex flex-col flex-wrap justify-center items-center w-full mx-auto space-y-3`}
         >
           <Logo />
           <SocialLinks />
@@ -51,37 +54,33 @@ export function AppLayout({ children }: AppLayoutProps) {
                 href='/'
                 className={`${styles['nav__item']} ${
                   asPath === '/' ? styles.active : ''
-                } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}>
-                
-                  Root
-                
+                } ${LINK_CLASSES}`}
+              >
+                Root
               </Link>
               <Link
                 href='/story'
                 className={`${styles['nav__item']} ${
                   asPath === '/story' ? styles.active : ''
-                } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}>
-                
-                  Story
-                
+                } ${LINK_CLASSES}`}
+              >
+                Story
               </Link>
               <Link
                 href='/now'
                 className={`${styles['nav__item']} ${
                   asPath === '/now' ? styles.active : ''
-                } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}>
-                
-                  Now
-                
+                } ${LINK_CLASSES}`}
+              >
+                Now
               </Link>
               <Link
                 href='/uses'
                 className={`${styles['nav__item']} ${
                   asPath === '/uses' ? styles.active : ''
-                } relative block sm:inline-block rounded-md sm:mt-0 mt-4 mr-0 sm:mx-1 uppercase text-center font-semibold text-lg transition duration-150 px-4 py-2`}>
-                
-                  Uses
-                
+                } ${LINK_CLASSES}`}
+              >
+                Uses
               </Link>
             </div>
           </motion.nav>
@@ -94,5 +93,5 @@ export function AppLayout({ children }: AppLayoutProps) {
         {children}
       </main>
     </motion.div>
-  );
+  )
 }
