@@ -180,28 +180,28 @@
   .dark .ascii-art__pre {
     filter: contrast(110%) brightness(105%);
   }
-  
+
   .song-wrapper {
     display: flex;
+    align-items: stretch;
     flex-flow: column;
+    justify-content: space-evenly;
+    max-width: 100%;
+    min-width: 100%;
     position: relative;
     width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    justify-content: space-evenly;
-    align-items: stretch;
   }
-  
+
   .song-item {
-    position: relative;
     display: flex;
+    position: relative;
     flex-direction: row;
     width: 100%;
   }
-  
+
   .song-image {
+    height: auto;
     position: relative;
     width: auto;
-    height: auto;
   }
 }
