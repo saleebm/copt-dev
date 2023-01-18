@@ -82,6 +82,15 @@ export function AppLayout({ children }: AppLayoutProps) {
               >
                 Uses
               </Link>
+              <Link
+                href='/musica'
+                className={`${styles['nav__item']} ${
+                  asPath === '/musica' ? styles.active : ''
+                } ${LINK_CLASSES}`}
+                title={'Music'}
+              >
+                🎶
+              </Link>
             </div>
           </motion.nav>
         </div>

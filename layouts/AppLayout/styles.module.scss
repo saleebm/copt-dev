@@ -6,6 +6,8 @@
 
 .nav__item {
   color: var(--nav-item-color);
+  word-wrap: break-word;
+  white-space: nowrap;
 
   &:hover,
   &:focus {
