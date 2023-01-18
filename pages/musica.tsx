@@ -1,12 +1,13 @@
 import Image from 'next/image'
 import type { Song } from '@prisma/client'
+import { motion } from 'framer-motion'
 import { Head } from 'components/Head'
 import { GetServerSideProps } from 'next'
 import { getSpotifyData } from 'lib/spotify/get-spotify-data'
 import prisma from '../lib/prisma'
 import { floatLeft } from '../utilities/animations/variants'
 import { transitionChildren } from '../utilities/animations/transitions'
-import { motion } from 'framer-motion'
+import { Eye } from '../components/Ascii/eye'
 
 type SongParsed = Song & { playedAt: string }
 export default function SongsPage({ songs }: { songs: string }) {
@@ -26,34 +27,60 @@ export default function SongsPage({ songs }: { songs: string }) {
           >
             {Array.isArray(data)
               ? data.map((item, index) => (
-                  <div className={'song-item'} key={index}>
+                  <figure className={'song-item'} key={index}>
                     {!!item.albumArtUrl ? (
-                      <Image
-                        className={'song-image'}
-                        width={300}
-                        height={300}
-                        src={item.albumArtUrl}
-                        alt={`album art for ${item.ablumName} ${item.name}`}
-                      />
-                    ) : null}
-                    <div>
-                      <p className={'lead'}>{item.name}</p>
-                      <p>{item.artistName}</p>
+                      <a
+                        className={'image-link'}
+                        rel={'noreferrer'}
+                        target={'_blank'}
+                        href={`${item.href}`}
+                      >
+                        <Image
+                          className={'song-image'}
+                          width={320}
+                          height={320}
+                          src={item.albumArtUrl}
+                          alt={`album art for ${item.ablumName} ${item.name}`}
+                        />
+                      </a>
+                    ) : /*todo placeholder*/ null}
+                    <figcaption>
+                      <p className={'lead'}>
+                        <a
+                          className={'song-text-link'}
+                          rel={'noreferrer'}
+                          target={'_blank'}
+                          href={`${item.href}`}
+                        >
+                          {item.name}
+                        </a>
+                      </p>
+                      <p>
+                        <a
+                          className={'song-text-link secondary-color'}
+                          rel={'noreferrer'}
+                          target={'_blank'}
+                          href={`${item.artistHref}`}
+                        >
+                          {item.artistName}
+                        </a>
+                      </p>
                       <p className={'text-sm'}>
-                        Played at{' '}
+                        ⏰{' '}
                         {new Date(item.playedAt).toLocaleDateString('en-US', {
-                          month: 'long',
+                          month: 'short',
                           day: 'numeric',
                           year: 'numeric',
                           hour: 'numeric',
                           minute: '2-digit'
                         })}
                       </p>
-                    </div>
-                  </div>
+                    </figcaption>
+                  </figure>
                 ))
               : null}
           </motion.div>
+          <Eye />
         </section>
       </div>
     </>
