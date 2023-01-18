@@ -44,8 +44,8 @@ export async function getSpotifyData() {
     const album = item?.track?.album
     const albumImage = Array.isArray(album?.images) ? album.images[0] : null
     const playedAt = new Date(item?.played_at)
-    const id = item?.track.id
-    if (!id || promises[promises.length - 1]?.id === id) {
+    const songId = item?.track.id
+    if (!songId || promises[promises.length - 1]?.songId === songId) {
       continue
     }
     promises = promises.concat({
@@ -56,7 +56,7 @@ export async function getSpotifyData() {
       href: item?.track?.external_urls?.spotify,
       name: item?.track.name,
       playedAt: playedAt,
-      songId: id,
+      songId: songId,
       uri: item.track.uri,
       spotifyUserId: user.id
     })
