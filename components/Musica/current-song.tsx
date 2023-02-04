@@ -37,7 +37,11 @@ export function CurrentSong({
         variants={floatLeft}
         transition={transitionChildren}
       >
-        {!!currentlyPlaying ? <Track item={currentlyPlaying} /> : <p>Nothing playing 🤫</p>}
+        {!!currentlyPlaying ? (
+          <Track item={currentlyPlaying} />
+        ) : (
+          <p className={'not-playing'}>Nothing playing 🤫</p>
+        )}
       </motion.div>
     ),
     [currentlyPlaying]
