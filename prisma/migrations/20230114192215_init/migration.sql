@@ -24,7 +24,7 @@ CREATE TABLE `Song` (
     `songId` VARCHAR(191) NULL,
     `href` VARCHAR(191) NULL,
     `albumArtUrl` VARCHAR(191) NULL,
-    `ablumName` VARCHAR(191) NULL,
+    `albumName` VARCHAR(191) NULL,
     `artistName` VARCHAR(191) NULL,
     `artistHref` VARCHAR(191) NULL,
     `spotifyUserId` INTEGER NOT NULL,

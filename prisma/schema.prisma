@@ -32,7 +32,7 @@ model Song {
   songId        String?
   href          String?
   albumArtUrl   String?
-  ablumName     String?
+  albumName     String?
   artistName    String?
   artistHref    String?
   spotifyUser   SpotifyUser @relation(fields: [spotifyUserId], references: [id])

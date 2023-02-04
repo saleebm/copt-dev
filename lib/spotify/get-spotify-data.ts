@@ -49,7 +49,7 @@ export async function getSpotifyData() {
       continue
     }
     promises = promises.concat({
-      ablumName: item?.track?.album?.name,
+      albumName: item?.track?.album?.name,
       albumArtUrl: albumImage?.url,
       artistHref: artist?.external_urls?.spotify,
       artistName: artistNames,
@@ -58,7 +58,8 @@ export async function getSpotifyData() {
       playedAt: playedAt,
       songId: songId,
       uri: item.track.uri,
-      spotifyUserId: user.id
+      spotifyUserId: user.id,
+      previewUrl: item?.track?.preview_url
     })
   }
   await prisma.song.createMany({

@@ -50,7 +50,7 @@ export default async (_phase, { defaultConfig: _ }) => {
   script-src 'self' 'unsafe-eval' 'unsafe-inline';
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
-  media-src 'none';
+  media-src https://p.scdn.co/;
   connect-src *;
   font-src 'self';
 `

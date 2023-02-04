@@ -3,12 +3,15 @@
 // Tailwinds Layers
 // https://tailwindcss.com/docs/functions-and-directives#layer
 
+$song_image_radius: 13px 13px 0 0;
+
 @layer base {
   h1 {
     @apply text-4xl tracking-tighter mb-4 md:text-5xl font-light break-words;
     color: var(--heading-primary-color);
     word-wrap: normal;
   }
+
   h2 {
     @apply text-3xl tracking-tight mb-4  md:text-4xl font-normal;
     color: var(--heading-secondary-color);
@@ -104,10 +107,10 @@
   .font-extrabold {
     font-variation-settings: 'wght' 800;
   }
-  
+
   .secondary-color {
     color: var(--link-color-hover);
-    
+
     &:is(a) {
       &:hover,
       &:focus {
@@ -192,33 +195,39 @@
     filter: contrast(110%) brightness(105%);
   }
 
-  .image-link {
+  // todo move to separate css file
+  .song-image-link {
     padding: 1px;
-    border: 1px solid black;
-    background-color: pink;
+    border-color: black;
+    border-style: solid;
+    border-width: 1px 1px 0;
+    background-color: rgba(255, 192, 203, 0.11);
     display: inline-block;
     max-width: 100%;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     transform: scale(100%);
     filter: saturate(69%) brightness(88%);
+    border-radius: $song_image_radius;
+    z-index: 2;
 
     @media screen and (prefers-reduced-motion: no-preference) {
       transition: transform, filter 0.2s cubic-bezier(0.88, 0.44, 0.92, 0.69) 0.04ms;
     }
-    
-    &:hover, &:focus {
-      transform: scale(102%);
+
+    &:hover,
+    &:focus {
+      transform: scale(101%);
       filter: saturate(100%) brightness(100%);
     }
   }
-  
+
   .song-text-link {
     max-width: 100%;
     position: relative;
     display: inline-block;
   }
-  
+
   .song-wrapper {
     display: flex;
     align-items: stretch;
@@ -239,8 +248,33 @@
     flex-direction: column;
     width: 100%;
     max-width: 320px;
-    margin: 10px;
-    padding: 0;
+    margin: 0;
+    padding: 12px;
+  }
+
+  .song-image-wrap {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+  }
+
+  .play-bar {
+    position: relative;
+    display: flex;
+    flex-flow: row nowrap;
+    height: auto;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    background-color: var(--secondary-background-color, #000);
+    justify-content: space-between;
+
+    & > audio {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .song-image {
@@ -248,5 +282,84 @@
     position: relative;
     width: auto;
     border: 1px solid black;
+    border-radius: $song_image_radius;
+  }
+
+  .musica-main {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 1480px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .musica-header {
+    display: inline-block;
+    margin-left: 1rem;
+    position: relative;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .musica-subheader {
+    display: block;
+    margin-left: 1rem;
+    position: relative;
+    color: var(--text-secondary-color, #069420);
+  }
+
+  .musica-recently-played {
+    grid-column: 1 / 2;
+  }
+
+  .musica-sidebar {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    grid-column: 2 / 3; /* spans the second column */
+    height: 100%;
+    width: auto;
+    text-align: center;
+  }
+  
+  .musica-current-wrap {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  @media screen and (max-width: 1080px) {
+    .musica-main {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    .musica-subheader {
+      text-align: center;
+    }
+    
+    .musica-recently-played {
+      max-width: 780px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .song-wrapper {
+      justify-content: space-between;
+    }
+    
+    .musica-sidebar {
+      position: relative;
+      max-width: 780px;
+      inset: auto;
+      height: auto;
+      width: 100%;
+      margin: 0 auto;
+    }
   }
 }

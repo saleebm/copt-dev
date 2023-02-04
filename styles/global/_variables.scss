@@ -6,6 +6,7 @@
 :root {
   // base
   --background-color: theme('colors.gray.100');
+  --secondary-background-color: theme('colors.gray.50');
   --text-primary-color: theme('colors.gray.800');
   --text-secondary-color: theme('colors.gray.700');
   --heading-primary-color: theme('colors.purple.600');
@@ -40,6 +41,7 @@
 html.dark {
   // base
   --background-color: theme('colors.gray.900');
+  --secondary-background-color: theme('colors.gray.800');
   --text-primary-color: theme('colors.gray.50');
   --text-secondary-color: theme('colors.gray.200');
   --heading-primary-color: theme('colors.yellow.400');

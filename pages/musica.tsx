@@ -1,87 +1,78 @@
-import Image from 'next/image'
-import type { Song } from '@prisma/client'
+import type { GetServerSideProps } from 'next'
 import { motion } from 'framer-motion'
-import { Head } from 'components/Head'
-import { GetServerSideProps } from 'next'
-import { getSpotifyData } from 'lib/spotify/get-spotify-data'
-import prisma from '../lib/prisma'
-import { floatLeft } from '../utilities/animations/variants'
-import { transitionChildren } from '../utilities/animations/transitions'
-import { Eye } from '../components/Ascii/eye'
+import type { CurrentlyPlayingItemProps, SongParsed } from '@types'
 
-type SongParsed = Song & { playedAt: string }
-export default function SongsPage({ songs }: { songs: string }) {
-  const data: SongParsed[] = !!songs ? JSON.parse(songs) : []
+import { Head } from 'components/Head'
+import { getSpotifyData } from 'lib/spotify/get-spotify-data'
+import { floatLeft } from 'utilities/animations/variants'
+import { transitionChildren, transitionChildrenFast } from 'utilities/animations/transitions'
+import { Eye } from 'components/Ascii/eye'
+import { getCurrentSong } from 'lib/spotify/get-current-song'
+import { Track } from 'components/Musica/track'
+import { CurrentSong } from 'components/Musica/current-song'
+import { CURRENTLY_PLAYED_URL } from 'config/routes'
+import { getSongs } from 'components/Musica/get-songs'
+
+export default function SongsPage({
+  songs,
+  fallback
+}: {
+  songs: SongParsed[]
+  fallback: {
+    [CURRENTLY_PLAYED_URL]: CurrentlyPlayingItemProps
+  }
+}) {
   return (
     <>
       <Head title='Musica' description='This is what I have been listening to' />
       <div className='page-content'>
-        <section className='section-fluid'>
-          <motion.h1 variants={floatLeft} transition={transitionChildren}>
-            Recently Played
-          </motion.h1>
-          <motion.div
+        <div className='section-fluid'>
+          <motion.h1
+            className={'musica-header'}
             variants={floatLeft}
-            transition={transitionChildren}
-            className={'song-wrapper'}
+            transition={transitionChildrenFast}
+            dir={'rtl'}
+            title={'Music (arabic)'}
           >
-            {Array.isArray(data)
-              ? data.map((item, index) => (
-                  <figure className={'song-item'} key={index}>
-                    {!!item.albumArtUrl ? (
-                      <a
-                        className={'image-link'}
-                        rel={'noreferrer'}
-                        target={'_blank'}
-                        href={`${item.href}`}
-                      >
-                        <Image
-                          className={'song-image'}
-                          width={320}
-                          height={320}
-                          src={item.albumArtUrl}
-                          alt={`album art for ${item.ablumName} ${item.name}`}
-                        />
-                      </a>
-                    ) : /*todo placeholder*/ null}
-                    <figcaption>
-                      <p className={'lead'}>
-                        <a
-                          className={'song-text-link'}
-                          rel={'noreferrer'}
-                          target={'_blank'}
-                          href={`${item.href}`}
-                        >
-                          {item.name}
-                        </a>
-                      </p>
-                      <p>
-                        <a
-                          className={'song-text-link secondary-color'}
-                          rel={'noreferrer'}
-                          target={'_blank'}
-                          href={`${item.artistHref}`}
-                        >
-                          {item.artistName}
-                        </a>
-                      </p>
-                      <p className={'text-sm'}>
-                        ⏰{' '}
-                        {new Date(item.playedAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                          hour: 'numeric',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </figcaption>
-                  </figure>
-                ))
-              : null}
-          </motion.div>
-          <Eye />
-        </section>
+            موسيقى
+          </motion.h1>
+          <div className={'musica-main'}>
+            <section className={'musica-recently-played'}>
+              <motion.h2
+                className={'musica-subheader'}
+                variants={floatLeft}
+                transition={transitionChildren}
+                title={'Music (arabic)'}
+              >
+                Recently Played
+              </motion.h2>
+              <motion.div
+                variants={floatLeft}
+                transition={transitionChildren}
+                className={'song-wrapper'}
+              >
+                {Array.isArray(songs)
+                  ? songs.map((item, index) => <Track item={item} key={index} />)
+                  : null}
+              </motion.div>
+            </section>
+            <aside className={'musica-sidebar'}>
+              <div className={'sticky top-0'}>
+                <motion.h2
+                  className={'musica-subheader'}
+                  variants={floatLeft}
+                  transition={transitionChildren}
+                  title={'Music'}
+                >
+                  Now Playing
+                </motion.h2>
+                {/*todo animate this*/}
+                <CurrentSong fallback={fallback} />
+              </div>
+            </aside>
+          </div>
+        </div>
+        <Eye />
       </div>
     </>
   )
@@ -90,21 +81,14 @@ export default function SongsPage({ songs }: { songs: string }) {
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
     await getSpotifyData()
-    const username = process.env.NEXT_PUBLIC_SPOTIFY_USER_ID
-    const songs = await prisma.song.findMany({
-      orderBy: {
-        playedAt: 'desc'
-      },
-      where: {
-        spotifyUser: {
-          username
-        }
-      },
-      take: 50
-    })
+    const songs = await getSongs()
+    const currentSong = await getCurrentSong()
     return {
       props: {
-        songs: JSON.stringify(songs)
+        songs,
+        fallback: {
+          [CURRENTLY_PLAYED_URL]: currentSong
+        }
       }
     }
   } catch (err) {

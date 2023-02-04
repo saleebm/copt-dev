@@ -66,7 +66,7 @@ export default function Home() {
                     transition={transitionChildren}
                     variants={floatIn}
                   >
-                    I&apos;m a full stack application developer based in Orlando, FL.
+                    Egyptian-American Software Engineer
                   </motion.p>
                 </div>
                 <motion.div transition={transitionChildren} variants={floatIn}>
