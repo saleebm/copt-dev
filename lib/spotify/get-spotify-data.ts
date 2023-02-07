@@ -26,28 +26,24 @@ export async function getSpotifyData() {
     throw new Error('missing data from spotify')
   }
 
-  // delete the older records
-  // todo - store history but dedupe
-  await prisma.song.deleteMany({
-    where: {
-      spotifyUserId: user.id
-    }
-  })
-
-  // store data
+  // store data todo fix any
   let promises: any = []
   for (const item of recentlyPlayed.items) {
+    if (!item?.played_at) {
+      console.error('missing played at', item)
+    }
+    const songId = item?.track.id
+    if (!songId || promises[promises.length - 1]?.songId === songId) {
+      continue
+    }
     const artistNames = Array.isArray(item?.track?.artists)
       ? item.track.artists.map(artist => artist.name).join(', ')
       : null
     const artist = Array.isArray(item?.track?.artists) ? item.track.artists[0] : null
     const album = item?.track?.album
     const albumImage = Array.isArray(album?.images) ? album.images[0] : null
-    const playedAt = new Date(item?.played_at)
-    const songId = item?.track.id
-    if (!songId || promises[promises.length - 1]?.songId === songId) {
-      continue
-    }
+    const playedAt = new Date(item.played_at)
+
     promises = promises.concat({
       albumName: item?.track?.album?.name,
       albumArtUrl: albumImage?.url,
@@ -63,6 +59,7 @@ export async function getSpotifyData() {
     })
   }
   await prisma.song.createMany({
-    data: promises
+    data: promises,
+    skipDuplicates: true
   })
 }

@@ -26,7 +26,7 @@ model Song {
   id            String      @id @default(uuid())
   createdAt     DateTime    @default(now())
   name          String?
-  playedAt      DateTime?
+  playedAt      DateTime?   @unique
   uri           String?
   previewUrl    String?
   songId        String?
