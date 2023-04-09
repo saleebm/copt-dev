@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getSpotifyData } from 'lib/spotify/get-spotify-data'
+import { createRecentlyPlayed } from 'lib/spotify/create-recently-played'
 
 export default async function recentlyPlayed(req: NextApiRequest, res: NextApiResponse) {
   if (!process.env.SILLY_SECRET) {
@@ -16,7 +16,7 @@ export default async function recentlyPlayed(req: NextApiRequest, res: NextApiRe
   }
 
   try {
-    await getSpotifyData()
+    await createRecentlyPlayed()
 
     res.status(200).end()
     return

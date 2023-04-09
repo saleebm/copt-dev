@@ -1,5 +1,4 @@
 import type { CurrentlyPlayingItemProps } from '@types'
-import { useMemo } from 'react'
 import useSWR from 'swr'
 import { motion } from 'framer-motion'
 
@@ -27,23 +26,23 @@ export function CurrentSong({
   const { data: currentlyPlaying } = useSWR<CurrentlyPlayingItemProps | null>(
     CURRENTLY_PLAYED_URL,
     fetcher,
-    { fallback }
+    {
+      fallback,
+      refreshInterval: 15
+    }
   )
 
-  return useMemo(
-    () => (
-      <motion.div
-        className={'musica-current-wrap'}
-        variants={floatLeft}
-        transition={transitionChildren}
-      >
-        {!!currentlyPlaying ? (
-          <Track item={currentlyPlaying} />
-        ) : (
-          <p className={'not-playing'}>Nothing playing 🤫</p>
-        )}
-      </motion.div>
-    ),
-    [currentlyPlaying]
+  return (
+    <motion.div
+      className={'musica-current-wrap'}
+      variants={floatLeft}
+      transition={transitionChildren}
+    >
+      {!!currentlyPlaying ? (
+        <Track item={currentlyPlaying} />
+      ) : (
+        <p className={'not-playing'}>Nothing playing 🤫</p>
+      )}
+    </motion.div>
   )
 }

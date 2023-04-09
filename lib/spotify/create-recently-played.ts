@@ -2,7 +2,7 @@ import querystring from 'querystring'
 import prisma from '../../lib/prisma'
 import { authenticate } from './authenticate'
 
-export async function getSpotifyData() {
+export async function createRecentlyPlayed(): Promise<number> {
   const { auth, user } = await authenticate()
   // get recently played
   const recentlyPlayedUrl = `https://api.spotify.com/v1/me/player/recently-played?${querystring.stringify(
@@ -58,8 +58,10 @@ export async function getSpotifyData() {
       previewUrl: item?.track?.preview_url
     })
   }
-  await prisma.song.createMany({
+  const result = await prisma.song.createMany({
     data: promises,
     skipDuplicates: true
   })
+
+  return result.count
 }

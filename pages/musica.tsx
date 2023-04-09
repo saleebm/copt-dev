@@ -3,15 +3,13 @@ import { motion } from 'framer-motion'
 import type { CurrentlyPlayingItemProps, SongParsed } from '@types'
 
 import { Head } from 'components/Head'
-import { getSpotifyData } from 'lib/spotify/get-spotify-data'
 import { floatLeft } from 'utilities/animations/variants'
 import { transitionChildren, transitionChildrenFast } from 'utilities/animations/transitions'
 import { Eye } from 'components/Ascii/eye'
-import { getCurrentSong } from 'lib/spotify/get-current-song'
 import { Track } from 'components/Musica/track'
 import { CurrentSong } from 'components/Musica/current-song'
 import { CURRENTLY_PLAYED_URL } from 'config/routes'
-import { getSongs } from 'components/Musica/get-songs'
+import { getMusicaProps } from '../lib/spotify/get-musica-props'
 
 export default function SongsPage({
   songs,
@@ -80,9 +78,7 @@ export default function SongsPage({
 
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
-    await getSpotifyData()
-    const songs = await getSongs()
-    const currentSong = await getCurrentSong()
+    const { songs, currentSong } = await getMusicaProps()
     return {
       props: {
         songs,
