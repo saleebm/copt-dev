@@ -12,6 +12,15 @@ module.exports = {
       env: {
         NODE_ENV: 'production'
       }
+    },
+    {
+      name: 'music-sentiment-analyzer',
+      script: 'scripts/seed.mjs',
+      instances: 1,
+      exec_mode: 'fork',
+      cron_restart: '0,30 * * * *',
+      watch: false,
+      autorestart: false
     }
   ]
 }

@@ -23,18 +23,38 @@ model SpotifyUser {
 }
 
 model Song {
-  id            String      @id @default(uuid())
-  createdAt     DateTime    @default(now())
-  name          String?
-  playedAt      DateTime?   @unique
-  uri           String?
-  previewUrl    String?
-  songId        String?
-  href          String?
-  albumArtUrl   String?
-  albumName     String?
-  artistName    String?
-  artistHref    String?
-  spotifyUser   SpotifyUser @relation(fields: [spotifyUserId], references: [id])
-  spotifyUserId Int
+  id                  String             @id @default(uuid())
+  createdAt           DateTime           @default(now())
+  name                String?
+  playedAt            DateTime?          @unique
+  uri                 String?
+  previewUrl          String?
+  songId              String?
+  href                String?
+  albumArtUrl         String?
+  albumName           String?
+  artistName          String?
+  artistHref          String?
+  spotifyUser         SpotifyUser        @relation(fields: [spotifyUserId], references: [id])
+  spotifyUserId       Int
+  sentimentBar        MusicSentimentBar? @relation(fields: [musicSentimentBarId], references: [id])
+  musicSentimentBarId String?            @unique
+}
+
+// unique instance of a sentiment
+model MusicSentimentBar {
+  id                     String                 @id @default(uuid())
+  createdAt              DateTime               @default(now())
+  musicSentimentAnalysis MusicSentimentAnalysis @relation(fields: [songId], references: [songId])
+  songId                 String
+  Song                   Song?
+}
+
+model MusicSentimentAnalysis {
+  createdAt         DateTime            @default(now())
+  songId            String              @id
+  mood              String?
+  color             String?
+  features          String?             @db.VarChar(1000) // keep track of features from Spotify to have the option to requeue without calling spotify
+  MusicSentimentBar MusicSentimentBar[]
 }

@@ -64,7 +64,6 @@ export default function SongsPage({
                 >
                   Now Playing
                 </motion.h2>
-                {/*todo animate this*/}
                 <CurrentSong fallback={fallback} />
               </div>
             </aside>
