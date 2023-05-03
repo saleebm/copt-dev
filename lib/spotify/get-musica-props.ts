@@ -20,7 +20,11 @@ export async function getMusicaProps() {
       })
       promises.push(promiseFetch)
     }
-    await Promise.all(promises)
+    try {
+      await Promise.all(promises)
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   return {

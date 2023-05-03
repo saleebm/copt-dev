@@ -9,38 +9,85 @@ export default async function saveSentiment(req: NextApiRequest, res: NextApiRes
     res.status(400).end()
     return
   }
-
   if (req.method?.toLowerCase() !== 'post') {
     res.status(405).end()
     return
   }
-  const trackId = req.body['trackId']
-  const existingSentiment = await prisma.musicSentimentAnalysis.findUnique({
-    where: {
-      songId: trackId
-    }
-  })
 
-  if (!!existingSentiment) {
-    //todo update it if color/mood changes
-    res.status(304).end()
-    return
-  }
+  const trackId = req.body['trackId']
   let features = ''
   if (!!req.body['features']) {
     features = JSON.stringify(req.body['features'])
-    console.log(features, features.length)
+  } else {
+    console.error('missing features data')
   }
   const mood = req.body['mood']
   const color = req.body['color']
-  await prisma.musicSentimentAnalysis.create({
-    data: {
+  const uuids = req.body['uuids']
+  console.log({
+    mood,
+    color,
+    uuids,
+    trackId,
+    features
+  })
+
+  const sentimentAnalysis = await prisma.musicSentimentAnalysis.upsert({
+    create: {
       mood,
       color,
       features,
       songId: trackId
+    },
+    update: {
+      mood,
+      color,
+      features
+    },
+    where: {
+      songId: trackId
     }
   })
-  //todo use uuids for songs to set music bars
+  const songs = await prisma.song.findMany({
+    where: {
+      id: {
+        in: uuids
+      }
+    }
+  })
+  for (const song of songs) {
+    if (!song || !song.songId) {
+      console.error('should never happen')
+      continue
+    }
+    console.log(`updating song ${song.id}`)
+    // each bar goes to a song
+    const bar = await prisma.musicSentimentBar.create({
+      data: {
+        musicSentimentAnalysis: {
+          connect: {
+            id: sentimentAnalysis.id
+          }
+        },
+        song: {
+          connect: {
+            id: song.id
+          }
+        }
+      }
+    })
+    await prisma.song.update({
+      where: {
+        id: song.id
+      },
+      data: {
+        sentimentBar: {
+          connect: {
+            id: bar.id
+          }
+        }
+      }
+    })
+  }
   res.status(200).end()
 }

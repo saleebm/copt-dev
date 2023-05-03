@@ -27,7 +27,7 @@ export function CurrentSong({
     CURRENTLY_PLAYED_URL,
     fetcher,
     {
-      fallback: fallback ? fallback : undefined,
+      fallback: fallback || {},
       refreshInterval: 15
     }
   )

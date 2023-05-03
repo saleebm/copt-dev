@@ -1,5 +1,6 @@
 // @ts-check
 import { PrismaClient } from '@prisma/client'
+import fetch from 'node-fetch'
 
 const prisma = new PrismaClient()
 
@@ -27,7 +28,7 @@ async function seed() {
       console.log('already sending ' + song.songId)
       const oldReqData = payloads[song.songId]
       payloads[song.songId] = {
-        uuids: [...oldReqData.uuids, song.id],
+        uuids: [...oldReqData.uuids, song.id], // attach this uuid so it can be attached to a bar of it's own, linked to the sentiment
         trackId: song.songId
       }
       continue
@@ -36,6 +37,7 @@ async function seed() {
     if (sentimentAnalyzed.some(analysis => analysis.songId === song.songId)) {
       console.log('already have analysis for song ' + song.songId)
       // todo link song to sentiment for front end bars
+
       continue
     }
 
@@ -45,22 +47,24 @@ async function seed() {
     }
   }
 
-  let promises = []
+  let results = 0
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [_, v] of Object.entries(payloads)) {
-    const promiseFetch = fetch('http://127.0.0.1:8080/track', {
-      body: JSON.stringify(v),
-      method: 'POST'
-    })
-    promises = [...promises, promiseFetch]
-  }
-  // const res = await Promise.all(promises)
-  const results = await Promise.all(promises)
-  for (const result of results) {
     try {
+      const result = await fetch('http://127.0.0.1:8080/track', {
+        body: JSON.stringify(v),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'Application/JSON'
+        }
+      })
       console.log(await result.text())
-    } catch (_) {}
+      results += 1
+    } catch (e) {
+      console.error(e)
+    }
   }
-  return results.length
+  return results
 }
 
 seed()

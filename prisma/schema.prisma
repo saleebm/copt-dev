@@ -23,38 +23,39 @@ model SpotifyUser {
 }
 
 model Song {
-  id                  String             @id @default(uuid())
-  createdAt           DateTime           @default(now())
-  name                String?
-  playedAt            DateTime?          @unique
-  uri                 String?
-  previewUrl          String?
-  songId              String?
-  href                String?
-  albumArtUrl         String?
-  albumName           String?
-  artistName          String?
-  artistHref          String?
-  spotifyUser         SpotifyUser        @relation(fields: [spotifyUserId], references: [id])
-  spotifyUserId       Int
-  sentimentBar        MusicSentimentBar? @relation(fields: [musicSentimentBarId], references: [id])
-  musicSentimentBarId String?            @unique
+  id            String             @id @default(uuid())
+  createdAt     DateTime           @default(now())
+  name          String?
+  playedAt      DateTime?          @unique
+  uri           String?
+  previewUrl    String?
+  songId        String?
+  href          String?
+  albumArtUrl   String?
+  albumName     String?
+  artistName    String?
+  artistHref    String?
+  spotifyUser   SpotifyUser        @relation(fields: [spotifyUserId], references: [id])
+  spotifyUserId Int
+  sentimentBar  MusicSentimentBar?
 }
 
 // unique instance of a sentiment
 model MusicSentimentBar {
   id                     String                 @id @default(uuid())
   createdAt              DateTime               @default(now())
-  musicSentimentAnalysis MusicSentimentAnalysis @relation(fields: [songId], references: [songId])
-  songId                 String
-  Song                   Song?
+  musicSentimentAnalysis MusicSentimentAnalysis @relation(fields: [songId], references: [songId]) // 1 to many
+  songId                 String // spotify song id
+  song                   Song?                  @relation(fields: [songUuid], references: [id]) // 1 to 1
+  songUuid               String?                @unique //the uuid of the song in the db
 }
 
 model MusicSentimentAnalysis {
-  createdAt         DateTime            @default(now())
-  songId            String              @id
-  mood              String?
-  color             String?
-  features          String?             @db.VarChar(1000) // keep track of features from Spotify to have the option to requeue without calling spotify
-  MusicSentimentBar MusicSentimentBar[]
+  createdAt          DateTime            @default(now())
+  id                 String              @id @default(uuid())
+  songId             String              @unique
+  mood               String?
+  color              String?
+  features           String?             @db.VarChar(1000) // keep track of features from Spotify to have the option to requeue without calling spotify
+  musicSentimentBars MusicSentimentBar[] // has many bars, so we can store the analysis for one song once
 }

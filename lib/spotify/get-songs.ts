@@ -24,6 +24,7 @@ export async function getSongs() {
           minute: '2-digit'
         })
       : null,
-    createdAt: null
+    createdAt: null,
+    id: null
   }))
 }
