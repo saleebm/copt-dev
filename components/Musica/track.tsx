@@ -1,5 +1,7 @@
 import type { CurrentlyPlayingItemProps, SongParsed } from '@types'
 import Image from 'next/image'
+import AudioPlayer from 'react-h5-audio-player'
+import 'react-h5-audio-player/lib/styles.css'
 
 export function Track({ item }: { item: SongParsed | CurrentlyPlayingItemProps }) {
   return (
@@ -21,9 +23,7 @@ export function Track({ item }: { item: SongParsed | CurrentlyPlayingItemProps }
             />
           </a>
           <div className={'play-bar'}>
-            <audio controls>
-              <source type='audio/mpeg' src={`${item.previewUrl}`} />
-            </audio>
+            <AudioPlayer autoPlay={false} src={`${item.previewUrl}`} />
           </div>
         </div>
       ) : /*todo placeholder*/ null}

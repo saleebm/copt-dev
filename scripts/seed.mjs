@@ -1,12 +1,11 @@
-// @ts-check
 import { PrismaClient } from '@prisma/client'
 import fetch from 'node-fetch'
 
 const prisma = new PrismaClient()
 
-async function seed() {
-  if (!process.env.MUSIC_SENTIMENT_ENABLED) {
-    console.log('MUSIC_SENTIMENT_ENABLED disabled')
+export async function seed() {
+  if (!process.env.MUSIC_SENTIMENT_ENABLED || (process.env.MUSIC_SENTIMENT_ENABLED && process.env.MUSIC_SENTIMENT_ENABLED.toLowerCase() !== 'true')) {
+    console.log('music sentiment disabled')
     return 0
   }
 
@@ -14,15 +13,24 @@ async function seed() {
     select: {
       songId: true,
       id: true
+    },
+    where: {
+      sentimentBar: undefined
     }
   })
   const sentimentAnalyzed = await prisma.musicSentimentAnalysis.findMany({
     select: {
       songId: true
+    },
+    where: {
+      songId: {
+        in: songs.map(song => song.songId)
+      }
     }
   })
 
   const payloads = {}
+  let batchUpdates = []
   for (const song of songs) {
     if (!!payloads[song.songId]) {
       console.log('already sending ' + song.songId)
@@ -36,8 +44,25 @@ async function seed() {
 
     if (sentimentAnalyzed.some(analysis => analysis.songId === song.songId)) {
       console.log('already have analysis for song ' + song.songId)
-      // todo link song to sentiment for front end bars
-
+      const sentimentAnalysis = sentimentAnalyzed.find(analysis => analysis.songId === song.songId)
+      const updateItem = prisma.song.update({
+        where: {
+          id: song.id
+        },
+        data: {
+          sentimentBar: {
+            create: {
+              songId: song.songId,
+              musicSentimentAnalysis: {
+                connect: {
+                  id: sentimentAnalysis.id
+                }
+              }
+            }
+          }
+        }
+      })
+      batchUpdates = [...batchUpdates, updateItem]
       continue
     }
 
@@ -64,6 +89,7 @@ async function seed() {
       console.error(e)
     }
   }
+  await Promise.all(batchUpdates)
   return results
 }
 

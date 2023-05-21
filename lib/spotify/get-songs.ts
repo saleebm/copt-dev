@@ -11,6 +11,9 @@ export async function getSongs() {
         username
       }
     },
+    include: {
+      sentimentBar: true
+    },
     take: 50
   })
   return songs.map(song => ({
@@ -25,6 +28,10 @@ export async function getSongs() {
         })
       : null,
     createdAt: null,
-    id: null
+    id: null,
+    sentimentBar: {
+      ...song.sentimentBar,
+      createdAt: null
+    }
   }))
 }

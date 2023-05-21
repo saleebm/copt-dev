@@ -32,4 +32,5 @@ const prisma = new PrismaClient()
       foundBars = [...foundBars, bars.find(s => s.songId === song.songId)]
     else console.warn(`missing bar for song ${song.id} with song id ${song.songId}`)
   }
+  console.log('done')
 })()

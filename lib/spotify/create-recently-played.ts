@@ -27,6 +27,7 @@ export async function createRecentlyPlayed(): Promise<number> {
   }
 
   // store data todo fix any
+  // can I skip processing for existing tracks
   let promises: any = []
   for (const item of recentlyPlayed.items) {
     if (!item?.played_at) {
