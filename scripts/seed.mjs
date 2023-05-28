@@ -45,19 +45,28 @@ export async function seed() {
     if (sentimentAnalyzed.some(analysis => analysis.songId === song.songId)) {
       console.log('already have analysis for song ' + song.songId)
       const sentimentAnalysis = sentimentAnalyzed.find(analysis => analysis.songId === song.songId)
+      const bar = await prisma.musicSentimentBar.create({
+        data: {
+          musicSentimentAnalysis: {
+            connect: {
+              id: sentimentAnalysis.id
+            }
+          },
+          song: {
+            connect: {
+              id: song.id
+            }
+          }
+        }
+      })
       const updateItem = prisma.song.update({
         where: {
           id: song.id
         },
         data: {
           sentimentBar: {
-            create: {
-              songId: song.songId,
-              musicSentimentAnalysis: {
-                connect: {
-                  id: sentimentAnalysis.id
-                }
-              }
+            connect: {
+              id: bar.id
             }
           }
         }

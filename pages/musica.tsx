@@ -1,4 +1,4 @@
-import type { GetServerSideProps } from 'next'
+import type { GetStaticProps } from 'next'
 import { motion } from 'framer-motion'
 import type { CurrentlyPlayingItemProps, SongParsed } from '@types'
 
@@ -10,16 +10,20 @@ import { Track } from 'components/Musica/track'
 import { CurrentSong } from 'components/Musica/current-song'
 import { CURRENTLY_PLAYED_URL } from 'config/routes'
 import { getMusicaProps } from '../lib/spotify/get-musica-props'
+// import { getSentiments } from '../lib/spotify/get-sentiments'
 
 export default function SongsPage({
   songs,
+  // sentiments,
   fallback
 }: {
   songs: SongParsed[]
+  // sentiments: ReturnType<typeof getSentiments>
   fallback: {
     [CURRENTLY_PLAYED_URL]: CurrentlyPlayingItemProps
   }
 }) {
+  // console.log({ songs, fallback, sentiments })
   return (
     <>
       <Head title='Musica' description='This is what I have been listening to' />
@@ -75,16 +79,18 @@ export default function SongsPage({
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   try {
-    const { songs, currentSong } = await getMusicaProps()
+    const { songs, currentSong /*sentiments*/ } = await getMusicaProps()
     return {
       props: {
         songs,
         fallback: {
           [CURRENTLY_PLAYED_URL]: currentSong
         }
-      }
+        // sentiments
+      },
+      revalidate: 60
     }
   } catch (err) {
     console.error(err)
