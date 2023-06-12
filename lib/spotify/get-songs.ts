@@ -1,7 +1,7 @@
 import prisma from '../../lib/prisma'
 
 export async function getSongs() {
-  const username = process.env.NEXT_PUBLIC_SPOTIFY_USER_ID
+  const username = process.env.SPOTIFY_USER_ID
   const songs = await prisma.song.findMany({
     orderBy: {
       playedAt: 'desc'

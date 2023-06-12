@@ -6,7 +6,7 @@ namespace NodeJS {
     NEXT_PUBLIC_LINKEDIN_PROFILE: string
     NEXT_PUBLIC_GITHUB_PROFILE: string
     NEXT_PUBLIC_POLYWORK_PROFILE: string
-    NEXT_PUBLIC_SPOTIFY_USER_ID: string
+    SPOTIFY_USER_ID: string
     NEXT_PUBLIC_HOST: string
     DATABASE_URL: string
     CAT_API_KEY: string

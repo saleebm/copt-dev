@@ -90,7 +90,7 @@ export const getStaticProps: GetStaticProps = async () => {
         }
         // sentiments
       },
-      revalidate: 60
+      revalidate: 4
     }
   } catch (err) {
     console.error(err)

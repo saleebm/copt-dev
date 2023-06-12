@@ -20,7 +20,7 @@ export default async function callbackSpotify(req: NextApiRequest, res: NextApiR
     return
   }
 
-  const username = process.env.NEXT_PUBLIC_SPOTIFY_USER_ID
+  const username = process.env.SPOTIFY_USER_ID
   const clientID = process.env.SPOTIFY_CLIENT_ID
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
   const host = process.env.NEXT_PUBLIC_HOST

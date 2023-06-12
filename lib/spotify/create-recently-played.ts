@@ -1,9 +1,27 @@
 import querystring from 'querystring'
 import prisma from '../../lib/prisma'
 import { authenticate } from './authenticate'
+import { getUser } from './get-user'
 
 export async function createRecentlyPlayed(): Promise<number> {
-  const { auth, user } = await authenticate()
+  let user, auth
+  try {
+    const authentication = await authenticate()
+    user = authentication.user
+    auth = authentication.auth
+  } catch (e) {
+    console.error(e)
+  }
+  if (!user) {
+    user = await getUser()
+    if (user != null)
+      auth = {
+        token_type: 'Bearer',
+        access_token: user.accessToken
+      }
+    else throw new Error('No user!')
+  }
+
   // get recently played
   const recentlyPlayedUrl = `https://api.spotify.com/v1/me/player/recently-played?${querystring.stringify(
     {

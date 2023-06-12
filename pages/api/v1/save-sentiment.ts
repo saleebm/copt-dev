@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import prisma from '../../../lib/prisma'
+import prisma from 'lib/prisma'
 
 export default async function saveSentiment(req: NextApiRequest, res: NextApiResponse) {
   if (!process.env.MUSIC_SENTIMENT_SECRET) {
@@ -55,6 +55,7 @@ export default async function saveSentiment(req: NextApiRequest, res: NextApiRes
       }
     }
   })
+  let createPromises: ReadonlyArray<Promise<any>> = []
   for (const song of songs) {
     if (!song || !song.songId) {
       console.error('should never happen')
@@ -76,7 +77,7 @@ export default async function saveSentiment(req: NextApiRequest, res: NextApiRes
         }
       }
     })
-    await prisma.song.update({
+    const creationPromise = prisma.song.update({
       where: {
         id: song.id
       },
@@ -88,6 +89,8 @@ export default async function saveSentiment(req: NextApiRequest, res: NextApiRes
         }
       }
     })
+    createPromises = [...createPromises, creationPromise]
   }
+  await Promise.allSettled(createPromises)
   res.status(200).end()
 }

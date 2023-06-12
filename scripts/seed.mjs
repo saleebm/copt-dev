@@ -4,7 +4,12 @@ import fetch from 'node-fetch'
 const prisma = new PrismaClient()
 
 export async function seed() {
-  if (!process.env.MUSIC_SENTIMENT_ENABLED || (process.env.MUSIC_SENTIMENT_ENABLED && process.env.MUSIC_SENTIMENT_ENABLED.toLowerCase() !== 'true')) {
+  // todo this method is too large, dedupe from elsewhere
+  if (
+    !process.env.MUSIC_SENTIMENT_ENABLED ||
+    (process.env.MUSIC_SENTIMENT_ENABLED &&
+      process.env.MUSIC_SENTIMENT_ENABLED.toLowerCase() !== 'true')
+  ) {
     console.log('music sentiment disabled')
     return 0
   }
@@ -20,7 +25,8 @@ export async function seed() {
   })
   const sentimentAnalyzed = await prisma.musicSentimentAnalysis.findMany({
     select: {
-      songId: true
+      songId: true,
+      id: true
     },
     where: {
       songId: {
@@ -98,7 +104,7 @@ export async function seed() {
       console.error(e)
     }
   }
-  await Promise.all(batchUpdates)
+  await Promise.allSettled(batchUpdates)
   return results
 }
 

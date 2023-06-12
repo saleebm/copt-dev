@@ -3,7 +3,7 @@ import { getUser } from './get-user'
 import prisma from '../prisma'
 
 export async function authenticate() {
-  const username = process.env.NEXT_PUBLIC_SPOTIFY_USER_ID
+  const username = process.env.SPOTIFY_USER_ID
   const clientID = process.env.SPOTIFY_CLIENT_ID
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
   const host = process.env.NEXT_PUBLIC_HOST
