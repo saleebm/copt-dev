@@ -122,7 +122,7 @@ $song_image_radius: 13px 13px 0 0;
   // containers
   // wraps the whole page
   .page-content {
-    @apply relative flex flex-col min-w-full w-full h-auto mx-auto space-y-8 md:space-y-16;
+    @apply relative flex flex-col mb-16 min-w-full w-full h-auto mx-auto space-y-8 md:space-y-16;
   }
 
   .banner {
