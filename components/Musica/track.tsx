@@ -48,7 +48,7 @@ export function Track({ item }: { item: SongParsed | CurrentlyPlayingItemProps }
             {item.artistName}
           </a>
         </p>
-        {'playedAt' in item && <p className={'text-sm'}>⏰ {item.playedAt}</p>}
+        <p className={'text-sm'}>{'playedAt' in item && `⏰ ${item.playedAt}`}</p>
       </figcaption>
     </figure>
   )
