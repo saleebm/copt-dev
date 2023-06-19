@@ -1,7 +1,6 @@
 import { createRecentlyPlayed } from './create-recently-played'
 import { getCurrentSong } from './get-current-song'
 import { getSongs } from './get-songs'
-import { getSentiments } from './get-sentiments'
 import { seed } from '../../scripts/seed.mjs'
 
 export async function getMusicaProps() {
@@ -16,13 +15,10 @@ export async function getMusicaProps() {
   }
   const songs = await getSongs()
   const currentSong = await getCurrentSong()
-  //todo optimize
-  const sentiments = await getSentiments(songs)
 
   return {
     songs,
     currentSong,
-    countNew,
-    sentiments
+    countNew
   }
 }

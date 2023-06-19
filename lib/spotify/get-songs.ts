@@ -1,5 +1,8 @@
 import prisma from '../../lib/prisma'
 
+export type GetSongs = Awaited<ReturnType<typeof getSongs>>
+export type SongResult = GetSongs[keyof GetSongs]
+
 export async function getSongs() {
   const username = process.env.SPOTIFY_USER_ID
   const songs = await prisma.song.findMany({
@@ -12,7 +15,11 @@ export async function getSongs() {
       }
     },
     include: {
-      sentimentBar: true
+      sentimentBar: {
+        include: {
+          musicSentimentAnalysis: true
+        }
+      }
     },
     take: 50
   })
@@ -29,9 +36,17 @@ export async function getSongs() {
       : null,
     createdAt: null,
     id: null,
-    sentimentBar: {
-      ...song.sentimentBar,
-      createdAt: null
-    }
+    sentimentBar: song.sentimentBar
+      ? {
+          ...song.sentimentBar,
+          createdAt: null,
+          musicSentimentAnalysis: song.sentimentBar.musicSentimentAnalysis
+            ? {
+                ...song.sentimentBar.musicSentimentAnalysis,
+                createdAt: null
+              }
+            : {}
+        }
+      : {}
   }))
 }

@@ -204,18 +204,16 @@ $song_image_radius: 13px 13px 0 0;
     max-width: 100%;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    transform: scale(100%);
     filter: saturate(69%) brightness(88%);
     border-radius: $song_image_radius;
     z-index: 2;
 
     @media screen and (prefers-reduced-motion: no-preference) {
-      transition: transform, filter 0.2s cubic-bezier(0.88, 0.44, 0.92, 0.69) 0.04ms;
+      transition: filter 0.2s cubic-bezier(0.88, 0.44, 0.92, 0.69) 0.04ms;
     }
 
     &:hover,
     &:focus {
-      transform: scale(101%);
       filter: saturate(100%) brightness(100%);
     }
   }
@@ -276,13 +274,16 @@ $song_image_radius: 13px 13px 0 0;
       width: 100%;
       height: 100%;
     }
+    
+    .rhap_container {
+      box-shadow: unset;
+    }
   }
 
   .song-image {
     height: auto;
     position: relative;
     width: auto;
-    border: 1px solid black;
     border-radius: $song_image_radius;
   }
 

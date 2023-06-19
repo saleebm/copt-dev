@@ -1,4 +1,4 @@
-import type { Song } from '@prisma/client'
+import type { Song, MusicSentimentBar, MusicSentimentAnalysis } from '@prisma/client'
 
 declare module '*.svg' {
   const content: any
@@ -20,7 +20,10 @@ declare module '*.jpeg' {
   export default content
 }
 
-export type SongParsed = Song & { playedAt: string }
+export type MusticSentimentBarParsed = MusicSentimentBar & {
+  musicSentimentAnalysis: MusicSentimentAnalysis
+}
+export type SongParsed = Song & { playedAt: string; sentimentBar: MusticSentimentBarParsed }
 
 export type CurrentlyPlayingItemProps =
   | {

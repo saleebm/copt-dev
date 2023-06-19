@@ -9,21 +9,17 @@ import { Eye } from 'components/Ascii/eye'
 import { Track } from 'components/Musica/track'
 import { CurrentSong } from 'components/Musica/current-song'
 import { CURRENTLY_PLAYED_URL } from 'config/routes'
-import { getMusicaProps } from '../lib/spotify/get-musica-props'
-// import { getSentiments } from '../lib/spotify/get-sentiments'
+import { getMusicaProps } from 'lib/spotify/get-musica-props'
 
 export default function SongsPage({
   songs,
-  // sentiments,
   fallback
 }: {
   songs: SongParsed[]
-  // sentiments: ReturnType<typeof getSentiments>
   fallback: {
     [CURRENTLY_PLAYED_URL]: CurrentlyPlayingItemProps
   }
 }) {
-  // console.log({ songs, fallback, sentiments })
   return (
     <>
       <Head title='Musica' description='This is what I have been listening to' />
@@ -81,14 +77,13 @@ export default function SongsPage({
 
 export const getStaticProps: GetStaticProps = async () => {
   try {
-    const { songs, currentSong /*sentiments*/ } = await getMusicaProps()
+    const { songs, currentSong } = await getMusicaProps()
     return {
       props: {
         songs,
         fallback: {
           [CURRENTLY_PLAYED_URL]: currentSong
         }
-        // sentiments
       },
       revalidate: 4
     }
