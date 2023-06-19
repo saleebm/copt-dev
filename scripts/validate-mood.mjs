@@ -1,75 +1,153 @@
 const d = {
-  Happy: {
-    Danceability: '>= 0.5',
-    Energy: '> 0.5 && < 0.7',
-    Tempo: '< 100',
-    Valence: '>= 0.5'
+  Angry: {
+    Danceability: '< 0.5',
+    Energy: '>= 0.75',
+    Tempo: '< 80',
+    Valence: '< 0.3'
+  },
+  Fiery: {
+    Danceability: '>= 0.7',
+    Energy: '>= 0.8',
+    Tempo: '> 60 && < 120',
+    Valence: '>= 0.7'
+  },
+  Lively: {
+    Danceability: '>= 0.7',
+    Energy: '>= 0.5 && < 0.8',
+    Tempo: '>= 120',
+    Valence: '>= 0.4 && < 0.7'
+  },
+  Nervous: {
+    Danceability: '<= 0.4',
+    Energy: '< 0.6',
+    Tempo: '>= 100',
+    Valence: '<= 0.5'
+  },
+  Anxious: {
+    Danceability: '<= 0.6',
+    Energy: '>= 0.6',
+    Tempo: '>= 80',
+    Valence: '> 0.2 && <= 0.5'
+  },
+  Worried: {
+    Danceability: '<= 0.4',
+    Energy: '<= 0.5',
+    Tempo: '> 80',
+    Valence: '<= 0.4'
+  },
+  Concerned: {
+    Danceability: '<= 0.5',
+    Energy: '< 0.6',
+    Tempo: '< 120',
+    Valence: '> 0.4 && < 0.7'
+  },
+  Confused: {
+    Danceability: '> 0.5',
+    Energy: '<= 0.5',
+    Tempo: '<= 100',
+    Valence: '> 0.4'
+  },
+  Afraid: {
+    Danceability: '< 0.6',
+    Energy: '< 0.6',
+    Tempo: '< 120',
+    Valence: '< 0.3'
+  },
+  Peaceful: {
+    Danceability: '< 0.5',
+    Energy: '<= 0.4',
+    Tempo: '<= 90',
+    Valence: '>= 0.7'
   },
   Excited: {
     Danceability: '>= 0.7',
-    Energy: '< 0.7',
-    Tempo: '>= 100',
-    Valence: '>= 0.5'
-  },
-  Lively: {
-    Danceability: '>= 0.5',
-    Energy: '>= 0.7',
+    Energy: '>= 0.8',
     Tempo: '>= 120',
-    Valence: '>= 0.5'
+    Valence: '>= 0.7'
   },
-  Melancholy: {
-    Danceability: '<= 0.5',
-    Energy: '<= 0.5',
-    Tempo: '<= 80',
-    Valence: '<= 0.5'
+  Amazed: {
+    Danceability: '>= 0.3 && < 0.7',
+    Energy: '>= 0.6',
+    Tempo: '> 120',
+    Valence: '>= 0.7'
   },
-  Serene: {
-    Danceability: '<= 0.5',
-    Energy: '<= 0.5',
-    Tempo: '<= 80',
-    Valence: '> 0.7'
-  },
-  Hopeful: {
-    Danceability: '>= 0.5',
+  Happy: {
+    Danceability: '>= 0.7',
     Energy: '>= 0.7',
     Tempo: '< 120',
     Valence: '>= 0.7'
   },
-  Fiery: {
-    Danceability: '< 0.5',
-    Energy: '>= 0.5',
-    Tempo: '>= 80 && < 120',
-    Valence: '< 0.7'
-  },
-  Anxious: {
-    Danceability: '< 0.5',
-    Energy: '>= 0.5',
-    Tempo: '> 80 && < 120',
-    Valence: '< 0.7'
-  },
-  Brooding: {
-    Danceability: '< 0.5',
-    Energy: '>= 0.5',
-    Tempo: '>= 120',
-    Valence: '< 0.7'
+  Hopeful: {
+    Danceability: '>= 0.5',
+    Energy: '>= 0.3 && < 0.7',
+    Tempo: '< 120',
+    Valence: '>= 0.7'
   },
   Easygoing: {
-    Danceability: '< 0.5',
-    Energy: '>= 0.5 && < 0.75',
-    Tempo: '< 80',
-    Valence: '< 0.7'
-  },
-  Dreamy: {
-    Danceability: '< 0.5',
-    Energy: '<= 0.5',
-    Tempo: '> 60 && < 80',
-    Valence: '< 0.7'
-  },
-  Peaceful: {
-    Danceability: '< 0.5',
+    Danceability: '>= 0.5',
     Energy: '< 0.5',
+    Tempo: '< 120',
+    Valence: '>= 0.5'
+  },
+  Brooding: {
+    Danceability: '> 0.2 && <= 0.5',
+    Energy: '<= 0.5',
     Tempo: '< 80',
-    Valence: '< 0.7'
+    Valence: '<= 0.3'
+  },
+  Grief: {
+    Danceability: '<= 0.4',
+    Energy: '<=0.4',
+    Tempo: '> 90',
+    Valence: '<= 0.3'
+  },
+  Melancholy: {
+    Danceability: '> 0.4',
+    Energy: '<= 0.4',
+    Tempo: '<= 90',
+    Valence: '<= 0.3'
+  },
+  Serene: {
+    Danceability: '< 0.5',
+    Energy: '<= 0.4',
+    Tempo: '<= 90',
+    Valence: '> 0.3 && < 0.7'
+  },
+  Disappointed: {
+    Danceability: '<= 0.5',
+    Energy: '<= 0.5',
+    Tempo: '< 80',
+    Valence: '<= 0.4'
+  },
+  Upset: {
+    Danceability: '<= 0.2',
+    Energy: '< 0.6',
+    Tempo: '<= 80',
+    Valence: '<= 0.3'
+  },
+  Disdain: {
+    Danceability: '<= 0.3',
+    Energy: '>= 0.6',
+    Tempo: '< 100',
+    Valence: '<= 0.4'
+  },
+  Horrify: {
+    Danceability: '<= 0.3',
+    Energy: '>= 0.7',
+    Tempo: '>= 100',
+    Valence: '<= 0.2'
+  },
+  Mysterious: {
+    Danceability: '> 0.3 && <= 0.6',
+    Energy: '< 0.6',
+    Tempo: '< 100',
+    Valence: '<= 0.5'
+  },
+  Cranky: {
+    Danceability: '<= 0.3',
+    Energy: '<= 0.5',
+    Tempo: '> 80',
+    Valence: '<= 0.3'
   }
 }
 
@@ -179,6 +257,7 @@ function valueOverlap(v1, v2) {
   return satisfiesV1 && satisfiesV2
 }
 
+let totalOverlap = 0
 // Now we can loop through each key in the object and compare the values for each pair of objects
 for (let key1 in d) {
   for (let key2 in d) {
@@ -191,23 +270,19 @@ for (let key1 in d) {
           const value2 = parseValue(d[key2][prop])
           if (valueOverlap(value1, value2)) {
             overlap = [...overlap, true]
-            log.push([
-              `values overlapping`,
-              {
-                key1,
-                key2,
-                prop,
-                v1: value1.operator + ' ' + value1.numValue,
-                v2: value2.operator + ' ' + value2.numValue
-              }
-            ])
+            log.push(`${prop}\n${value1.operator + ' ' + value1.numValue} \n${value2.operator + ' ' + value2.numValue}`)
           }
         }
       }
       if (overlap.length > 3) {
+        totalOverlap += 1
+        console.log('---------')
         console.log(`${key1} and ${key2} have overlapping values`)
-        log.forEach(l => console.log(l[0], l[1]))
+        log.forEach(l => console.error(l))
+        console.log('---------')
       }
     }
   }
 }
+
+console.log(`total overlapping: ${totalOverlap}`)
