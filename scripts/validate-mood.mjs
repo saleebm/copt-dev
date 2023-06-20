@@ -16,7 +16,7 @@ const d = {
   Lively: {
     Danceability: '>= 0.6',
     Energy: '>= 0.5 && < 0.8',
-    Tempo: '>= 120',
+    Tempo: '>= 100',
     Valence: '>= 0.3 && < 0.8'
   },
   Nervous: {

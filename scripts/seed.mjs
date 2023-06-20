@@ -18,8 +18,11 @@ export async function seed() {
     console.log('music sentiment disabled')
     return 0
   }
+  
+  const override = process.env.FORCE_SENTIMENT_OVERRIDE
   // force get a new sentiment for every song in db
-  const force = Boolean(process.env.FORCE_SENTIMENT_OVERRIDE)
+  const force = String(override)?.toLowerCase() === 'true' || override === true
+  console.log(`forcing update? ${force}`)
 
   const songs = await prisma.song.findMany({
     select: {
@@ -122,7 +125,7 @@ export async function seed() {
       console.error(e)
     }
   }
-  await Promise.allSettled(batchUpdates)
+  // await Promise.allSettled(batchUpdates)
   return results
 }
 
