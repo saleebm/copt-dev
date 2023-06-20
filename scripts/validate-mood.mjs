@@ -43,7 +43,7 @@ const d = {
     Tempo: '< 120',
     Valence: '> 0.4 && < 0.7'
   },
-  Confused: {
+  Ambitious: {
     Danceability: '> 0.5',
     Energy: '<= 0.5',
     Tempo: '<= 100',
