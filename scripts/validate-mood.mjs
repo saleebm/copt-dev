@@ -1,3 +1,5 @@
+// the source of truth 📜
+// todo model
 const d = {
   Angry: {
     Danceability: '< 0.5',
@@ -6,16 +8,16 @@ const d = {
     Valence: '< 0.3'
   },
   Fiery: {
-    Danceability: '>= 0.7',
-    Energy: '>= 0.8',
+    Danceability: '>= 0.5',
+    Energy: '>= 0.7',
     Tempo: '> 60 && < 120',
     Valence: '>= 0.7'
   },
   Lively: {
-    Danceability: '>= 0.7',
+    Danceability: '>= 0.6',
     Energy: '>= 0.5 && < 0.8',
     Tempo: '>= 120',
-    Valence: '>= 0.4 && < 0.7'
+    Valence: '>= 0.3 && < 0.8'
   },
   Nervous: {
     Danceability: '<= 0.4',
@@ -24,9 +26,9 @@ const d = {
     Valence: '<= 0.5'
   },
   Anxious: {
-    Danceability: '<= 0.6',
-    Energy: '>= 0.6',
-    Tempo: '>= 80',
+    Danceability: '<= 0.7',
+    Energy: '>= 0.5',
+    Tempo: '>= 100',
     Valence: '> 0.2 && <= 0.5'
   },
   Worried: {
@@ -47,6 +49,12 @@ const d = {
     Tempo: '<= 100',
     Valence: '> 0.4'
   },
+  Amusement: {
+    Danceability: '> 0.7',
+    Energy: '>= 0.4 && < 0.8',
+    Tempo: '> 120',
+    Valence: '>= 0.7'
+  },
   Afraid: {
     Danceability: '< 0.6',
     Energy: '< 0.6',
@@ -57,7 +65,7 @@ const d = {
     Danceability: '< 0.5',
     Energy: '<= 0.4',
     Tempo: '<= 90',
-    Valence: '>= 0.7'
+    Valence: '>= 0.3'
   },
   Excited: {
     Danceability: '>= 0.7',
@@ -68,20 +76,20 @@ const d = {
   Amazed: {
     Danceability: '>= 0.3 && < 0.7',
     Energy: '>= 0.6',
-    Tempo: '> 120',
+    Tempo: '> 120 && < 140',
     Valence: '>= 0.7'
   },
   Happy: {
     Danceability: '>= 0.7',
-    Energy: '>= 0.7',
-    Tempo: '< 120',
-    Valence: '>= 0.7'
+    Energy: '< 0.8',
+    Tempo: '> 80',
+    Valence: '>= 0.5'
   },
   Hopeful: {
     Danceability: '>= 0.5',
     Energy: '>= 0.3 && < 0.7',
     Tempo: '< 120',
-    Valence: '>= 0.7'
+    Valence: '< 0.5'
   },
   Easygoing: {
     Danceability: '>= 0.5',

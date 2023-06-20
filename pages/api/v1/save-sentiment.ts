@@ -24,13 +24,10 @@ export default async function saveSentiment(req: NextApiRequest, res: NextApiRes
   const mood = req.body['mood']
   const color = req.body['color']
   const uuids = req.body['uuids']
-  console.log({
-    mood,
-    color,
-    uuids,
-    trackId,
-    features
-  })
+
+  if (!mood || !color) {
+    console.error(`no mood for song with track id ${trackId}, uuids: ${uuids}}`)
+  }
 
   const sentimentAnalysis = await prisma.musicSentimentAnalysis.upsert({
     create: {
