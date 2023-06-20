@@ -2,6 +2,7 @@ import type { CurrentlyPlayingItemProps, SongParsed } from '@types'
 import Image from 'next/image'
 import AudioPlayer from 'react-h5-audio-player'
 import 'react-h5-audio-player/lib/styles.css'
+import { useState } from 'react'
 
 class SentimentData {
   color: string | null = null
@@ -49,6 +50,8 @@ class SentimentData {
 
 export function Track({ item }: { item: SongParsed | CurrentlyPlayingItemProps }) {
   const sentimentData = new SentimentData(item)
+  // todo ensure only one is playing
+  // const [playingAny, SetPlayingAny] = useState(false)
   return (
     <figure
       className={'song-item'}
@@ -73,7 +76,17 @@ export function Track({ item }: { item: SongParsed | CurrentlyPlayingItemProps }
             />
           </a>
           <div className={'play-bar'}>
-            <AudioPlayer autoPlay={false} src={`${item.previewUrl}`} />
+            <AudioPlayer
+              showFilledProgress={false}
+              autoPlayAfterSrcChange={false}
+              autoPlay={false}
+              src={`${item.previewUrl}`}
+              showDownloadProgress={false}
+              showSkipControls={false}
+              showFilledVolume={false}
+              showJumpControls={false}
+              hasDefaultKeyBindings={false}
+            />
           </div>
         </div>
       ) : /*todo placeholder*/ null}

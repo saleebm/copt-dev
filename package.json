@@ -21,7 +21,8 @@
     "migrate:reset": "prisma migrate reset",
     "prepare": "husky install",
     "production": "npm run build && npm run start",
-    "seed": "node scripts/seed.mjs",
+    "seed": "node scripts/cron-seed.mjs",
+    "studio": "npx prisma studio",
     "start": "NODE_OPTIONS='--max-old-space-size=4096' NODE_ENV=production next start -p ${PORT:=3000}",
     "validate-mood": "node scripts/validate-mood.mjs",
     "type-check": "tsc --noEmit"

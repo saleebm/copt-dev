@@ -2,13 +2,14 @@ import { PrismaClient } from '@prisma/client'
 import fetch from 'node-fetch'
 import dotenv from 'dotenv'
 
+// functions to seed tings
 dotenv.config({
   path: process.env.NODE_ENV === 'development' ? '.env' : `.env.production`
 })
 
 const prisma = new PrismaClient()
 
-export async function seed() {
+export async function queueSentimentAnalysis(isCron) {
   // todo this method is too large
   if (
     !process.env.MUSIC_SENTIMENT_ENABLED ||
@@ -20,8 +21,8 @@ export async function seed() {
   }
   
   const override = process.env.FORCE_SENTIMENT_OVERRIDE
-  // force get a new sentiment for every song in db
-  const force = String(override)?.toLowerCase() === 'true' || override === true
+  // force get a new sentiment for every song in db (only if its a cron so it doesn't blow up when called from api)
+  const force = isCron && (String(override)?.toLowerCase() === 'true' || override === true)
   console.log(`forcing update? ${force}`)
 
   const songs = await prisma.song.findMany({
@@ -125,14 +126,6 @@ export async function seed() {
       console.error(e)
     }
   }
-  // await Promise.allSettled(batchUpdates)
+  await Promise.allSettled(batchUpdates)
   return results
 }
-
-seed()
-  .then(total => {
-    console.log('done. total: ' + total)
-  })
-  .catch(e => {
-    console.error(e)
-  })

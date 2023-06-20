@@ -15,7 +15,7 @@ module.exports = {
     },
     {
       name: 'music-sentiment-analyzer',
-      script: 'scripts/seed.mjs',
+      script: 'scripts/cron-seed.mjs',
       instances: 1,
       exec_mode: 'fork',
       cron_restart: '0,30 * * * *',

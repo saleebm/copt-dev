@@ -17,6 +17,8 @@ export async function authenticate() {
     throw new Error(`User not inserted yet with username ${username}`)
   }
   const token = Buffer.from(`${clientID}:${clientSecret}`).toString('base64')
+
+  // todo don't call refresh && don't update user unless necessary
   // get new token first using refresh
   const refresh_token = user.refreshToken
   const refreshUrl = `https://accounts.spotify.com/api/token?${querystring.stringify({

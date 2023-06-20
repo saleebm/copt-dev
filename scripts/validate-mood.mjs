@@ -74,10 +74,10 @@ const d = {
     Valence: '>= 0.7'
   },
   Amazed: {
-    Danceability: '>= 0.3 && < 0.7',
-    Energy: '>= 0.6',
-    Tempo: '> 120 && < 140',
-    Valence: '>= 0.7'
+    Danceability: '>= 0.3 && < 0.8',
+    Energy: '>= 0.45',
+    Tempo: '> 120',
+    Valence: '>= 0.1'
   },
   Happy: {
     Danceability: '>= 0.7',

@@ -1,8 +1,8 @@
 // @ts-check
 
-import { seed } from './seed.mjs'
+import { queueSentimentAnalysis } from './seed.mjs'
 
-seed()
+queueSentimentAnalysis(true)
   .then(total => {
     console.log('done. total: ' + total)
   })
