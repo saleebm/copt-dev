@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { createRecentlyPlayed } from 'lib/spotify/create-recently-played'
+import { createRecentlyPlayed as callCreate } from 'lib/spotify/create-recently-played'
 
-export default async function recentlyPlayed(req: NextApiRequest, res: NextApiResponse) {
+export default async function createRecentlyPlayed(req: NextApiRequest, res: NextApiResponse) {
   if (!process.env.SILLY_SECRET) {
     throw new Error('configure your silly secret')
   }
@@ -16,7 +16,7 @@ export default async function recentlyPlayed(req: NextApiRequest, res: NextApiRe
   }
 
   try {
-    await createRecentlyPlayed()
+    await callCreate()
 
     res.status(200).end()
     return

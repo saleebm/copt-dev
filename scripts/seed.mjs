@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import fetch from 'node-fetch'
 import dotenv from 'dotenv'
+import *  as querystring from 'querystring'
 
 // functions to seed tings
 dotenv.config({
@@ -19,7 +20,16 @@ export async function queueSentimentAnalysis(isCron) {
     console.log('music sentiment disabled')
     return 0
   }
-  
+
+  if (isCron) {
+    // update recently played in bg
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/v1/create-recently-played?${querystring.stringify({sillySecret: process.env.SILLY_SECRET})}`)
+    }catch (e) {
+      console.error('unable to create recently played', e)
+    }
+  }
+
   const override = process.env.FORCE_SENTIMENT_OVERRIDE
   // force get a new sentiment for every song in db (only if its a cron so it doesn't blow up when called from api)
   const force = isCron && (String(override)?.toLowerCase() === 'true' || override === true)

@@ -23,6 +23,7 @@ export async function createRecentlyPlayed(): Promise<number> {
   }
 
   // get recently played
+  // todo: use `after` with unix timestamp of last song inserted date to limit results
   const recentlyPlayedUrl = `https://api.spotify.com/v1/me/player/recently-played?${querystring.stringify(
     {
       limit: 50
@@ -49,7 +50,9 @@ export async function createRecentlyPlayed(): Promise<number> {
   let promises: any = []
   for (const item of recentlyPlayed.items) {
     if (!item?.played_at) {
+      // this is an indexed field (unique) && must be present
       console.error('missing played at', item)
+      continue
     }
     const songId = item?.track.id
     if (!songId || promises[promises.length - 1]?.songId === songId) {
@@ -70,7 +73,7 @@ export async function createRecentlyPlayed(): Promise<number> {
       artistName: artistNames,
       href: item?.track?.external_urls?.spotify,
       name: item?.track.name,
-      playedAt: playedAt,
+      playedAt: playedAt, // unique
       songId: songId,
       uri: item.track.uri,
       spotifyUserId: user.id,
