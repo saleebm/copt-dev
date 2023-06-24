@@ -123,6 +123,7 @@ export async function queueSentimentAnalysis(isCron) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [_, v] of Object.entries(payloads)) {
     try {
+      // get a new sentiment
       const result = await fetch('http://127.0.0.1:8080/track', {
         body: JSON.stringify(v),
         method: 'POST',
@@ -136,6 +137,9 @@ export async function queueSentimentAnalysis(isCron) {
       console.error(e)
     }
   }
+  // todo handle error
   await Promise.allSettled(batchUpdates)
+  // this will create the musica page
+  await fetch(`${process.env.NEXT_PUBLIC_HOST}/musica`)
   return results
 }
