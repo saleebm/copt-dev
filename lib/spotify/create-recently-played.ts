@@ -10,7 +10,7 @@ export async function createRecentlyPlayed(): Promise<number> {
     user = authentication.user
     auth = authentication.auth
   } catch (e) {
-    console.error(e)
+    console.error('Unable to authenticate', e)
   }
   if (!user) {
     user = await getUser()

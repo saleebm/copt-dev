@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import fetch from 'node-fetch'
 import dotenv from 'dotenv'
-import *  as querystring from 'querystring'
 
 // functions to seed tings
 dotenv.config({
@@ -10,7 +9,7 @@ dotenv.config({
 
 const prisma = new PrismaClient()
 
-export async function queueSentimentAnalysis(isCron) {
+export async function queueSentimentAnalysis() {
   // todo this method is too large
   if (
     !process.env.MUSIC_SENTIMENT_ENABLED ||
@@ -21,18 +20,9 @@ export async function queueSentimentAnalysis(isCron) {
     return 0
   }
 
-  if (isCron) {
-    // update recently played in bg
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/v1/create-recently-played?${querystring.stringify({sillySecret: process.env.SILLY_SECRET})}`)
-    }catch (e) {
-      console.error('unable to create recently played', e)
-    }
-  }
-
   const override = process.env.FORCE_SENTIMENT_OVERRIDE
   // force get a new sentiment for every song in db (only if its a cron so it doesn't blow up when called from api)
-  const force = isCron && (String(override)?.toLowerCase() === 'true' || override === true)
+  const force = String(override)?.toLowerCase() === 'true' || override === true
   console.log(`forcing update? ${force}`)
 
   const songs = await prisma.song.findMany({
@@ -41,9 +31,11 @@ export async function queueSentimentAnalysis(isCron) {
       id: true
     },
     // select all if force
-    where: force ? {} : {
-      sentimentBar: undefined
-    }
+    where: force
+      ? {}
+      : {
+        sentimentBar: undefined
+      }
   })
   const sentimentAnalyzed = await prisma.musicSentimentAnalysis.findMany({
     select: {
@@ -77,7 +69,7 @@ export async function queueSentimentAnalysis(isCron) {
     if (!force && sentimentAnalyzed.some(analysis => analysis.songId === song.songId)) {
       console.log('already have analysis for song ' + song.songId)
       const sentimentAnalysis = sentimentAnalyzed.find(analysis => analysis.songId === song.songId)
-      
+
       // if the mood is there OR force update
       if (sentimentAnalysis.mood) {
         console.log(' ---- updating')
@@ -108,7 +100,7 @@ export async function queueSentimentAnalysis(isCron) {
           }
         })
         batchUpdates = [...batchUpdates, updateItem]
-        continue 
+        continue
       }
     }
 

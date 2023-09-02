@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRecentlyPlayed as callCreate } from 'lib/spotify/create-recently-played'
+import { queueSentimentAnalysis } from '../../../scripts/seed.mjs'
 
 export default async function createRecentlyPlayed(req: NextApiRequest, res: NextApiResponse) {
   if (!process.env.SILLY_SECRET) {
@@ -16,7 +17,16 @@ export default async function createRecentlyPlayed(req: NextApiRequest, res: Nex
   }
 
   try {
-    await callCreate()
+    const countNew = await callCreate() // this should be done in bg, not per request
+
+    if (countNew > 0) {
+      try {
+        // this queues new songs into db
+        await queueSentimentAnalysis()
+      } catch (e) {
+        console.error(`failed to queue sentiment analysis:`, e)
+      }
+    }
 
     res.status(200).end()
     return
