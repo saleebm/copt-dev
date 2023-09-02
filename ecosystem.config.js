@@ -15,10 +15,12 @@ module.exports = {
     },
     {
       name: 'music-sentiment-analyzer',
-      script: 'scripts/cron-seed.mjs',
+      script: 'npm',
+      // Options reference: https://pm2.keymetrics.io/docs/usage/application-declaration/
+      args: 'run seed',
       instances: 1,
       exec_mode: 'fork',
-      cron_restart: '0,5 * * * *',
+      cron_restart: '0,5 * * * *', // every 5 minutes
       watch: false,
       autorestart: false
     }
