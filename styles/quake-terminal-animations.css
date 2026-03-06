@@ -1,0 +1,266 @@
+/* Quake Terminal Animation Styles */
+
+/* CSS Variables for timing control */
+:root {
+  --quake-open-duration: 400ms;
+  --quake-close-duration: 300ms;
+  --quake-bounce-timing: cubic-bezier(0.68, -0.25, 0.32, 1.25);
+  --quake-smooth-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --quake-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --terminal-glow-color: rgba(0, 255, 0, 0.15);
+}
+
+/* Main terminal container animations */
+.quake-terminal {
+  will-change: transform, opacity;
+  transform-origin: top center;
+}
+
+/* Opening animation - rolls down with slight bounce */
+.quake-terminal-opening {
+  animation: quakeRollDown var(--quake-open-duration) var(--quake-bounce-timing)
+    forwards;
+}
+
+/* Closing animation - smooth upward roll */
+.quake-terminal-closing {
+  animation: quakeRollUp var(--quake-close-duration) var(--quake-smooth-timing)
+    forwards;
+}
+
+/* Quake-style roll down animation */
+@keyframes quakeRollDown {
+  0% {
+    transform: translateY(-100%) scaleY(0.1);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(-80%) scaleY(0.3);
+    opacity: 0.3;
+  }
+  40% {
+    transform: translateY(-40%) scaleY(0.7);
+    opacity: 0.7;
+  }
+  80% {
+    transform: translateY(2%) scaleY(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* Smooth roll up animation */
+@keyframes quakeRollUp {
+  0% {
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(-10%) scaleY(0.95);
+    opacity: 0.9;
+  }
+  70% {
+    transform: translateY(-60%) scaleY(0.4);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-100%) scaleY(0);
+    opacity: 0;
+  }
+}
+
+/* Terminal scan line effect */
+.terminal-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 0, 0.5) 50%,
+    transparent
+  );
+  animation: scanline 3s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(85vh);
+    opacity: 0;
+  }
+}
+
+/* CRT glow effect */
+.terminal-crt-glow {
+  position: absolute;
+  inset: -2px;
+  background: radial-gradient(
+    ellipse at center top,
+    var(--terminal-glow-color) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: crtGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes crtGlow {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* Terminal flicker effect on open */
+.terminal-flicker {
+  animation: terminalFlicker 0.15s steps(2, start) 2;
+}
+
+@keyframes terminalFlicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Header bar animation */
+.quake-header {
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+
+.quake-header-slide-in {
+  animation: headerSlideIn 0.3s var(--quake-ease-out) forwards;
+}
+
+.quake-header-slide-out {
+  animation: headerSlideOut 0.2s var(--quake-smooth-timing) forwards;
+}
+
+@keyframes headerSlideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes headerSlideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+/* Backdrop fade animation */
+.quake-backdrop {
+  will-change: opacity;
+  animation: backdropFade 0.2s ease-out forwards;
+}
+
+@keyframes backdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Content stagger animation */
+.quake-content-item {
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: contentStagger 0.3s var(--quake-ease-out) forwards;
+}
+
+.quake-content-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.quake-content-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.quake-content-item:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.quake-content-item:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.quake-content-item:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+@keyframes contentStagger {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Terminal typing cursor animation */
+.terminal-cursor {
+  animation: terminalBlink 1s step-end infinite;
+}
+
+@keyframes terminalBlink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Performance optimizations */
+.quake-terminal,
+.quake-terminal * {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* Disable animations for reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .quake-terminal,
+  .quake-terminal-opening,
+  .quake-terminal-closing,
+  .terminal-scanline,
+  .terminal-crt-glow,
+  .terminal-flicker,
+  .quake-header-slide-in,
+  .quake-header-slide-out,
+  .quake-backdrop,
+  .quake-content-item {
+    animation: none !important;
+    transition: opacity 0.2s ease-out !important;
+  }
+}

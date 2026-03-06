@@ -1,26 +1,945 @@
 @import "tailwindcss";
+@import "../styles/post-animations.css";
+@import "../styles/hlexicon.css";
+@import "../styles/logo.css";
+@import "../styles/findings-accordion.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@source "../*.{js,ts,jsx,tsx,mdx}";
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@custom-variant dark (&:is(.dark *));
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  /* Font family configuration */
+  --font-mono: var(--font-ibm-plex-mono);
+  --font-serif: var(--font-space-grotesk);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  /* MDX Animation Definitions */
+  --animate-fade-in: fade-in 0.4s ease-out;
+  --animate-slide-in-from-bottom-2: slide-in-from-bottom-2 0.4s ease-out;
+  --animate-slide-in-from-bottom-3: slide-in-from-bottom-3 0.5s ease-out;
+  --animate-slide-in-from-bottom-4: slide-in-from-bottom-4 0.5s ease-out;
+  --animate-slide-in-from-left-4: slide-in-from-left-4 0.5s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+
+  /* MDX Content Animations */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-from-bottom-2 {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-from-bottom-3 {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-from-bottom-4 {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-from-left-4 {
+    from {
+      opacity: 0;
+      transform: translateX(-16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  /*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground));
+    border-radius: 20px;
+    border: 2px solid hsl(var(--background));
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--background));
+  }
+
+  /* Make all buttons and elements with role=button have a pointer cursor for better accessibility */
+  button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  a[href]:not([tabindex="-1"]) {
+    cursor: pointer;
+  }
+
+  /* Post Stack Smooth Transitions */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out forwards;
+  }
+
+  /* Active post styling with smooth transitions */
+  .active-post {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Loading skeleton pulse animation */
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .animate-pulse {
+    animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Smooth transitions for post container */
+  #posts-container {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /*
+  Apply a monospace font stack to all <pre> elements.
+  This ensures that any preformatted text, like ASCII art,
+  aligns correctly.
+*/
+  pre {
+    font-family:
+      Consolas, Monaco, "Andale Mono", "Ubuntu Mono", "Courier New", monospace;
+  }
+
+  /* Enhanced heading styles with Lora font and variable font features */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+    font-feature-settings: var(--heading-font-feature-settings);
+    text-wrap: balance;
+    letter-spacing: -0.025em;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    font-weight: 700;
+    font-variation-settings:
+      "wght" 700,
+      "slnt" 0;
+  }
+
+  h2 {
+    font-size: 2.75rem;
+    line-height: 1.15;
+    font-weight: 600;
+    font-variation-settings:
+      "wght" 600,
+      "slnt" 0;
+  }
+
+  h3 {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    font-weight: 600;
+    font-variation-settings:
+      "wght" 600,
+      "slnt" 0;
+  }
+
+  h4 {
+    font-size: 1.875rem;
+    line-height: 1.25;
+    font-weight: 500;
+    font-variation-settings:
+      "wght" 500,
+      "slnt" 0;
+  }
+
+  h5 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    font-weight: 500;
+    font-variation-settings:
+      "wght" 500,
+      "slnt" 0;
+  }
+
+  h6 {
+    font-size: 1.25rem;
+    line-height: 1.35;
+    font-weight: 500;
+    font-variation-settings:
+      "wght" 500,
+      "slnt" 0;
+  }
+
+  /* Responsive heading adjustments */
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2.5rem;
+      line-height: 1.15;
+    }
+
+    h2 {
+      font-size: 2rem;
+      line-height: 1.2;
+    }
+
+    h3 {
+      font-size: 1.75rem;
+      line-height: 1.25;
+    }
+
+    h4 {
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+
+    h5 {
+      font-size: 1.25rem;
+      line-height: 1.35;
+    }
+
+    h6 {
+      font-size: 1.125rem;
+      line-height: 1.4;
+    }
+  }
+
+  /* Ensure body text uses IBM Plex Mono with enhanced features */
+  p,
+  a,
+  span,
+  div,
+  li,
+  td,
+  th,
+  label,
+  input,
+  textarea,
+  button {
+    font-family: var(--font-mono);
+    font-feature-settings: var(--default-mono-font-feature-settings);
+  }
+
+  /* Enhanced paragraph styling */
+  p {
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  /*
+  Apply a monospace font stack to all <pre> elements.
+  This ensures that any preformatted text, like ASCII art,
+  aligns correctly.
+  */
+  pre {
+    font-family:
+      Consolas, Monaco, "Andale Mono", "Ubuntu Mono", "Courier New", monospace;
+    font-feature-settings:
+      "liga" 0,
+      "calt" 0;
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@layer utilities {
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  /* Hacker/Terminal Theme Semantic Classes */
+  .terminal-prompt {
+    @apply text-primary;
+  }
+
+  .terminal-prompt-muted {
+    @apply text-primary opacity-60;
+  }
+
+  .terminal-error {
+    @apply text-destructive;
+  }
+
+  .terminal-success {
+    @apply text-primary;
+  }
+
+  .terminal-accent {
+    @apply text-accent-foreground;
+  }
+
+  .terminal-muted {
+    @apply text-muted-foreground;
+  }
+
+  /* Post Type Colors using Chart Colors */
+  .post-type-finding {
+    @apply text-chart-2;
+    /* Cyan equivalent */
+  }
+
+  .post-type-sight {
+    @apply text-chart-3;
+    /* Purple equivalent */
+  }
+
+  .post-type-blog {
+    @apply text-chart-4;
+    /* Blue equivalent */
+  }
+
+  .post-type-concrete {
+    @apply text-chart-5;
+    /* Orange equivalent */
+  }
+
+  /* Interactive States */
+  .terminal-interactive {
+    @apply text-muted-foreground hover:text-foreground transition-colors;
+  }
+
+  .terminal-button {
+    @apply border-border bg-background text-foreground hover:border-primary/70 hover:bg-primary/5 hover:text-primary/90 focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-1 focus-visible:ring-offset-background focus-visible:outline-none transition-all duration-200;
+  }
+
+  .terminal-button-destructive {
+    @apply border-destructive/60 bg-background text-destructive/90 hover:border-destructive/90 hover:bg-destructive/10 hover:text-destructive focus-visible:ring-2 focus-visible:ring-destructive/60 focus-visible:ring-offset-1 focus-visible:ring-offset-background focus-visible:outline-none transition-all duration-200;
+  }
+
+  .terminal-tab {
+    @apply text-muted-foreground hover:text-foreground hover:bg-accent/10 data-[state=active]:text-primary data-[state=active]:bg-primary/5 data-[state=active]:border-b-2 data-[state=active]:border-primary/70 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-1 focus-visible:ring-offset-background focus-visible:outline-none;
+  }
+
+  .terminal-active-item {
+    @apply bg-primary/20 text-primary border-primary/50;
+  }
+
+  .terminal-hover-item {
+    @apply hover:bg-primary/10 hover:text-primary/90;
+  }
+
+  .terminal-focus-item {
+    @apply focus:bg-primary/10 focus:text-primary/90;
+  }
+
+  /* Mobile navigation specific */
+  .terminal-mobile-button {
+    @apply border-2 border-border bg-background text-foreground hover:border-primary/70 hover:bg-primary/5 hover:text-primary/90 hover:shadow-lg active:border-primary/90 active:bg-primary/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none focus-visible:border-primary/70 transition-all duration-200 ease-out;
+  }
+
+  /* MDX Animation Utilities */
+  .animate-fade-in {
+    animation: var(--animate-fade-in);
+  }
+
+  .animate-slide-in-from-bottom-2 {
+    animation: var(--animate-slide-in-from-bottom-2);
+  }
+
+  .animate-slide-in-from-bottom-3 {
+    animation: var(--animate-slide-in-from-bottom-3);
+  }
+
+  .animate-slide-in-from-bottom-4 {
+    animation: var(--animate-slide-in-from-bottom-4);
+  }
+
+  .animate-slide-in-from-left-4 {
+    animation: var(--animate-slide-in-from-left-4);
+  }
+
+  /* Radix UI ScrollArea viewport fix for navigation overflow */
+  .scroll-area-viewport > div {
+    display: flex !important;
+    flex-direction: column;
+    align-content: flex-start;
+    justify-content: flex-start;
+    align-items: stretch;
+    min-width: 0 !important;
+    width: 100%;
+  }
+
+  /* Motion-safe variants - only animate if user hasn't requested reduced motion */
+  @media (prefers-reduced-motion: no-preference) {
+    .motion-safe\:animate-fade-in {
+      animation: var(--animate-fade-in);
+    }
+
+    .motion-safe\:animate-slide-in-from-bottom-2 {
+      animation: var(--animate-slide-in-from-bottom-2);
+    }
+
+    .motion-safe\:animate-slide-in-from-bottom-3 {
+      animation: var(--animate-slide-in-from-bottom-3);
+    }
+
+    .motion-safe\:animate-slide-in-from-bottom-4 {
+      animation: var(--animate-slide-in-from-bottom-4);
+    }
+
+    .motion-safe\:animate-slide-in-from-left-4 {
+      animation: var(--animate-slide-in-from-left-4);
+    }
+  }
+
+  /* Reduced motion fallback - no animations */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-slide-in-from-bottom-2,
+    .animate-slide-in-from-bottom-3,
+    .animate-slide-in-from-bottom-4,
+    .animate-slide-in-from-left-4,
+    .motion-safe\:animate-fade-in,
+    .motion-safe\:animate-slide-in-from-bottom-2,
+    .motion-safe\:animate-slide-in-from-bottom-3,
+    .motion-safe\:animate-slide-in-from-bottom-4,
+    .motion-safe\:animate-slide-in-from-left-4 {
+      animation: none !important;
+    }
+  }
+
+  /* Shimmer animation for loading overlays */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  /* Post dismissal animations */
+  @keyframes tvShutdown {
+    0% {
+      transform: scaleY(1) scaleX(1);
+      opacity: 1;
+      filter: brightness(1);
+    }
+
+    50% {
+      transform: scaleY(0.1) scaleX(0.95);
+      opacity: 0.8;
+      filter: brightness(1.2);
+    }
+
+    80% {
+      transform: scaleY(0.02) scaleX(0.3);
+      opacity: 0.3;
+      filter: brightness(2);
+    }
+
+    100% {
+      transform: scaleY(0) scaleX(0);
+      opacity: 0;
+      filter: brightness(0);
+    }
+  }
+
+  @keyframes sectionCollapse {
+    from {
+      max-height: var(--original-height, 100vh);
+      opacity: 1;
+      margin-bottom: 0;
+      padding-top: var(--original-padding-top, 2rem);
+      padding-bottom: var(--original-padding-bottom, 2rem);
+      border-width: 1px;
+    }
+
+    to {
+      max-height: 0;
+      opacity: 0;
+      margin-bottom: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-width: 0;
+    }
+  }
+
+  .tv-shutdown-active {
+    animation: tvShutdown 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    transform-origin: center center;
+  }
+
+  .section-collapse-active {
+    animation: sectionCollapse 0.4s ease-out 0.6s forwards;
+    overflow: hidden;
+  }
+
+  /* Active post indicator for progressive enhancement */
+  .active-post {
+    position: relative;
+  }
+
+  .active-post::before {
+    content: "";
+    position: absolute;
+    left: -1rem;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: hsl(var(--primary));
+    border-radius: 1px;
+    opacity: 0.069;
+    z-index: 1;
+  }
+
+  @media (max-width: 1024px) {
+    .active-post::before {
+      display: none;
+    }
+  }
+
+  /* Line clamp utilities for text truncation */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  .copt-centered-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre-wrap;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .copt-centered-text > * {
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Syntax Highlighter Code Block Overflow Fix */
+  .syntax-highlighter-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .syntax-highlighter-container pre {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+  }
+
+  .syntax-highlighter-container code {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .syntax-highlighter-container code span {
+    display: inline-block !important;
+    max-width: 100% !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+}
+
+@layer base {
+  :root {
+    /* Dark theme as default - Underground mystical slate with subtle green */
+    --background: 215 28% 8%;
+    --foreground: 142 20% 92%;
+    --card: 215 25% 11%;
+    --card-foreground: 142 15% 88%;
+    --popover: 215 28% 9%;
+    --popover-foreground: 142 20% 92%;
+    --primary: 142 55% 45%;
+    --primary-foreground: 215 28% 8%;
+    --secondary: 215 20% 18%;
+    --secondary-foreground: 142 15% 85%;
+    --muted: 215 22% 15%;
+    --muted-foreground: 215 12% 62%;
+    --accent: 142 25% 25%;
+    --accent-foreground: 142 15% 88%;
+    --destructive: 0 65% 52%;
+    --destructive-foreground: 142 20% 92%;
+    --border: 215 20% 22%;
+    --input: 215 22% 18%;
+    --ring: 142 55% 45%;
+    --chart-1: 142 55% 55%;
+    --chart-2: 160 45% 50%;
+    --chart-3: 200 50% 50%;
+    --chart-4: 120 40% 60%;
+    --chart-5: 180 45% 55%;
+    --radius: 0.75rem;
+    --sidebar-background: 215 30% 6%;
+    --sidebar-foreground: 142 15% 85%;
+    --sidebar-primary: 142 55% 45%;
+    --sidebar-primary-foreground: 215 28% 8%;
+    --sidebar-accent: 215 25% 12%;
+    --sidebar-accent-foreground: 142 15% 88%;
+    --sidebar-border: 215 22% 18%;
+    --sidebar-ring: 142 55% 45%;
+
+    /* Font feature settings for enhanced typography */
+    --default-mono-font-feature-settings:
+      "liga" 1, "calt" 1, "kern" 1, "ss01" 1, "ss02" 1;
+    --heading-font-feature-settings: "liga" 1, "kern" 1, "onum" 1, "pnum" 1;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground h-auto min-h-screen font-mono;
+    font-feature-settings: var(--default-mono-font-feature-settings);
+  }
+
+  html {
+    @apply h-auto min-h-screen scroll-smooth;
+  }
+}
+
+/* Terminal-Style Navigation Tabs */
+@layer components {
+  /* Tab Bar Container */
+  .terminal-nav .tab-bar {
+    position: relative;
+    background: #000;
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Tab Buttons */
+  .terminal-nav .tab-bar button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: none;
+    transition: none;
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* Tab Button Hover State */
+  .terminal-nav .tab-bar button:hover:not([aria-selected="true"]) {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Active Tab State */
+  .terminal-nav .tab-bar button[aria-selected="true"] {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+    border-bottom: 1px solid #000;
+    z-index: 10;
+    font-weight: 500;
+  }
+
+  /* Tab Content Container */
+  .terminal-nav .tab-content {
+    background: #000;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Terminal Prompt Styles */
+  .terminal-prompt {
+    color: #00ff00;
+    font-weight: bold;
+    font-family: var(--font-mono);
+  }
+
+  .terminal-prompt-muted {
+    color: rgba(255, 255, 255, 0.4);
+    font-family: var(--font-mono);
+  }
+
+  /* Terminal Button Styles */
+  .terminal-button {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-family: var(--font-mono);
+    transition: none;
+  }
+
+  .terminal-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .terminal-button-destructive {
+    background: transparent;
+    color: rgba(255, 100, 100, 0.8);
+    border: 1px solid rgba(255, 100, 100, 0.3);
+    font-family: var(--font-mono);
+    transition: none;
+  }
+
+  .terminal-button-destructive:hover {
+    background: rgba(255, 100, 100, 0.1);
+    color: rgba(255, 100, 100, 1);
+    border-color: rgba(255, 100, 100, 0.5);
+  }
+
+  /* Mobile Responsive Adjustments */
+  @media (max-width: 768px) {
+    .terminal-nav .tab-bar button {
+      font-size: 0.625rem;
+      padding: 0.625rem 0.5rem;
+      letter-spacing: 0.025em;
+    }
+  }
+
+  /* Quake Terminal Animations */
+  @keyframes terminal-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
+    }
+  }
+
+  @keyframes terminal-scan {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 10px;
+    }
+  }
+
+  .quake-terminal-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 0, 0.02) 2px,
+      rgba(0, 255, 0, 0.02) 4px
+    );
+    animation: terminal-scan 8s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Terminal cursor blink */
+  @keyframes terminal-cursor-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
 }

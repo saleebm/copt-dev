@@ -1,0 +1,215 @@
+/* Post Type Filter Module - Theme-consistent styling */
+@reference "../../app/globals.css";
+
+/* Base button styles */
+.filterButton {
+  @apply relative font-mono transition-all duration-200 border rounded-sm;
+  @apply flex items-center gap-1.5 hover:scale-[1.02] active:scale-95;
+}
+
+.filterButtonPrimary {
+  @apply px-3 py-1.5 text-sm;
+}
+
+.filterButtonSecondary {
+  @apply px-2 py-1 text-xs;
+}
+
+.filterButtonDisabled {
+  @apply opacity-50 cursor-not-allowed hover:scale-100;
+}
+
+/* Active state base */
+.filterButtonActive {
+  /* Border is fully opaque by default in active state */
+}
+
+/* Inactive state */
+.filterButtonInactive {
+  @apply bg-black/50 border-white/20 opacity-60 hover:opacity-80;
+}
+
+/* Color variations for each post type using chart colors */
+/* BLOG - Using chart-1 (emerald/green) */
+.blogBorder {
+  @apply border-chart-1/50;
+}
+
+.blogBg {
+  @apply bg-chart-1/10;
+}
+
+.blogText {
+  @apply text-chart-1;
+}
+
+.blogHover {
+  @apply hover:border-chart-1/70 hover:bg-chart-1/20;
+}
+
+.blogActive {
+  @apply border-chart-1 bg-chart-1/20;
+  box-shadow: 0 0 10px rgba(142, 255, 142, 0.3);
+}
+
+/* CONCRETE - Using chart-2 (cyan/teal) */
+.concreteBorder {
+  @apply border-chart-2/50;
+}
+
+.concreteBg {
+  @apply bg-chart-2/10;
+}
+
+.concreteText {
+  @apply text-chart-2;
+}
+
+.concreteHover {
+  @apply hover:border-chart-2/70 hover:bg-chart-2/20;
+}
+
+.concreteActive {
+  @apply border-chart-2 bg-chart-2/20;
+  box-shadow: 0 0 10px rgba(0, 200, 200, 0.3);
+}
+
+/* FINDING - Using chart-5 (orange/amber) */
+.findingBorder {
+  @apply border-chart-5/50;
+}
+
+.findingBg {
+  @apply bg-chart-5/10;
+}
+
+.findingText {
+  @apply text-chart-5;
+}
+
+.findingHover {
+  @apply hover:border-chart-5/70 hover:bg-chart-5/20;
+}
+
+.findingActive {
+  @apply border-chart-5 bg-chart-5/20;
+  box-shadow: 0 0 10px rgba(180, 180, 255, 0.3);
+}
+
+/* SIGHT - Using chart-3 (purple/blue) */
+.sightBorder {
+  @apply border-chart-3/50;
+}
+
+.sightBg {
+  @apply bg-chart-3/10;
+}
+
+.sightText {
+  @apply text-chart-3;
+}
+
+.sightHover {
+  @apply hover:border-chart-3/70 hover:bg-chart-3/20;
+}
+
+.sightActive {
+  @apply border-chart-3 bg-chart-3/20;
+  box-shadow: 0 0 10px rgba(200, 150, 255, 0.3);
+}
+
+/* Fallback for unknown types - Using muted colors */
+.fallbackBorder {
+  @apply border-muted/50;
+}
+
+.fallbackBg {
+  @apply bg-muted/10;
+}
+
+.fallbackText {
+  @apply text-muted-foreground;
+}
+
+.fallbackHover {
+  @apply hover:border-muted/70 hover:bg-muted/20;
+}
+
+.fallbackActive {
+  @apply border-muted bg-muted/20;
+  box-shadow: 0 0 10px rgba(107, 114, 128, 0.3);
+}
+
+/* Container styles */
+.filterBarContainer {
+  @apply w-full bg-black/50 border-b border-white/10 p-2 font-mono text-xs;
+}
+
+.filterBarContent {
+  @apply flex items-center gap-2 flex-wrap;
+}
+
+/* Terminal prompt indicator */
+.terminalPrompt {
+  @apply text-white/30 mr-1;
+}
+
+/* Separator */
+.separator {
+  @apply text-white/20 mx-1;
+}
+
+/* Type groups */
+.primaryTypesGroup {
+  @apply flex items-center gap-1.5;
+}
+
+.secondaryTypesGroup {
+  @apply flex items-center gap-1;
+}
+
+/* Stats display */
+.statsContainer {
+  @apply ml-auto flex items-center gap-3 text-xs;
+}
+
+.statsCount {
+  @apply text-white/40;
+}
+
+.statsPercentage {
+  @apply px-1.5 py-0.5 rounded;
+}
+
+.statsPercentageComplete {
+  @apply bg-chart-1/20 text-chart-1 border border-chart-1/30;
+}
+
+.statsPercentagePartial {
+  @apply bg-white/5 text-white/50 border border-white/10;
+}
+
+/* Text styling */
+.typeLabel {
+  @apply font-medium tracking-wide;
+}
+
+.typeLabelActive {
+  @apply text-white/70;
+}
+
+.typeLabelInactive {
+  @apply text-white/50;
+}
+
+.typeCount {
+  @apply text-xs opacity-70;
+}
+
+.typeCountActive {
+  @apply text-white/70;
+}
+
+.typeCountInactive {
+  @apply text-white/40;
+}

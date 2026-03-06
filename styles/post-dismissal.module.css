@@ -1,0 +1,96 @@
+/* Post dismissal animation - Old TV shutoff effect */
+.dismissContainer {
+  position: relative;
+  overflow: hidden;
+  /* Maintain original height during animation */
+  height: var(--original-height, auto);
+  transition: height 0.3s ease-out 0.5s;
+  /* Delayed height collapse after animation */
+}
+
+.dismissing {
+  position: relative;
+  /* Ensure content is positioned behind the black bars */
+  z-index: 1;
+}
+
+/* Black bars that slide from top and bottom */
+.dismissing::before,
+.dismissing::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  background-color: #000;
+  z-index: 10;
+  transition: height 0.5s ease-in-out;
+  /* Add animation name for event listening */
+  animation-name: tv-shutdown-bars;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  animation-play-state: paused;
+}
+
+@keyframes tv-shutdown-bars {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 50%;
+  }
+}
+
+/* Top black bar */
+.dismissing::before {
+  top: 0;
+}
+
+/* Bottom black bar */
+.dismissing::after {
+  bottom: 0;
+}
+
+/* Active state - bars expand to meet in middle */
+.dismissing.active::before,
+.dismissing.active::after {
+  height: 50%;
+  animation-play-state: running;
+}
+
+/* Collapse animation after TV effect */
+.dismissing.collapsing {
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.3s ease-out;
+  opacity: 0;
+  /* Ensure post stays invisible during collapse */
+  visibility: hidden;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .dismissing::before,
+  .dismissing::after {
+    transition: height 0.1s ease-in-out;
+  }
+
+  .dismissContainer {
+    transition: height 0.1s ease-out 0.1s;
+  }
+
+  .dismissing.collapsing {
+    transition:
+      transform 0.1s ease-out,
+      opacity 0.1s ease-out;
+    visibility: hidden;
+  }
+}
+
+/* Smooth height transition */
+.dismissContainer.collapsing {
+  height: 0 !important;
+  margin: 0;
+  padding: 0;
+  border: none;
+}

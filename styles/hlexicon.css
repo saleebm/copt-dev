@@ -1,0 +1,68 @@
+/* Hlexicon Component Styles */
+
+.hlexicon-term {
+  /* Ensure inline behavior in all contexts */
+  display: inline;
+
+  /* Prevent text selection on the term itself for better UX */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  /* Ensure consistent line height */
+  line-height: inherit;
+
+  /* Smooth color transitions */
+  transition:
+    color 0.2s ease,
+    text-decoration 0.2s ease;
+}
+
+.hlexicon-term:focus {
+  /* Ensure focus is visible but not intrusive */
+  outline: 2px solid hsl(var(--primary) / 0.3);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .hlexicon-term {
+    border-bottom: 1px solid currentColor;
+    text-decoration: none;
+    text-decoration-color: currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .hlexicon-term,
+  .hlexicon-tooltip {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .hlexicon-term {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .hlexicon-term::after {
+    content: " [" attr(aria-describedby) "]";
+    font-size: 0.8em;
+    color: #666;
+  }
+}
+
+/* Mobile touch improvements */
+@media (hover: none) and (pointer: coarse) {
+  .hlexicon-term {
+    /* Slightly larger touch target on mobile */
+    padding: 2px 1px;
+    margin: -2px -1px;
+  }
+}

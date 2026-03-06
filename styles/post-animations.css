@@ -1,0 +1,61 @@
+/* Post Animation Performance Optimizations */
+
+/* GPU acceleration for animated elements */
+.post-card-animated {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Prevent layout shifts during animations */
+.post-container {
+  contain: layout style paint;
+}
+
+/* Smooth transitions for interactive elements */
+.post-interactive {
+  transition-property: transform, opacity, box-shadow;
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-duration: 0.3s;
+}
+
+/* Optimize text rendering during animations */
+.post-content-animating {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+/* Prevent flicker on hover states */
+.post-card-hover {
+  transform: translateZ(0);
+}
+
+/* Ensure smooth scrolling for post navigation */
+.posts-container {
+  scroll-behavior: smooth;
+  contain: layout;
+  scroll-snap-type: y mandatory;
+}
+
+/* Snap posts to viewport top for consistent positioning */
+.posts-container > div {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .post-card-animated,
+  .post-interactive,
+  .posts-container {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep scroll-snap even with reduced motion for better UX */
+  .posts-container {
+    scroll-snap-type: y mandatory;
+  }
+}

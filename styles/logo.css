@@ -1,0 +1,77 @@
+/* Rainbow text animation for logo */
+.rainbow-text {
+  background: linear-gradient(
+    90deg,
+    hsl(calc(var(--hue-offset) + 0deg), 70%, 60%) 0%,
+    hsl(calc(var(--hue-offset) + 60deg), 70%, 60%) 25%,
+    hsl(calc(var(--hue-offset) + 120deg), 70%, 60%) 50%,
+    hsl(calc(var(--hue-offset) + 180deg), 70%, 60%) 75%,
+    hsl(calc(var(--hue-offset) + 240deg), 70%, 60%) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  /* Static position by default - rainbow is visible but not moving */
+  background-position: 0% 50%;
+  transition: background-position 0.3s ease-out;
+}
+
+.rainbow-text-active {
+  /* Start the animation when active (hovered/focused) */
+  animation: rainbow-shift 2s ease-in-out infinite;
+  animation-delay: var(--animation-delay);
+}
+
+@keyframes rainbow-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .rainbow-text {
+    /* Keep rainbow visible but no transitions */
+    transition: none;
+  }
+
+  .rainbow-text-active {
+    animation: none;
+    /* Keep static rainbow gradient */
+    background-position: 50% 50%;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .rainbow-text {
+    background: none;
+    color: currentColor;
+    text-shadow: none;
+    transition: none;
+  }
+
+  .rainbow-text-active {
+    animation: none;
+    background: none;
+    color: currentColor;
+  }
+}
+
+/* Focus visible styles for accessibility */
+.logo-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Ensure proper text rendering */
+.rainbow-text {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

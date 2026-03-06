@@ -1,0 +1,314 @@
+.navHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.6);
+  background: hsl(var(--background));
+}
+
+.navHeaderMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+}
+
+.navContent {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.navStatusBar {
+  padding: 0.75rem;
+  border-top: 1px solid hsl(var(--border) / 0.6);
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+}
+
+/* Category tree */
+.categoryTree {
+  padding: 0.75rem 0.5rem;
+}
+
+.categoryTree .nodeRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  color: hsl(var(--foreground) / 0.85);
+  border-left: 2px solid transparent;
+}
+
+.categoryTree .nodeRow:hover {
+  background: hsl(var(--accent) / 0.12);
+  color: hsl(var(--foreground));
+}
+
+.categoryTree .nodeRow.active {
+  background: hsl(var(--primary) / 0.2);
+  color: hsl(var(--primary));
+  border-left-color: hsl(var(--primary) / 0.6);
+}
+
+.categoryTree .nodeRow .meta {
+  margin-left: 0.5rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+}
+
+.categoryTree .children {
+  margin-left: 1rem;
+  border-left: 1px dashed hsl(var(--border) / 0.6);
+}
+
+/* Post list */
+.postListContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.chronicleGroupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.5rem;
+}
+
+.chronicleSummaryButton {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+}
+
+.chronicleSummaryButton:hover {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--primary));
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  color: hsl(var(--foreground) / 0.95);
+  font-size: 0.875rem;
+  border: 0;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.searchInput::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+/* ===================================== */
+/* Vertical Accordion Layout */
+/* ===================================== */
+
+.vertical-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Accordion Section */
+.accordion-section {
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-section.expanded {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.accordion-section.collapsed {
+  flex: 0 0 auto;
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  transition: all 150ms;
+  width: 100%;
+  background: transparent;
+  color: hsl(var(--foreground));
+  text-align: left;
+}
+
+.section-header:hover {
+  background: hsl(var(--accent) / 0.08);
+}
+
+.section-header.active {
+  border-bottom-color: hsl(var(--border));
+}
+
+.section-icon {
+  width: 1rem;
+  font-family: var(--font-mono);
+  color: hsl(var(--muted-foreground));
+}
+
+.section-title {
+  flex: 1;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+/* Section Content */
+.section-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem;
+  display: none;
+}
+
+.section-content.expanded {
+  display: block;
+  animation: slideDown 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Terminal Aesthetics */
+.terminal-border {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0;
+}
+
+/* Mode switcher styles removed - now using TerminalModeSwitcher component */
+
+/* Timeline Filters */
+.timeline-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* View mode switcher removed - now using TerminalModeSwitcher component */
+
+/* Section Wrappers */
+.session-section-wrapper,
+.browse-section-wrapper,
+.timeline-section-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.browse-content,
+.timeline-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ===================================== */
+/* Mobile Responsiveness */
+/* ===================================== */
+
+@media (max-width: 768px) {
+  .vertical-accordion.mobile-full-screen {
+    gap: 0;
+    padding: 0;
+    position: relative;
+    height: 100vh;
+  }
+
+  .accordion-section.expanded.full-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 3rem; /* Room for bottom bar */
+    z-index: 10;
+    border: none;
+    min-height: unset;
+    height: calc(100vh - 3rem);
+  }
+
+  .accordion-section.collapsed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3rem;
+    z-index: 20;
+    border: none;
+    border-top: 1px solid hsl(var(--border));
+    flex: 0 0 3rem;
+  }
+
+  /* Mobile bottom bar layout */
+  .vertical-accordion.mobile-full-screen .accordion-section.collapsed {
+    width: calc(100% / 3); /* Three sections */
+    position: fixed;
+    bottom: 0;
+  }
+
+  .vertical-accordion.mobile-full-screen
+    .accordion-section.collapsed:nth-child(1) {
+    left: 0;
+  }
+
+  .vertical-accordion.mobile-full-screen
+    .accordion-section.collapsed:nth-child(2) {
+    left: calc(100% / 3);
+  }
+
+  .vertical-accordion.mobile-full-screen
+    .accordion-section.collapsed:nth-child(3) {
+    left: calc(200% / 3);
+  }
+
+  .section-header.collapsed {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    font-size: 0.625rem;
+    height: 100%;
+    border-bottom: none;
+  }
+
+  .section-header.collapsed .section-icon {
+    display: none;
+  }
+
+  .section-header.collapsed .section-title {
+    letter-spacing: 0;
+  }
+
+  /* Ensure minimum touch target size */
+  .section-header,
+  .mode-button {
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mobile mode switcher styles removed - now using TerminalModeSwitcher component */
+}

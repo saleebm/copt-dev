@@ -1,0 +1,307 @@
+/* Findings Accordion Enhanced Animations */
+
+/* Custom animations for findings accordion */
+@keyframes accordion-slide-down {
+  0% {
+    opacity: 0;
+    height: 0;
+    transform: translateY(-10px);
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 1;
+    height: var(--radix-accordion-content-height);
+    transform: translateY(0);
+  }
+}
+
+@keyframes accordion-slide-up {
+  0% {
+    opacity: 1;
+    height: var(--radix-accordion-content-height);
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 0;
+    height: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes findings-item-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes content-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes trigger-hover {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes trigger-press {
+  0% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(0.98);
+  }
+}
+
+/* Enhanced Findings Accordion Styles */
+.findings-accordion {
+  --findings-transition-duration: 0.3s;
+  --findings-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  scroll-margin-top: 100px;
+  /* Offset for fixed headers */
+}
+
+.findings-accordion-item {
+  scroll-margin-top: 120px;
+  /* Individual item scroll offset */
+  border-radius: 12px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  overflow: hidden;
+  transition: all var(--findings-transition-duration) var(--findings-ease);
+  will-change: transform, box-shadow, border-color;
+  animation: findings-item-enter 0.5s var(--findings-ease) both;
+}
+
+.findings-accordion-item:hover {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 4px 12px -4px hsl(var(--primary) / 0.1);
+  transform: translateY(-2px);
+}
+
+.findings-accordion-item[data-state="open"] {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 8px 25px -8px hsl(var(--primary) / 0.15);
+}
+
+.findings-accordion-trigger {
+  padding: 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: left;
+  color: hsl(var(--foreground));
+  background: transparent;
+  transition: all var(--findings-transition-duration) var(--findings-ease);
+  position: relative;
+  will-change: transform, background-color;
+}
+
+.findings-accordion-trigger:hover {
+  background: hsl(var(--muted) / 0.5);
+  animation: trigger-hover 0.2s var(--findings-ease) both;
+}
+
+.findings-accordion-trigger:active {
+  animation: trigger-press 0.1s var(--findings-ease) both;
+}
+
+.findings-accordion-trigger[data-state="open"] {
+  background: hsl(var(--muted) / 0.7);
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.findings-accordion-trigger::after {
+  content: "";
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-left: none;
+  border-top: none;
+  transition: transform var(--findings-transition-duration) var(--findings-ease);
+}
+
+.findings-accordion-trigger[data-state="open"]::after {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.findings-accordion-content {
+  padding: 0 1.5rem 1.5rem;
+  animation: content-reveal 0.4s var(--findings-ease) both;
+  animation-delay: 0.1s;
+}
+
+.findings-accordion-content[data-state="open"] {
+  animation: accordion-slide-down var(--findings-transition-duration)
+    var(--findings-ease);
+}
+
+.findings-accordion-content[data-state="closed"] {
+  animation: accordion-slide-up var(--findings-transition-duration)
+    var(--findings-ease);
+}
+
+.findings-source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid hsl(var(--border));
+  color: hsl(var(--primary));
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s var(--findings-ease);
+  will-change: transform, color;
+}
+
+.findings-source-link:hover {
+  color: hsl(var(--primary) / 0.8);
+  transform: translateX(4px);
+}
+
+.findings-source-link svg {
+  transition: transform 0.2s var(--findings-ease);
+}
+
+.findings-source-link:hover svg {
+  transform: rotate(45deg);
+}
+
+/* Performance optimizations */
+.findings-accordion-item {
+  contain: layout style paint;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Staggered animation support */
+.findings-accordion-item:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.findings-accordion-item:nth-child(2) {
+  animation-delay: 100ms;
+}
+
+.findings-accordion-item:nth-child(3) {
+  animation-delay: 200ms;
+}
+
+.findings-accordion-item:nth-child(4) {
+  animation-delay: 300ms;
+}
+
+.findings-accordion-item:nth-child(5) {
+  animation-delay: 400ms;
+}
+
+.findings-accordion-item:nth-child(n + 6) {
+  animation-delay: 500ms;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .findings-accordion-item,
+  .findings-accordion-trigger,
+  .findings-accordion-content,
+  .findings-source-link {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .findings-accordion-item:hover {
+    transform: none;
+  }
+
+  .findings-source-link:hover {
+    transform: none;
+  }
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  .findings-accordion-item:hover {
+    box-shadow: 0 4px 12px -4px hsl(var(--primary) / 0.2);
+  }
+
+  .findings-accordion-item[data-state="open"] {
+    box-shadow: 0 8px 25px -8px hsl(var(--primary) / 0.25);
+  }
+}
+
+/* Enhanced focus state for scrolled items */
+.findings-accordion-item:focus-within {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Scroll indicator animation */
+@keyframes scroll-highlight {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px hsl(var(--primary) / 0.1);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+  }
+}
+
+.findings-accordion-item.scroll-highlight {
+  animation: scroll-highlight 1s ease-out;
+}
+
+/* Smooth scroll support for the entire container */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced viewport considerations */
+@media (max-height: 600px) {
+  .findings-accordion-item {
+    scroll-margin-top: 80px;
+  }
+}
+
+@media (min-height: 800px) {
+  .findings-accordion-item {
+    scroll-margin-top: 140px;
+  }
+}

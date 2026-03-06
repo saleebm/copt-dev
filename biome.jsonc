@@ -1,0 +1,53 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite/core", "ultracite/next", "ultracite/react"],
+  "linter": {
+    "rules": {
+      "style": {
+        "noMagicNumbers": "off",
+        "noNestedTernary": "warn",
+        "noNonNullAssertion": "warn"
+      },
+      "complexity": {
+        "noForEach": "off",
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "performance": {
+        "noNamespaceImport": "off",
+        "useTopLevelRegex": "off"
+      },
+      "suspicious": {
+        "noEmptyBlockStatements": "error",
+        "noImplicitAnyLet": "error",
+        "noEvolvingTypes": "error",
+        "noExplicitAny": "error",
+        "useAwait": "warn"
+      },
+      "correctness": {
+        "noUnusedFunctionParameters": "warn"
+      },
+      "a11y": {
+        "useButtonType": "error",
+        "useSemanticElements": "warn",
+        "noStaticElementInteractions": "warn",
+        "noNoninteractiveElementInteractions": "warn",
+        "useKeyWithClickEvents": "warn",
+        "useAriaPropsSupportedByRole": "warn"
+      },
+      "nursery": {
+        "noShadow": "warn"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["scripts/**", "tests/**"],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
+    }
+  ]
+}

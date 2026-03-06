@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Post {
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  title           String
+  content         String
+  excerpt         String?
+  type            PostType
+  status          PostStatus      @default(DRAFT)
+  filePath        String // Store the original file path for sync tracking
+  fileHash        String // Store file hash for change detection
+  findingsCount   Int? // For aggregated findings posts, store count of individual findings
+  originalDate    DateTime? // Store the frontmatter date (for findings posts, this is the actual finding date)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  lastEdited      DateTime        @updatedAt
+  published       Boolean         @default(false)
+  tags            Tag[]           @relation("PostToTag")
+  categories      Category[]      @relation("PostToCategory")
+  hlexiconEntries HlexiconEntry[] @relation("PostToHlexicon")
+
+  @@index([slug])
+  @@index([type])
+  @@index([status])
+  @@index([published])
+}
+
+enum PostType {
+  CONCRETE
+  BLOG
+  FINDING
+  SIGHT
+}
+
+enum PostStatus {
+  PUBLISHED
+  DRAFT
+  ARCHIVED
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  posts Post[] @relation("PostToTag")
+
+  @@index([slug])
+}
+
+model Category {
+  id          String @id @default(cuid())
+  name        String @unique // Keep as kebab-case to match embeddings
+  displayName String // ADD: Human-readable name
+  slug        String @unique
+  posts       Post[] @relation("PostToCategory")
+
+  @@index([slug])
+  @@index([name]) // ADD: Index for faster joins
+}
+
+model HlexiconEntry {
+  id         String   @id @default(cuid())
+  term       String   @unique
+  definition String
+  posts      Post[]   @relation("PostToHlexicon")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([term])
+}
+
+model CategoryEmbedding {
+  id             String   @id @default(cuid())
+  path           String   @unique // Full category path (e.g., "ai-tools/developer-tools/llmops")
+  name           String // Category name (e.g., "llmops")
+  fullPath       String // Absolute file system path
+  parentPath     String? // Parent category path (null for top-level)
+  depth          Int // Nesting depth (0 = top-level)
+  fileCount      Int // Number of MDX files in this category
+  description    String // Generated description used for embedding
+  embedding      Float[] // Vector embedding (stored as array of floats)
+  embeddingHash  String // Hash of the description to detect changes
+  modelVersion   String // Model version used for embedding (e.g., "text-embedding-004")
+  dimensionality Int // Embedding vector size (e.g., 256)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([path])
+  @@index([parentPath])
+  @@index([depth])
+  @@index([embeddingHash])
+}
+
+model TagEmbedding {
+  id             String   @id @default(cuid())
+  name           String   @unique // Tag name (e.g., "open-source")
+  description    String // Generated description used for embedding
+  embedding      Float[] // Vector embedding (stored as array of floats)
+  embeddingHash  String // Hash of the description to detect changes
+  modelVersion   String // Model version used for embedding (e.g., "gemini-embedding-001")
+  dimensionality Int // Embedding vector size (e.g., 256)
+  postCount      Int // Number of posts using this tag
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([name])
+  @@index([embeddingHash])
+}
