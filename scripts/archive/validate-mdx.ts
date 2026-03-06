@@ -1,3 +1,4 @@
+// Previously ran via: "validate-mdx": "bun run scripts/validate-mdx.ts"
 #!/usr/bin/env bun
 import fs from "node:fs";
 import path from "node:path";

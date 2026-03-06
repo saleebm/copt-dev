@@ -1,3 +1,4 @@
+// Previously ran via: "db:sync-posts:fix": "bun run scripts/fix-all-broken-mdx.ts"
 #!/usr/bin/env bun
 import { execSync } from "node:child_process";
 import fs from "node:fs";

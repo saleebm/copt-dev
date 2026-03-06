@@ -1,3 +1,4 @@
+// Previously ran via: "codemods:test": "bun run scripts/test-codemods.ts"
 import { access, mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { runCodemods } from "./run-codemods.js";

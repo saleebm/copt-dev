@@ -1,3 +1,4 @@
+// Previously ran via: "clear:embeddings": "bun run scripts/clear-embedding-cache.ts"
 #!/usr/bin/env bun
 
 /**

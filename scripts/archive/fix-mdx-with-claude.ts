@@ -1,3 +1,4 @@
+// Previously ran via: "fix-mdx": "bun run scripts/fix-mdx-with-claude.ts"
 #!/usr/bin/env bun
 import { execSync } from "node:child_process";
 import fs from "node:fs";
