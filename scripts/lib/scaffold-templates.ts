@@ -88,6 +88,8 @@ function createContentTemplate(config: PostTemplateConfig): string {
       return createBlogTemplate(config);
     case "FINDING":
       return createFindingTemplate(config);
+    case "SIGHT":
+      return createSightTemplate(config);
     default:
       return createDefaultTemplate(config);
   }
@@ -222,6 +224,31 @@ ${sourceSection}## Summary
 ---
 
 *This is a FINDING post - analytical content focused on research and discoveries.*`;
+}
+
+/**
+ * SIGHT post template
+ */
+function createSightTemplate(config: PostTemplateConfig): string {
+  return `# ${config.title}
+
+<!-- AI-generated outline will be inserted here -->
+
+## Image
+
+*Insert your image or visual content here.*
+
+## Context
+
+*Briefly describe what this image captures and why it matters.*
+
+## Observations
+
+*What stands out? What details are worth noting?*
+
+---
+
+*This is a SIGHT post — visual content with concise commentary.*`;
 }
 
 /**

@@ -5,6 +5,7 @@ import { GoogleGenAI } from "@google/genai";
 import { glob } from "glob";
 import { PrismaClient } from "@/lib/generated/prisma";
 import type { CodemodDefinition } from "./types";
+import { resolveApiKey, getAIConfig } from "../lib/ai-config";
 
 // Configuration for tag analysis and consolidation
 type TagAnalysisConfig = {
@@ -43,11 +44,11 @@ type TagConsolidationPlan = {
 
 // Default configuration
 const DEFAULT_CONFIG: TagAnalysisConfig = {
-  similarityThreshold: 0.8, // Tags with >80% similarity are considered duplicates
-  maxTagsPerGroup: 10, // Maximum tags to merge into one group
-  minPostsForTag: 1, // Minimum posts required to keep a tag
+  similarityThreshold: 0.8,
+  maxTagsPerGroup: 10,
+  minPostsForTag: 1,
   embeddingDimensionality: 256,
-  modelVersion: "gemini-embedding-001",
+  modelVersion: process.env.EMBEDDING_MODEL ?? "gemini-embedding-001",
 };
 
 /**
@@ -604,13 +605,12 @@ export const consolidateTags: CodemodDefinition = {
   transform: async (_context) => {
     try {
       // Get API key from environment
-      const apiKey =
-        process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY;
+      const apiKey = resolveApiKey();
       if (!apiKey) {
         return {
           modified: false,
           message:
-            "GOOGLE_GENAI_API_KEY or GEMINI_API_KEY environment variable required",
+            "GEMINI_API_KEY environment variable required (see .env.example)",
         };
       }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
- * Post Scaffolding CLI - Refactored with SOLID principles
- * Creates new posts with AI-generated outlines using Gemini 2.5 Flash
+ * Post Scaffolding CLI
+ * Creates new posts with AI-generated outlines (model configured via AI_MODEL env var)
  */
 
 import {
@@ -9,6 +9,7 @@ import {
   parseCliArguments,
   validateCliArguments,
 } from "./lib/cli-parser";
+import { resolveApiKey } from "./lib/ai-config";
 import { AIServiceFactory } from "./lib/services/ai-service";
 import { DatabaseServiceFactory } from "./lib/services/database-service";
 import { FileServiceFactory } from "./lib/services/file-service";
@@ -38,14 +39,13 @@ async function main(): Promise<void> {
       process.exit(1);
     }
 
-    // Check environment
-    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    const apiKey = resolveApiKey();
     if (args.outline && !apiKey) {
       console.warn(
         "⚠️  No API key found. AI outline generation will be disabled."
       );
       console.warn(
-        "   Set GEMINI_API_KEY or GOOGLE_API_KEY environment variable to enable."
+        "   Set GEMINI_API_KEY environment variable to enable (see .env.example)."
       );
     }
 
@@ -63,8 +63,7 @@ async function main(): Promise<void> {
       interactiveService
     );
 
-    console.log("🚀 Post Scaffolding CLI");
-    console.log("✨ Powered by Gemini 2.5 Flash\n");
+    console.log("🚀 Post Scaffolding CLI\n");
 
     let result;
 

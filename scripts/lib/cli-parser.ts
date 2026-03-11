@@ -117,7 +117,7 @@ EXAMPLES:
 
 OPTIONS:
   -i, --interactive     Run in interactive mode (default if no title provided)
-  -t, --type TYPE       Post type: CONCRETE, BLOG, FINDING
+  -t, --type TYPE       Post type: CONCRETE, BLOG, FINDING, SIGHT
   -T, --title TITLE     Post title
   -c, --category CAT    Post category
   --tags TAG1,TAG2      Comma-separated tags
@@ -130,8 +130,9 @@ OPTIONS:
 
 POST TYPES:
   CONCRETE              Foundational, principle-based content
-  BLOG                  Personal, chronological posts  
+  BLOG                  Personal, chronological posts
   FINDING               Research discoveries and external content
+  SIGHT                 Visual/image posts
 
 TEMPLATE VARIATIONS:
   minimal               Basic structure for quick starts
@@ -140,10 +141,9 @@ TEMPLATE VARIATIONS:
   tutorial              Step-by-step instructional format
 
 ENVIRONMENT:
-  GEMINI_API_KEY        Required for AI outline generation
-  DEBUG                 Enable debug logging
-
-For more information, see scripts/README.md
+  GEMINI_API_KEY        Required for AI outline generation (or GOOGLE_API_KEY)
+  AI_MODEL              Model name (default from .env)
+  AI_TEMPERATURE        Generation temperature (default: 0.7)
 `);
 }
 
@@ -154,9 +154,9 @@ export function validateCliArguments(args: CLIArguments): string[] {
   const errors: string[] = [];
 
   // Validate post type
-  if (args.type && !["CONCRETE", "BLOG", "FINDING"].includes(args.type)) {
+  if (args.type && !["CONCRETE", "BLOG", "FINDING", "SIGHT"].includes(args.type)) {
     errors.push(
-      `Invalid post type: ${args.type}. Must be CONCRETE, BLOG, or FINDING.`
+      `Invalid post type: ${args.type}. Must be CONCRETE, BLOG, FINDING, or SIGHT.`
     );
   }
 

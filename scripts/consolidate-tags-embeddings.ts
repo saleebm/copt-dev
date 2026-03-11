@@ -12,7 +12,7 @@
  * By default, this runs in dry-run mode. Use --execute to actually perform the updates.
  *
  * Prerequisites:
- *   - GOOGLE_GENAI_API_KEY or GEMINI_API_KEY environment variable set
+ *   - GEMINI_API_KEY environment variable set (see .env.example)
  *   - @google/genai package installed
  *   - Database migration run for TagEmbedding model
  */
@@ -20,6 +20,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { consolidateTags } from "./codemods/consolidate-tags";
+import { resolveApiKey } from "./lib/ai-config";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -43,7 +44,7 @@ Options:
   --help, -h      Show this help message
 
 Environment Variables Required:
-  GOOGLE_GENAI_API_KEY or GEMINI_API_KEY
+  GEMINI_API_KEY (or GOOGLE_API_KEY — see .env.example)
 
 The tool will:
 1. Scan all tags in finding and sight posts
@@ -61,13 +62,10 @@ Reports are saved to .analysis/tag-consolidation-report.md
   console.log("🔍 Starting tag consolidation analysis...");
 
   // Check for API key
-  const apiKey = process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey = resolveApiKey();
   if (!apiKey) {
     console.error(
-      "❌ Error: GOOGLE_GENAI_API_KEY or GEMINI_API_KEY environment variable required"
-    );
-    console.error(
-      "   Please set one of these environment variables with your Google GenAI API key"
+      "❌ Error: GEMINI_API_KEY environment variable required (see .env.example)"
     );
     process.exit(1);
   }
