@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = {
   apps: [
     {
@@ -9,7 +11,6 @@ module.exports = {
         NODE_ENV: "production",
         PORT: 3000,
         BUILD_DIR: ".next-builds/current",
-        DATABASE_URL: "postgresql://coptdev:<PW>@localhost:5432/coptdev?schema=public",
         NEXT_PUBLIC_APP_URL: "https://copt.dev",
       },
       instances: 2,
