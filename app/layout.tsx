@@ -31,7 +31,6 @@ export default function RootLayout({
       className={`${ibmPlexMono.variable} ${spaceGrotesk.variable} h-full bg-background`}
       lang="en"
     >
-      {/* deploy-test */}
       <body className="h-full text-foreground">
         {children}
         <Toaster />
