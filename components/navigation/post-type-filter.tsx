@@ -6,13 +6,13 @@ import { PostType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 import type { PostTypeCount } from "@/types/navigation";
 
-type PostTypeFilterProps = {
+interface PostTypeFilterProps {
+  className?: string;
+  onFilterChange?: (types: PostType[]) => void;
+  onTypeToggle?: (type: PostType) => void;
   postTypeCounts: PostTypeCount[];
   selectedTypes?: PostType[];
-  onTypeToggle?: (type: PostType) => void;
-  onFilterChange?: (types: PostType[]) => void;
-  className?: string;
-};
+}
 
 // Terminal-style post type descriptions
 const POST_TYPE_INFO = {
@@ -168,7 +168,7 @@ export function PostTypeFilter({
                     "absolute top-0 right-0 h-24 w-24",
                     info.bgColor,
                     "rounded-full opacity-10 blur-xl",
-                    "-mr-12 -mt-12"
+                    "-mt-12 -mr-12"
                   )}
                 />
               )}

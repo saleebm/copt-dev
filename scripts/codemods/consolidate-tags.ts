@@ -4,8 +4,8 @@ import { dirname, join } from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import { glob } from "glob";
 import { PrismaClient } from "@/lib/generated/prisma";
+import { getAIConfig, resolveApiKey } from "../lib/ai-config";
 import type { CodemodDefinition } from "./types";
-import { resolveApiKey, getAIConfig } from "../lib/ai-config";
 
 // Configuration for tag analysis and consolidation
 type TagAnalysisConfig = {

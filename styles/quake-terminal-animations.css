@@ -12,8 +12,8 @@
 
 /* Main terminal container animations */
 .quake-terminal {
-  will-change: transform, opacity;
   transform-origin: top center;
+  will-change: transform, opacity;
 }
 
 /* Opening animation - rolls down with slight bounce */
@@ -76,9 +76,11 @@
 .terminal-scanline {
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
+  left: 0;
+  z-index: 1;
   height: 2px;
+  pointer-events: none;
   background: linear-gradient(
     90deg,
     transparent,
@@ -86,8 +88,6 @@
     transparent
   );
   animation: scanline 3s linear infinite;
-  pointer-events: none;
-  z-index: 1;
 }
 
 @keyframes scanline {
@@ -111,12 +111,12 @@
 .terminal-crt-glow {
   position: absolute;
   inset: -2px;
+  pointer-events: none;
   background: radial-gradient(
     ellipse at center top,
     var(--terminal-glow-color) 0%,
     transparent 70%
   );
-  pointer-events: none;
   animation: crtGlow 2s ease-in-out infinite alternate;
 }
 
@@ -182,8 +182,8 @@
 
 /* Backdrop fade animation */
 .quake-backdrop {
-  will-change: opacity;
   animation: backdropFade 0.2s ease-out forwards;
+  will-change: opacity;
 }
 
 @keyframes backdropFade {
@@ -260,7 +260,7 @@
   .quake-header-slide-out,
   .quake-backdrop,
   .quake-content-item {
-    animation: none !important;
     transition: opacity 0.2s ease-out !important;
+    animation: none !important;
   }
 }

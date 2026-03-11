@@ -4,10 +4,10 @@ import { RabbitholeTrackTab } from "@/components/navigation/rabbithole-track-tab
 import type { useMobileNavigationState } from "@/hooks/use-mobile-navigation-state";
 import styles from "@/styles/navigation.module.css";
 
-type SessionSectionProps = {
-  onNavigate?: () => void;
+interface SessionSectionProps {
   navState?: ReturnType<typeof useMobileNavigationState>;
-};
+  onNavigate?: () => void;
+}
 
 /**
  * SESSION section wrapper for the vertical accordion

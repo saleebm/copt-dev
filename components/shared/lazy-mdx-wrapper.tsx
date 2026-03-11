@@ -5,14 +5,14 @@ import dynamic from "next/dynamic";
 import React, { Suspense, useMemo } from "react";
 import { ErrorBoundary } from "./error-boundary";
 
-type LazyMDXWrapperProps = {
+interface LazyMDXWrapperProps {
   children: React.ReactNode;
-  loadingComponent?: React.ComponentType;
-  errorFallback?: React.ReactNode;
   enableLazyLoading?: boolean;
-  postSlug?: string;
+  errorFallback?: React.ReactNode;
   isFindingsPost?: boolean;
-};
+  loadingComponent?: React.ComponentType;
+  postSlug?: string;
+}
 
 // Default loading component
 const DefaultLoadingComponent = () => (

@@ -8,13 +8,13 @@ const STORAGE_KEY = "nav-content-filter";
 // Default to showing only Blog and Concrete posts for a cleaner view
 const DEFAULT_TYPES = new Set([PostType.BLOG, PostType.CONCRETE]);
 
-type UseContentFilterReturn = {
-  selectedTypes: Set<PostType>;
-  setSelectedTypes: (types: Set<PostType>) => void;
+interface UseContentFilterReturn {
   filterPosts: <T extends { type?: PostType | string }>(posts: T[]) => T[];
   isDefaultFilter: boolean;
   resetFilter: () => void;
-};
+  selectedTypes: Set<PostType>;
+  setSelectedTypes: (types: Set<PostType>) => void;
+}
 
 export function useContentFilter(): UseContentFilterReturn {
   const [selectedTypes, setSelectedTypesState] =

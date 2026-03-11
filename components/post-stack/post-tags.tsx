@@ -10,17 +10,17 @@ import {
 } from "@/lib/animations";
 import type { PostType } from "@/lib/generated/prisma";
 
-type PostTagsProps = {
-  tags: string[];
+interface PostTagsProps {
   postId: string;
-};
+  tags: string[];
+}
 
-type RelatedPost = {
+interface RelatedPost {
+  lastEdited: Date;
   slug: string;
   title: string;
   type: PostType;
-  lastEdited: Date;
-};
+}
 
 export function PostTags({ tags, postId }: PostTagsProps) {
   const [activeTag, setActiveTag] = useState<string | null>(null);

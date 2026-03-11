@@ -5,12 +5,12 @@ import { PostType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 import type { CategoryNode } from "@/types/navigation";
 
-type ChildCategoriesPopoutProps = {
+interface ChildCategoriesPopoutProps {
   category: CategoryNode;
+  className?: string;
   onCategoryClick: (category: CategoryNode) => void;
   selectedPostTypes: PostType[];
-  className?: string;
-};
+}
 
 export function ChildCategoriesPopout({
   category,

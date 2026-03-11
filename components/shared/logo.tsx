@@ -7,13 +7,13 @@ import { useEffect, useState } from "react";
 import { usePostStackActions } from "@/components/post-stack/post-stack-provider-xstate";
 import logoImage from "@/public/post-pics/golden_red_light_eye.svg";
 
-type LogoProps = {
+interface LogoProps {
   className?: string;
   imageSize?: number;
-  textSize?: "xs" | "sm" | "base" | "lg";
   layout?: "horizontal" | "vertical" | "auto";
   onClick?: () => void;
-};
+  textSize?: "xs" | "sm" | "base" | "lg";
+}
 
 export function Logo({
   className = "",
@@ -181,6 +181,7 @@ export function Logo({
             <motion.span
               className={`rainbow-text inline-block transition-all duration-300 ease-out ${isActive && !shouldReduceMotion ? "rainbow-text-active" : ""}
                             `}
+              // biome-ignore lint/suspicious/noArrayIndexKey: fixed "COPT.DEV" string, position is the stable identity
               key={`logo-letter-${index}-${letter}`}
               style={
                 {

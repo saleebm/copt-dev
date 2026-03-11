@@ -5,18 +5,18 @@ import { PostType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 import styles from "./post-type-filter.module.css";
 
-type PostTypeCount = {
-  type: PostType;
+interface PostTypeCount {
   count: number;
   percentage: number;
-};
+  type: PostType;
+}
 
-type PostTypeFilterBarProps = {
-  selectedTypes?: PostType[];
+interface PostTypeFilterBarProps {
+  className?: string;
   onTypeToggle?: (type: PostType) => void;
   postTypeCounts?: PostTypeCount[];
-  className?: string;
-};
+  selectedTypes?: PostType[];
+}
 
 // Get all PostType values dynamically from the enum
 const getAllPostTypes = (): PostType[] => Object.values(PostType) as PostType[];

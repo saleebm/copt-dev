@@ -1,12 +1,12 @@
 import type { CategoryEmbedding } from "@/lib/generated/prisma";
 import type { CategoryNode, PostTypeDistribution } from "@/types/navigation";
 
-type CategoryData = {
-  name: string; // kebab-case name matching CategoryEmbedding
+interface CategoryData {
   displayName: string; // human-readable name for display
+  name: string; // kebab-case name matching CategoryEmbedding
   postCount: number;
   postTypes: Record<string, number>;
-};
+}
 
 /**
  * Builds a hierarchical tree structure from flat CategoryEmbedding records
@@ -56,8 +56,12 @@ export class CategoryTreeBuilder {
     }
 
     // Third pass: Calculate aggregated counts
-    roots.forEach((root) => this.calculateTotalCounts(root));
-    orphans.forEach((orphan) => this.calculateTotalCounts(orphan));
+    for (const root of roots) {
+      this.calculateTotalCounts(root);
+    }
+    for (const orphan of orphans) {
+      this.calculateTotalCounts(orphan);
+    }
 
     // Sort roots and orphans alphabetically
     const sortedRoots = this.sortNodes(roots);

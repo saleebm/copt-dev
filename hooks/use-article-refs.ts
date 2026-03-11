@@ -31,11 +31,8 @@ export function useArticleRefs(
         if (currentRef && document.contains(currentRef)) {
           return; // Don't nullify a valid ref
         }
-      } else {
-        // Only update if it's actually different
-        if (currentRef === element) {
-          return; // Avoid unnecessary re-assignments
-        }
+      } else if (currentRef === element) {
+        return; // Avoid unnecessary re-assignments
       }
 
       articleRefs.current[index] = element;

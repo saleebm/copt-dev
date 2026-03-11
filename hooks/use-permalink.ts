@@ -4,9 +4,9 @@ import { useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { RenderedPost } from "@/types/post";
 
-type UsePermalinkProps = {
+interface UsePermalinkProps {
   posts: RenderedPost[];
-};
+}
 
 export function usePermalink({ posts }: UsePermalinkProps) {
   const { toast } = useToast();

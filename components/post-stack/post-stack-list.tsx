@@ -10,14 +10,8 @@ import type {
 } from "@/types/navigation";
 import type { RenderedPost } from "@/types/post";
 
-type PostStackListProps = {
-  serverInitialPosts: RenderedPost[];
-  serverInitialStackIds: string[];
+interface PostStackListProps {
   allAvailablePostIds: string[];
-  concretePostIds: string[];
-  categories: CategoryNode[];
-  tags: TagWithMetadata[];
-  postTypeCounts: PostTypeCount[];
   allTimeline: Array<{
     date: Date;
     posts: Array<{
@@ -30,6 +24,7 @@ type PostStackListProps = {
     formattedDate: string;
     monthKey: string;
   }>;
+  categories: CategoryNode[];
   chronicleData: Array<{
     id: string;
     slug: string;
@@ -39,9 +34,14 @@ type PostStackListProps = {
     tags: Array<{ name: string }>;
     categories: Array<{ name: string }>;
   }>;
-  isRootPage: boolean;
+  concretePostIds: string[];
   initialActivePostId?: string | null;
-};
+  isRootPage: boolean;
+  postTypeCounts: PostTypeCount[];
+  serverInitialPosts: RenderedPost[];
+  serverInitialStackIds: string[];
+  tags: TagWithMetadata[];
+}
 
 /**
  * Server component that renders posts with server data and provides Suspense boundaries for client hydration

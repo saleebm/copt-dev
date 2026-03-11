@@ -1,15 +1,15 @@
 import { type RefObject, useCallback, useEffect, useState } from "react";
 
-type UseTooltipPositionProps = {
+interface UseTooltipPositionProps {
+  isVisible: boolean;
   termRef: RefObject<HTMLElement | null>;
   tooltipRef: RefObject<HTMLElement | null>;
-  isVisible: boolean;
-};
+}
 
-type TooltipPosition = {
+interface TooltipPosition {
   x: number;
   y: number;
-};
+}
 
 export function useTooltipPosition({
   termRef,

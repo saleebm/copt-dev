@@ -18,12 +18,12 @@ import {
 import { getAllAvailablePostIds } from "@/lib/posts";
 import type { RenderedPost } from "@/types/post";
 
-type PostStackDataFetcherProps = {
-  params: PostStackParams;
-  isRootPage: boolean;
-  initialActivePostId?: string | null;
+interface PostStackDataFetcherProps {
   allowNotFound?: boolean;
-};
+  initialActivePostId?: string | null;
+  isRootPage: boolean;
+  params: PostStackParams;
+}
 
 /**
  * Server component that handles all data fetching for post stacks.

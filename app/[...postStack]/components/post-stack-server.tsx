@@ -2,12 +2,12 @@ import { notFound } from "next/navigation";
 import { PostStackDataFetcher } from "@/components/post-stack/post-stack-data-fetcher";
 import type { PostStackParams } from "@/lib/post-stack-utils-client";
 
-type PostStackServerProps = {
+interface PostStackServerProps {
   params: Promise<{ postStack?: string[] }>;
   searchParams?: Promise<{
     stack?: string; // e.g., "post-alpha,post-bravo" (canonical IDs)
   }>;
-};
+}
 
 export async function PostStackServer({
   params,

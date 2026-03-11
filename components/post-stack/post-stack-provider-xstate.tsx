@@ -26,34 +26,19 @@ import type {
 } from "@/types/navigation";
 import type { RenderedPost } from "@/types/post";
 
-type TimelineEntry = {
+interface TimelineEntry {
   date: Date;
-  posts: RenderedPost[];
   formattedDate: string;
   monthKey: string;
-};
+  posts: RenderedPost[];
+}
 
 // Define context types for XState provider
-export type PostStackState = {
-  posts: RenderedPost[];
-  currentStackIds: string[]; // Post IDs currently in the client's view
-  isLoadingNewPost: string | null; // Post ID of the post being loaded
-  dismissingInfo: { id: string } | null; // Post ID of the post being dismissed
-  allAvailablePostIds: string[]; // For footer links
-  concretePostIds: string[]; // Filtered concrete post IDs for navigation
-  serverInitialStackIds: string[]; // Original stack IDs from server, for comparison
+export interface PostStackState {
   activePostId: string | null; // Currently active/focused post ID
-  scrollState: "idle" | "programmaticScroll" | "userInteraction" | "settling"; // Current scroll state
-  isInitialLoad: boolean; // Track initial load to prevent intersection observer interference
-  initialActivePostId: string | null; // Initial active post ID for permalink handling
-  postCache: RenderedPost[]; // Cache of all loaded posts for browser navigation
-  visiblePostIds: string[]; // IDs of posts that should be visible (for browser navigation)
-  isProgrammaticScroll: boolean; // Lock to prevent observer interference during programmatic scrolls
+  allAvailablePostIds: string[]; // For footer links
   // Navigation data from server (optimized metadata only)
   categories: CategoryNode[];
-  tags: TagWithMetadata[];
-  timeline: TimelineEntry[];
-  postTypeCounts: PostTypeCount[];
   chronicleData: Array<{
     id: string;
     slug: string;
@@ -63,19 +48,34 @@ export type PostStackState = {
     tags: Array<{ name: string }>;
     categories: Array<{ name: string }>;
   }>;
-};
+  concretePostIds: string[]; // Filtered concrete post IDs for navigation
+  currentStackIds: string[]; // Post IDs currently in the client's view
+  dismissingInfo: { id: string } | null; // Post ID of the post being dismissed
+  initialActivePostId: string | null; // Initial active post ID for permalink handling
+  isInitialLoad: boolean; // Track initial load to prevent intersection observer interference
+  isLoadingNewPost: string | null; // Post ID of the post being loaded
+  isProgrammaticScroll: boolean; // Lock to prevent observer interference during programmatic scrolls
+  postCache: RenderedPost[]; // Cache of all loaded posts for browser navigation
+  posts: RenderedPost[];
+  postTypeCounts: PostTypeCount[];
+  scrollState: "idle" | "programmaticScroll" | "userInteraction" | "settling"; // Current scroll state
+  serverInitialStackIds: string[]; // Original stack IDs from server, for comparison
+  tags: TagWithMetadata[];
+  timeline: TimelineEntry[];
+  visiblePostIds: string[]; // IDs of posts that should be visible (for browser navigation)
+}
 
-export type PostStackActions = {
+export interface PostStackActions {
   addPost: (originalPostId: string) => Promise<void>;
+  copyPermalink: (postId: string) => Promise<void>;
   dismissPost: (postId: string, index: number) => void;
-  setArticleRef: (index: number, element: HTMLElement | null) => void;
   getArticleRef: (index: number) => HTMLElement | null;
   getArticleRefs: () => (HTMLElement | null)[];
   goHome: () => void;
   scrollToPost: (postId: string, skipStateUpdate?: boolean) => Promise<void>;
   setActivePost: (postId: string | null) => void;
-  copyPermalink: (postId: string) => Promise<void>;
-};
+  setArticleRef: (index: number, element: HTMLElement | null) => void;
+}
 
 // Create contexts
 export const PostStackStateContext = createContext<PostStackState | undefined>(
@@ -106,14 +106,8 @@ export function usePostStackActions() {
   return context;
 }
 
-type PostStackProviderProps = {
-  serverInitialPosts: RenderedPost[];
-  serverInitialStackIds: string[]; // These are post IDs from the URL
+interface PostStackProviderProps {
   allAvailablePostIds: string[];
-  concretePostIds: string[]; // Concrete post IDs from database query (PostType.CONCRETE)
-  categories: CategoryNode[];
-  tags: TagWithMetadata[];
-  postTypeCounts: PostTypeCount[];
   allTimeline: Array<{
     date: Date;
     posts: Array<{
@@ -126,6 +120,8 @@ type PostStackProviderProps = {
     formattedDate: string;
     monthKey: string;
   }>;
+  categories: CategoryNode[];
+  children: React.ReactNode;
   chronicleData: Array<{
     id: string;
     slug: string;
@@ -135,10 +131,14 @@ type PostStackProviderProps = {
     tags: Array<{ name: string }>;
     categories: Array<{ name: string }>;
   }>;
-  children: React.ReactNode;
-  isRootPage?: boolean;
+  concretePostIds: string[]; // Concrete post IDs from database query (PostType.CONCRETE)
   initialActivePostId?: string | null; // New prop for server-provided active post
-};
+  isRootPage?: boolean;
+  postTypeCounts: PostTypeCount[];
+  serverInitialPosts: RenderedPost[];
+  serverInitialStackIds: string[]; // These are post IDs from the URL
+  tags: TagWithMetadata[];
+}
 
 export function PostStackProvider({
   serverInitialPosts,
@@ -172,7 +172,9 @@ export function PostStackProvider({
     const resolvedActivePostId =
       initialActivePostId ||
       urlState.activePostId ||
-      (serverInitialPosts.length > 0 ? serverInitialPosts.at(-1)?.id ?? null : null);
+      (serverInitialPosts.length > 0
+        ? (serverInitialPosts.at(-1)?.id ?? null)
+        : null);
 
     // PostStackProvider initialized with activePostId: resolvedActivePostId
 
@@ -189,7 +191,8 @@ export function PostStackProvider({
     // State machine subscription for observer guards
     actorInstance.subscribe((_state) => {
       // Track state change timing for observer guards
-      (window as any).__lastStateChangeTime = Date.now();
+      (window as unknown as Record<string, number>).__lastStateChangeTime =
+        Date.now();
     });
 
     return actorInstance;
@@ -259,7 +262,7 @@ export function PostStackProvider({
   // Clear stale refs when posts change
   useEffect(() => {
     const currentRefs = articleRefs.current;
-    const postIds = posts.map(p => p.id);
+    const postIds = posts.map((p) => p.id);
 
     // Clear refs that don't match current posts
     for (let i = 0; i < currentRefs.length; i++) {
@@ -458,7 +461,10 @@ export function PostStackProvider({
         // Browser navigation scrolls need explicit success notification
         // Regular scrolls use SCROLL_COMPLETE from within scrollToPost
         if (isProgrammaticScroll) {
-          actor.send({ type: "SCROLL_SUCCESS", operationId: scrollOperationId });
+          actor.send({
+            type: "SCROLL_SUCCESS",
+            operationId: scrollOperationId,
+          });
         }
       } catch (error) {
         // Notify state machine of scroll errors for browser navigation

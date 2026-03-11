@@ -11,14 +11,14 @@ import {
 } from "@/lib/scroll-utils";
 import type { RenderedPost } from "@/types/post";
 
-type UseScrollManagementProps = {
-  posts: RenderedPost[];
+interface UseScrollManagementProps {
   actor: ActorRefFrom<PostStackMachine>;
   articleRefs: React.RefObject<(HTMLElement | null)[]>;
-  setArticleRef: (index: number, element: HTMLElement | null) => void;
   currentStackIds: string[];
+  posts: RenderedPost[];
   scrollOperationId?: number;
-};
+  setArticleRef: (index: number, element: HTMLElement | null) => void;
+}
 
 export function useScrollManagement({
   posts,
@@ -151,11 +151,11 @@ export function useScrollManagement({
 
         // Final validation: ensure element is visible and correct
         const finalPostId = targetElement.getAttribute("data-post-id");
-        const finalPostIndex = targetElement.getAttribute("data-post-index");
+        const _finalPostIndex = targetElement.getAttribute("data-post-index");
 
         if (finalPostId !== postId || targetElement.offsetHeight === 0) {
           // Element is not valid, wait for DOM to stabilize
-          await new Promise(resolve => requestAnimationFrame(resolve));
+          await new Promise((resolve) => requestAnimationFrame(resolve));
 
           // Try one more time after animation frame
           const lastAttempt = document.querySelector(

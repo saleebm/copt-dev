@@ -217,7 +217,7 @@ export function QuakeTerminalMobile() {
           isOpen && !isClosing && "quake-terminal-opening pointer-events-auto",
           isClosing && "quake-terminal-closing pointer-events-none",
           !(isOpen || isClosing) &&
-            "-translate-y-full pointer-events-none transform opacity-0"
+            "pointer-events-none -translate-y-full transform opacity-0"
         )}
       >
         {/* Terminal Container */}
@@ -258,7 +258,7 @@ export function QuakeTerminalMobile() {
         </div>
 
         {/* Terminal Shadow Effect */}
-        <div className="-bottom-8 pointer-events-none absolute inset-x-0 h-8 bg-gradient-to-b from-black/20 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 -bottom-8 h-8 bg-gradient-to-b from-black/20 to-transparent" />
       </div>
 
       {/* Floating Action Button - only shows when regular nav is hidden */}

@@ -24,10 +24,10 @@ import { getCurrentPostIndex } from "@/lib/post-stack-helpers";
 import type { RenderedPost } from "@/types/post";
 import { PostTags } from "./post-tags";
 
-type PostCardHeaderProps = {
-  post: RenderedPost;
+interface PostCardHeaderProps {
   index: number;
-};
+  post: RenderedPost;
+}
 
 const PostCardHeader: React.FC<PostCardHeaderProps> = ({ post, index }) => {
   const { posts, dismissingInfo, isLoadingNewPost } = usePostStackState();

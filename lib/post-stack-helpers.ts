@@ -114,6 +114,7 @@ export function getCurrentPostIndex(
   );
 
   if (!isValid && message && context) {
+    // Validation message logged by validateAndCorrectIndex
   }
 
   return correctIndex;

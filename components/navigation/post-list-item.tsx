@@ -4,13 +4,13 @@ import React from "react";
 import { PostType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 
-type PostListItemProps = {
+interface PostListItemProps {
+  isSelected?: boolean;
+  onClick: (slug: string) => void;
   slug: string;
   title: string;
   type: PostType;
-  onClick: (slug: string) => void;
-  isSelected?: boolean;
-};
+}
 
 export function PostListItem({
   slug,

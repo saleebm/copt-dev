@@ -49,9 +49,9 @@ type Action =
       toastId?: ToasterToast["id"];
     };
 
-type State = {
+interface State {
   toasts: ToasterToast[];
-};
+}
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
@@ -123,6 +123,8 @@ export const reducer = (state: State, action: Action): State => {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
       };
+    default:
+      return state;
   }
 };
 

@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type TextProps = {
+interface TextProps {
   children?: ReactNode;
-  variant?: "default" | "error" | "warning" | "muted";
   className?: string;
   preserveWhitespace?: boolean;
-};
+  variant?: "default" | "error" | "warning" | "muted";
+}
 
 export function Text({
   children,

@@ -16,7 +16,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import { getAllPosts, type ParsedPost } from "@/lib/mdx-parser";
-import { resolveApiKey, getAIConfig } from "./lib/ai-config";
+import { getAIConfig, resolveApiKey } from "./lib/ai-config";
 
 type DuplicateGroup = {
   slug: string;

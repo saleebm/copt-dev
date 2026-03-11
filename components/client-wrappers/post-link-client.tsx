@@ -3,11 +3,11 @@
 import { usePostStackActions } from "@/components/post-stack/post-stack-provider-xstate";
 import type { PostId } from "@/types/post";
 
-type PostLinkProps = {
-  postId: string;
+interface PostLinkProps {
   children: React.ReactNode;
   className?: string;
-};
+  postId: string;
+}
 
 export function PostLinkClient({ postId, children, className }: PostLinkProps) {
   // Use addPost directly - no tracking/correction needed for content links

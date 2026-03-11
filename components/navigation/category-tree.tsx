@@ -6,23 +6,23 @@ import { cn } from "@/lib/utils";
 import navStyles from "@/styles/navigation.module.css";
 import type { CategoryNode } from "@/types/navigation";
 
-type CategoryTreeProps = {
+interface CategoryTreeProps {
   categories: CategoryNode[];
+  className?: string;
   onCategoryClick?: (category: CategoryNode) => void;
   onNavigate?: () => void;
-  className?: string;
-};
+}
 
-type CategoryNodeItemProps = {
-  node: CategoryNode;
+interface CategoryNodeItemProps {
   depth: number;
   expandedNodes: Set<string>;
-  onToggleExpand: (path: string) => void;
-  onNodeClick: (node: CategoryNode) => void;
-  onNavigate?: () => void;
   isLast?: boolean;
+  node: CategoryNode;
+  onNavigate?: () => void;
+  onNodeClick: (node: CategoryNode) => void;
+  onToggleExpand: (path: string) => void;
   parentPrefix?: string;
-};
+}
 
 // Recursive component for rendering a single category node and its children
 function CategoryNodeItem({

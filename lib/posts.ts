@@ -1,6 +1,5 @@
 import { LRUCache } from "lru-cache";
 import { cache } from "react";
-import { DEFAULT_POST_ID } from "@/lib/constants";
 import { formatDateWithoutTimezone } from "@/lib/date-utils";
 import {
   PostStatus,
@@ -13,41 +12,41 @@ import type { PostData } from "@/types/post";
 
 // ===== NAVIGATION QUERY TYPES =====
 
-type BlogPostForNav = {
+interface BlogPostForNav {
   id: string;
-  title: string;
-  type: PostType;
   lastEdited: Date;
   originalId: string;
-};
+  title: string;
+  type: PostType;
+}
 
-type BlogPostCategory = {
+interface BlogPostCategory {
+  count: number;
   name: string;
   posts: BlogPostForNav[];
-  count: number;
   type: "BLOG";
-};
+}
 
-type TagForNav = {
-  name: string;
+interface TagForNav {
   count: number;
+  name: string;
   posts: string[]; // Post IDs
-};
+}
 
-type PostForTimeline = {
+interface PostForTimeline {
   id: string;
-  title: string;
-  type: PostType;
   lastEdited: Date;
   originalId: string;
-};
+  title: string;
+  type: PostType;
+}
 
-type TimelineEntry = {
+interface TimelineEntry {
   date: Date;
-  posts: PostForTimeline[];
   formattedDate: string;
   monthKey: string;
-};
+  posts: PostForTimeline[];
+}
 
 // Define the type for post with includes
 type PostWithIncludes = Prisma.PostGetPayload<{
@@ -62,17 +61,17 @@ type PostWithIncludes = Prisma.PostGetPayload<{
 }>;
 
 // Define pagination type
-type PaginationResult = {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+interface PaginationResult {
   hasNext: boolean;
   hasPrev: boolean;
-};
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
+}
 
 // LRU Cache configuration for better performance
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: general-purpose cache stores heterogeneous types
 const postCache = new LRUCache<string, any>({
   max: 500, // Maximum number of items
   ttl: 1000 * 60 * 5, // 5 minutes TTL
@@ -87,23 +86,23 @@ export type PostSortOption =
   | "updated";
 
 // Pagination options
-export type PaginationOptions = {
-  page?: number;
+export interface PaginationOptions {
   limit?: number;
+  page?: number;
   skip?: number;
   take?: number;
-};
+}
 
 // Query filters
-export type PostFilters = {
-  status?: PostStatus | PostStatus[];
-  type?: PostType;
-  published?: boolean;
-  tagSlugs?: string[];
+export interface PostFilters {
   categorySlugs?: string[];
-};
+  published?: boolean;
+  status?: PostStatus | PostStatus[];
+  tagSlugs?: string[];
+  type?: PostType;
+}
 
-export { DEFAULT_POST_ID };
+export type { DEFAULT_POST_ID } from "@/lib/constants";
 
 // Helper function to get sort order from option
 function getSortOrder(sort: PostSortOption = "newest") {

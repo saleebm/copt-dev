@@ -11,15 +11,15 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { RenderedPost } from "@/types/post";
 
-type PostItemProps = {
+interface PostItemProps {
+  onClick: (postId: string) => void;
   post: {
     id: string;
     originalId: string;
     title: string;
     isActive: boolean;
   };
-  onClick: (postId: string) => void;
-};
+}
 
 const PostItem = ({ post, onClick }: PostItemProps) => (
   <button
@@ -62,9 +62,9 @@ const PostItem = ({ post, onClick }: PostItemProps) => (
   </button>
 );
 
-type RabbitholeTrackTabProps = {
+interface RabbitholeTrackTabProps {
   onNavigate?: () => void;
-};
+}
 
 export function RabbitholeTrackTab({ onNavigate }: RabbitholeTrackTabProps) {
   const { posts, activePostId, initialActivePostId, dismissingInfo } =

@@ -5,19 +5,19 @@ import { renderMdxContent } from "@/lib/post-rendering";
 import { getAllConcretePostIds, getRawPostDataById } from "@/lib/posts";
 import type { PostData, RenderedPost } from "@/types/post";
 
-export type PostStackParams = {
+export interface PostStackParams {
+  pathParams?: string[]; // e.g., ["post-alpha", "post-bravo"] from catch-all routes
   searchParams?: {
     stack?: string; // e.g., "post-alpha,post-bravo" (canonical IDs)
   };
-  pathParams?: string[]; // e.g., ["post-alpha", "post-bravo"] from catch-all routes
-};
+}
 
-export type ParsedPostIds = {
-  postIds: string[];
+export interface ParsedPostIds {
   pathPostIds: string[];
+  postIds: string[];
   searchPostIds: string[];
   source: "combined" | "path" | "search" | "default";
-};
+}
 
 /**
  * Parses post IDs from both search params and path params, combining them properly.

@@ -1,10 +1,10 @@
 import { type ReactNode, Suspense } from "react";
 import { PostStackSkeleton } from "./skeletons";
 
-type EnhancedSuspenseProps = {
+interface EnhancedSuspenseProps {
   children: ReactNode;
   fallback?: ReactNode;
-};
+}
 
 export function EnhancedSuspense({
   children,

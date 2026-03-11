@@ -1,5 +1,6 @@
 /* Rainbow text animation for logo */
 .rainbow-text {
+  color: transparent;
   background: linear-gradient(
     90deg,
     hsl(calc(var(--hue-offset) + 0deg), 70%, 60%) 0%,
@@ -8,12 +9,11 @@
     hsl(calc(var(--hue-offset) + 180deg), 70%, 60%) 75%,
     hsl(calc(var(--hue-offset) + 240deg), 70%, 60%) 100%
   );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
   /* Static position by default - rainbow is visible but not moving */
   background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-size: 200% 100%;
   transition: background-position 0.3s ease-out;
 }
 
@@ -42,25 +42,24 @@
   }
 
   .rainbow-text-active {
-    animation: none;
-    /* Keep static rainbow gradient */
     background-position: 50% 50%;
+    animation: none;
   }
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .rainbow-text {
-    background: none;
     color: currentColor;
     text-shadow: none;
+    background: none;
     transition: none;
   }
 
   .rainbow-text-active {
-    animation: none;
-    background: none;
     color: currentColor;
+    background: none;
+    animation: none;
   }
 }
 

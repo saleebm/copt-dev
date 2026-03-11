@@ -2,10 +2,10 @@
 import type React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-type PostStackLoadingProps = {
+interface PostStackLoadingProps {
   isLoading: boolean;
   loadingPostId: string | null;
-};
+}
 
 /**
  * Loading indicator for smooth post addition transitions

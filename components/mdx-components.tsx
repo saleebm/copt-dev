@@ -17,15 +17,15 @@ import { CenteredText } from "./shared/centered-text";
 import { SightsList } from "./sights-list";
 
 // Custom Image component with configuration options
-type CustomImageProps = {
-  src: string;
+interface CustomImageProps {
   alt?: string;
-  width?: number | string;
-  height?: number | string;
-  placement?: "left" | "center" | "right";
   caption?: string;
   className?: string;
-};
+  height?: number | string;
+  placement?: "left" | "center" | "right";
+  src: string;
+  width?: number | string;
+}
 
 function CustomImage({
   src,
@@ -70,12 +70,12 @@ function CustomImage({
 }
 
 // Image Grid component for side-by-side layouts
-type ImageGridProps = {
+interface ImageGridProps {
   children: React.ReactNode;
+  className?: string;
   columns?: 2 | 3 | 4;
   gap?: "sm" | "md" | "lg";
-  className?: string;
-};
+}
 
 function ImageGrid({
   children,

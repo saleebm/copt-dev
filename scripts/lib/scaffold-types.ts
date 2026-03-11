@@ -55,6 +55,7 @@ export type ScaffoldResult = {
  * Available post type choices for CLI — derived from shared post-type-meta.
  */
 export { getPostTypeChoices as getPostTypeChoicesFromMeta } from "./post-type-meta";
+
 import { getPostTypeChoices } from "./post-type-meta";
 
 export const POST_TYPE_CHOICES = getPostTypeChoices();

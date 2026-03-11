@@ -7,10 +7,10 @@ import { TerminalModeSwitcher } from "@/components/navigation/terminal-mode-swit
 import type { useMobileNavigationState } from "@/hooks/use-mobile-navigation-state";
 import styles from "@/styles/navigation.module.css";
 
-type BrowseSectionProps = {
-  onNavigate?: () => void;
+interface BrowseSectionProps {
   navState?: ReturnType<typeof useMobileNavigationState>;
-};
+  onNavigate?: () => void;
+}
 
 const BROWSE_MODES = [
   { value: "nodes" as const, label: "Categories" },

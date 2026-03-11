@@ -3,11 +3,11 @@ import { EnhancedSuspense } from "@/components/shared/enhanced-suspense";
 import { MainWrapper } from "@/components/shared/main-wrapper";
 import { HomeServer } from "./components/home-server";
 
-type HomePageProps = {
+interface HomePageProps {
   searchParams?: Promise<{
     stack?: string; // e.g., "post-alpha,post-bravo" (canonical IDs)
   }>;
-};
+}
 
 export default function HomePage(props: HomePageProps) {
   return (

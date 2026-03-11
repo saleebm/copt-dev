@@ -48,8 +48,8 @@
 }
 
 .blogActive {
-  @apply border-chart-1 bg-chart-1/20;
   box-shadow: 0 0 10px rgba(142, 255, 142, 0.3);
+  @apply border-chart-1 bg-chart-1/20;
 }
 
 /* CONCRETE - Using chart-2 (cyan/teal) */
@@ -70,8 +70,8 @@
 }
 
 .concreteActive {
-  @apply border-chart-2 bg-chart-2/20;
   box-shadow: 0 0 10px rgba(0, 200, 200, 0.3);
+  @apply border-chart-2 bg-chart-2/20;
 }
 
 /* FINDING - Using chart-5 (orange/amber) */
@@ -92,8 +92,8 @@
 }
 
 .findingActive {
-  @apply border-chart-5 bg-chart-5/20;
   box-shadow: 0 0 10px rgba(180, 180, 255, 0.3);
+  @apply border-chart-5 bg-chart-5/20;
 }
 
 /* SIGHT - Using chart-3 (purple/blue) */
@@ -114,8 +114,8 @@
 }
 
 .sightActive {
-  @apply border-chart-3 bg-chart-3/20;
   box-shadow: 0 0 10px rgba(200, 150, 255, 0.3);
+  @apply border-chart-3 bg-chart-3/20;
 }
 
 /* Fallback for unknown types - Using muted colors */
@@ -136,8 +136,8 @@
 }
 
 .fallbackActive {
-  @apply border-muted bg-muted/20;
   box-shadow: 0 0 10px rgba(107, 114, 128, 0.3);
+  @apply border-muted bg-muted/20;
 }
 
 /* Container styles */

@@ -4,9 +4,9 @@ import { NavigationTabs } from "../navigation/navigation-tabs";
 import { QuakeTerminalMobile } from "../navigation/quake-terminal-mobile";
 import { PostArticle } from "./post-article";
 
-type PostStackContentProps = {
+interface PostStackContentProps {
   posts: RenderedPost[];
-};
+}
 
 /**
  * Server component that renders initial posts immediately for optimal UX

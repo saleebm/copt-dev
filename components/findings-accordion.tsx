@@ -7,17 +7,17 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-export type Finding = {
-  slug: string;
-  title: string;
+export interface Finding {
   content: string;
   original_url?: string;
-};
+  slug: string;
+  title: string;
+}
 
-type FindingsAccordionProps = {
-  findings: Finding[];
+interface FindingsAccordionProps {
   className?: string;
-};
+  findings: Finding[];
+}
 
 export function FindingsAccordion({
   findings,
