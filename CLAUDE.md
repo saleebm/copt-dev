@@ -37,6 +37,7 @@ Domain-specific agent skills extend this file — they do not override it:
 - Next.js conventions: `.agents/skills/next-best-practices/SKILL.md`
 - Next.js 16 caching: `.agents/skills/next-cache-components/SKILL.md`
 - Prisma: `.agents/skills/prisma-*/SKILL.md`
+- Cloud agent setup & testing: `.agents/skills/cloud-starter/SKILL.md`
 
 ## Commands
 
