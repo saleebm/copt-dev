@@ -6,6 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const nextConfig: NextConfig = {
+  distDir: process.env.BUILD_DIR || ".next",
   reactStrictMode: true,
   pageExtensions: ["ts", "tsx", "mdx"],
   // Enable new caching and pre-rendering behavior

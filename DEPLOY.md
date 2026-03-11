@@ -3,7 +3,7 @@
 ## Architecture
 
 ```
-Internet --> Nginx (443/80) --> localhost:3000 (Next.js via PM2)
+Internet --> Nginx (443/80) --> localhost:3000 (Next.js via PM2 cluster)
                                        |
                                  PostgreSQL 16 (localhost:5432)
 ```
@@ -14,38 +14,39 @@ Ubuntu 24.04 | Node 22 (nvm) | Bun 1.3.x | PostgreSQL 16 | Nginx (latest) | PM2 
 
 ## Deployment Files
 
-| File | Location on server | Purpose |
-|---|---|---|
-| `ecosystem.config.cjs` | Repo root (in git) | PM2 process config -- app name, env vars, log paths, memory limits |
-| `deploy.sh` | `/home/deploy/apps/deploy.sh` | Full deploy: pull, install, migrate, build, restart PM2 |
-| `sync-posts.sh` | `/home/deploy/apps/sync-posts.sh` | Post-only sync: pull posts, sync to DB (no restart needed) |
+| File | Purpose |
+|---|---|
+| `ecosystem.config.cjs` | PM2 cluster config (2 instances, env vars, log paths, memory limits) |
+| `deploy.sh` | Full deploy: pull, install, migrate, sync posts, build, zero-downtime reload |
 
 ## Deploy Workflow
 
 ```bash
 ssh deploy@<server>
-
-# Code deploy (pull + build + restart)
-./apps/deploy.sh
-
-# Code deploy + post sync
-./apps/deploy.sh sync
+cd apps/copt-dev
+./deploy.sh
 ```
 
-## Post Sync Workflow
+Each deploy:
+1. `git pull --ff-only origin main`
+2. `bun install`
+3. `bun run db:migrate:deploy`
+4. `bun run db:sync-posts` (marks deleted post files as unpublished)
+5. Builds to `.next-builds/<timestamp>/`, symlinks `.next-builds/current`
+6. `pm2 reload` rolls cluster instances one-by-one (zero downtime)
+7. Prunes old builds, keeping last 3
 
-Syncs MDX posts to the database without rebuilding or restarting the app.
+## One-Time Migration (fork -> cluster)
+
+If PM2 is currently running in fork mode, the first deploy must recreate the process:
 
 ```bash
-ssh deploy@<server>
-./apps/sync-posts.sh
+pm2 delete copt-dev
+pm2 start ecosystem.config.cjs
+pm2 save
 ```
 
-Can be scheduled via cron for automatic syncing:
-```bash
-# Example: sync posts every hour
-0 * * * * /home/deploy/apps/sync-posts.sh >> /home/deploy/logs/sync-posts.log 2>&1
-```
+After that, `deploy.sh` uses `pm2 reload` automatically.
 
 ## Server File Layout
 
@@ -55,13 +56,14 @@ Can be scheduled via cron for automatic syncing:
     copt-dev/            # git repo
       .env               # production env (not in git)
       ecosystem.config.cjs
-      .next/             # build output
-    deploy.sh
-    sync-posts.sh
+      .next-builds/
+        current -> <latest>  # symlink to active build
+        20260311-143000/
+        20260311-120000/
+      deploy.sh
   logs/
     copt-dev-out.log
     copt-dev-error.log
-    sync-posts.log
 ```
 
 ## Reference
