@@ -3,14 +3,14 @@
 ## Architecture
 
 ```
-Internet --> Nginx (443/80) --> localhost:3000 (Next.js via PM2 cluster)
+Internet --> Caddy (443/80) --> localhost:3000 (Next.js via PM2 cluster)
                                        |
                                  PostgreSQL 16 (localhost:5432)
 ```
 
 ## Server Stack
 
-Ubuntu 24.04 | Node 22 (nvm) | Bun 1.3.x | PostgreSQL 16 | Nginx (latest) | PM2 | Let's Encrypt SSL
+Ubuntu 24.04 | Node 22 (nvm) | Bun 1.3.x | PostgreSQL 16 | Caddy 2.x (auto-TLS) | PM2
 
 ## Deployment Files
 
@@ -21,11 +21,13 @@ Ubuntu 24.04 | Node 22 (nvm) | Bun 1.3.x | PostgreSQL 16 | Nginx (latest) | PM2 
 
 ## Deploy Workflow
 
+From local machine:
+
 ```bash
-ssh deploy@<server>
-cd apps/copt-dev
-./deploy.sh
+bun run deploy
 ```
+
+This runs `scripts/deploy-remote.sh`, which pushes to main, SSHes in, and runs `deploy.sh`.
 
 Each deploy:
 1. `git pull --ff-only origin main`
@@ -68,5 +70,5 @@ After that, `deploy.sh` uses `pm2 reload` automatically.
 
 ## Reference
 
-Full server provisioning steps (Ubuntu setup, Postgres, Node, Nginx, SSL, security hardening):
+Full server provisioning steps (Ubuntu setup, Postgres, Node, Caddy, security hardening):
 `.cursor/plans/deploy-server-setup.reference.md`

@@ -15,13 +15,11 @@ Open [http://localhost:3000](http://localhost:3000) to see the result.
 
 ## Deploying
 
-Push to `main`, then SSH into the server and run the deploy script:
-
 ```bash
-ssh deploy@<server> "cd ~/apps/copt-dev && git pull --ff-only origin main && ./deploy.sh"
+bun run deploy
 ```
 
-This pulls latest `main`, installs deps, runs migrations, syncs posts, builds (blue-green via `deploy.sh`), and reloads PM2. See [DEPLOY.md](DEPLOY.md) for server setup details.
+Pushes `main`, SSHes into the server, runs `deploy.sh` (pull, deps, migrations, sync posts, blue-green build, PM2 reload), and verifies HTTP 200. See [DEPLOY.md](DEPLOY.md) for server setup details.
 
 ## Learn More
 

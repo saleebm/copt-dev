@@ -33,7 +33,8 @@
     "lint:fix": "biome check . --write",
     "lint:fix:unsafe": "biome check . --write --unsafe",
     "typecheck": "tsc --noEmit",
-    "records:validate": "bun run scripts/validate-records.ts"
+    "records:validate": "bun run scripts/validate-records.ts",
+    "deploy": "bash scripts/deploy-remote.sh"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.72",
