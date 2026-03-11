@@ -4,14 +4,14 @@
   /* Ensure inline behavior in all contexts */
   display: inline;
 
-  /* Prevent text selection on the term itself for better UX */
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-
   /* Ensure consistent line height */
   line-height: inherit;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+
+  /* Prevent text selection on the term itself for better UX */
+  user-select: none;
 
   /* Smooth color transitions */
   transition:
@@ -29,9 +29,9 @@
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .hlexicon-term {
-    border-bottom: 1px solid currentColor;
     text-decoration: none;
     text-decoration-color: currentColor;
+    border-bottom: 1px solid currentColor;
   }
 }
 
@@ -47,14 +47,14 @@
 /* Print styles */
 @media print {
   .hlexicon-term {
-    text-decoration: none;
     color: inherit;
+    text-decoration: none;
   }
 
   .hlexicon-term::after {
-    content: " [" attr(aria-describedby) "]";
     font-size: 0.8em;
     color: #666;
+    content: " [" attr(aria-describedby) "]";
   }
 }
 

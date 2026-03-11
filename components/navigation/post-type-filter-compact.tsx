@@ -5,19 +5,19 @@ import { PostType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 import styles from "./post-type-filter.module.css";
 
-type PostTypeCount = {
-  type: PostType;
+interface PostTypeCount {
   count: number;
   percentage: number;
-};
+  type: PostType;
+}
 
-type PostTypeFilterCompactProps = {
+interface PostTypeFilterCompactProps {
+  className?: string;
+  onFilterChange?: (types: PostType[]) => void;
+  onTypeToggle?: (type: PostType) => void;
   postTypeCounts: PostTypeCount[];
   selectedTypes?: PostType[];
-  onTypeToggle?: (type: PostType) => void;
-  onFilterChange?: (types: PostType[]) => void;
-  className?: string;
-};
+}
 
 // Define display order and styling for post types using CSS module classes
 const POST_TYPE_CONFIG = {

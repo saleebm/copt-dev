@@ -1,18 +1,18 @@
 import { PostLink } from "@/components/mdx/post-link";
 import { BracketedPostName } from "@/components/shared/bracketed-post-name";
 
-export type Sight = {
-  slug: string;
-  title: string;
-  content: string;
+export interface Sight {
   categories?: string[];
+  content: string;
+  slug: string;
   tags?: string[];
-};
+  title: string;
+}
 
-type SightsListProps = {
-  sights: Sight[];
+interface SightsListProps {
   className?: string;
-};
+  sights: Sight[];
+}
 
 export function SightsList({ sights, className = "" }: SightsListProps) {
   return (
@@ -39,7 +39,7 @@ export function SightsList({ sights, className = "" }: SightsListProps) {
                     {sight.categories.map((category, idx, arr) => (
                       <span
                         className="text-foreground/60"
-                        key={`${sight.slug}-${category}-${idx}`}
+                        key={`${sight.slug}-${category}`}
                       >
                         {category}
                         {idx < arr.length - 1 && "/"}

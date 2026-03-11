@@ -16,15 +16,15 @@ import { PostTypeFilterBar } from "./post-type-filter-bar";
 import { TagCloud } from "./tag-cloud";
 
 // Define the PostNavItem type locally
-type PostNavItem = {
+interface PostNavItem {
   id: PostId;
   title: string;
   type: PostType;
-};
+}
 
-type EnhancedTagsTabProps = {
+interface EnhancedTagsTabProps {
   onNavigate?: () => void;
-};
+}
 
 export function EnhancedTagsTab({ onNavigate }: EnhancedTagsTabProps) {
   const { scrollState } = usePostStackState();
@@ -146,7 +146,11 @@ export function EnhancedTagsTab({ onNavigate }: EnhancedTagsTabProps) {
       setLoadingPosts(true);
 
       try {
-        type RawPost = { slug: string; type: PostType | string; title: string };
+        interface RawPost {
+          slug: string;
+          title: string;
+          type: PostType | string;
+        }
         // Fetch posts for this tag filtered by selected types
         const posts = (await getPostsByTagNameAction(
           tag.name,

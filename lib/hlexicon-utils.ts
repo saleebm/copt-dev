@@ -2,10 +2,10 @@ import type { HlexiconEntry } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/prisma";
 
 // Type for Hlexicon term definition
-export type HlexiconTerm = {
-  term: string;
+export interface HlexiconTerm {
   definition: string;
-};
+  term: string;
+}
 
 // Regex pattern to detect Hlexicon terms in content
 // Looks for patterns like {{term:definition}} or {{term|definition}}

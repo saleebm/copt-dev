@@ -1,10 +1,10 @@
 import { PostLinkClient } from "../client-wrappers/post-link-client";
 
-type PostLinkProps = {
-  postId: string;
+interface PostLinkProps {
   children: React.ReactNode;
   className?: string;
-};
+  postId: string;
+}
 
 export function PostLink({ postId, children, className }: PostLinkProps) {
   return (

@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type MainWrapperProps = {
+interface MainWrapperProps {
   children: ReactNode;
-  variant?: "default" | "gradient";
   className?: string;
-};
+  variant?: "default" | "gradient";
+}
 
 export function MainWrapper({
   children,

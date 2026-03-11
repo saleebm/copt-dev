@@ -5,20 +5,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 /**
  * Props for the AsciiArtRenderer component.
  */
-type AsciiArtRendererProps = {
+interface AsciiArtRendererProps {
   asciiArt: string;
-  src?: string;
-  className?: string;
-  lineCount: number;
-  maxLineLength: number;
   asciiCategory: "normal" | "large" | "extremely-large";
+  className?: string;
+  estimatedHeight: number;
   fontSizeEstimates: {
     mobile: number;
     tablet: number;
     desktop: number;
   };
-  estimatedHeight: number;
-};
+  lineCount: number;
+  maxLineLength: number;
+  src?: string;
+}
 
 /**
  * A React component that renders pre-formatted ASCII art and auto-scales it to fit its container width.
@@ -57,7 +57,9 @@ const AsciiArtRenderer = ({
 
   // Fetch ASCII art from src if asciiArt prop is empty
   useEffect(() => {
-    if (asciiArtProp || !src) return;
+    if (asciiArtProp || !src) {
+      return;
+    }
     fetch(src)
       .then((res) => res.text())
       .then(setFetchedArt);
@@ -132,7 +134,7 @@ const AsciiArtRenderer = ({
   );
 
   useEffect(() => {
-    if (!containerRef.current || !asciiArt) {
+    if (!(containerRef.current && asciiArt)) {
       return;
     }
 
@@ -202,7 +204,7 @@ const AsciiArtRenderer = ({
   if (!asciiArt) {
     return (
       <div
-        className="w-full flex items-center justify-center p-1 overflow-hidden"
+        className="flex w-full items-center justify-center overflow-hidden p-1"
         style={{ minHeight: `${estimatedHeight}px` }}
       />
     );

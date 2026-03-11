@@ -1,15 +1,16 @@
 #!/usr/bin/env bun
+
 /**
  * Post Scaffolding CLI
  * Creates new posts with AI-generated outlines (model configured via AI_MODEL env var)
  */
 
+import { resolveApiKey } from "./lib/ai-config";
 import {
   displayHelp,
   parseCliArguments,
   validateCliArguments,
 } from "./lib/cli-parser";
-import { resolveApiKey } from "./lib/ai-config";
 import { AIServiceFactory } from "./lib/services/ai-service";
 import { DatabaseServiceFactory } from "./lib/services/database-service";
 import { FileServiceFactory } from "./lib/services/file-service";

@@ -3,19 +3,19 @@ import { MDXRemote } from "next-mdx-remote";
 import type React from "react";
 import { PostContentSkeleton } from "@/components/shared/skeletons";
 
-type CreatePostContentProps = {
-  isMdx?: boolean;
-  rawContent?: string;
-  mdxSource?: MDXRemoteSerializeResult;
+interface CreatePostContentProps {
   components?: Record<string, React.ComponentType<Record<string, unknown>>>;
-  isError?: boolean;
   errorMessage?: string;
-};
+  isError?: boolean;
+  isMdx?: boolean;
+  mdxSource?: MDXRemoteSerializeResult;
+  rawContent?: string;
+}
 
-type PostContentResult = {
-  renderedContent: React.ReactNode;
+interface PostContentResult {
   isContentReady: boolean;
-};
+  renderedContent: React.ReactNode;
+}
 
 export function createPostContent({
   isMdx,

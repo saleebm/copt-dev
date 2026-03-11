@@ -19,9 +19,9 @@ import {
 } from "./navigation-shared-components";
 import { PostTypeFilterBar } from "./post-type-filter-bar";
 
-type EnhancedCategoryTabProps = {
+interface EnhancedCategoryTabProps {
   onNavigate?: () => void;
-};
+}
 
 export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
   const { scrollState } = usePostStackState();
@@ -130,15 +130,15 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
         // Convert category path to array for hierarchical matching
         const categoryPath = category.path.split("/");
 
-        type RawPost = {
-          slug: string;
-          type: PostType | string;
-          title: string;
-          lastEdited?: Date;
-          createdAt?: Date;
-          tags?: Array<{ name: string }>;
+        interface RawPost {
           categories?: Array<{ name: string }>;
-        };
+          createdAt?: Date;
+          lastEdited?: Date;
+          slug: string;
+          tags?: Array<{ name: string }>;
+          title: string;
+          type: PostType | string;
+        }
 
         // Fetch posts for this category filtered by selected types
         const posts = (await getCategoryPosts(

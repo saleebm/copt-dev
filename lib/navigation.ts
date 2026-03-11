@@ -2,16 +2,16 @@ import { cache } from "react";
 import type { Post } from "./generated/prisma/client";
 import { getPostsByType } from "./posts";
 
-export type NavigationItem = {
-  title: string;
+export interface NavigationItem {
   slug: string;
+  title: string;
   type: "CONCRETE" | "BLOG";
-};
+}
 
-export type NavigationData = {
-  concretePages: NavigationItem[];
+export interface NavigationData {
   blogPosts: NavigationItem[];
-};
+  concretePages: NavigationItem[];
+}
 
 export const getNavigationData = cache(async (): Promise<NavigationData> => {
   const [concretePages, blogPosts] = await Promise.all([

@@ -10,10 +10,10 @@ import type { useMobileNavigationState } from "@/hooks/use-mobile-navigation-sta
 import { PostType } from "@/lib/generated/prisma";
 import styles from "@/styles/navigation.module.css";
 
-type TimelineSectionProps = {
-  onNavigate?: () => void;
+interface TimelineSectionProps {
   navState?: ReturnType<typeof useMobileNavigationState>;
-};
+  onNavigate?: () => void;
+}
 
 const TIMELINE_MODES = [
   { value: "live" as const, label: "Live" },

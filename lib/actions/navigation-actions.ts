@@ -25,12 +25,12 @@ import type {
   TagWithMetadata,
 } from "@/types/navigation";
 
-type FindingsByDate = {
+interface FindingsByDate {
+  count: number;
   date: string;
   formattedDate: string;
-  count: number;
   slug: string;
-};
+}
 
 /**
  * Server action to get all blog posts grouped by categories

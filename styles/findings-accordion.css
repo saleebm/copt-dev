@@ -90,15 +90,15 @@
 }
 
 .findings-accordion-item {
+  overflow: hidden;
   scroll-margin-top: 120px;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
   /* Individual item scroll offset */
   border-radius: 12px;
-  border: 1px solid hsl(var(--border));
-  background: hsl(var(--card));
-  overflow: hidden;
   transition: all var(--findings-transition-duration) var(--findings-ease);
-  will-change: transform, box-shadow, border-color;
   animation: findings-item-enter 0.5s var(--findings-ease) both;
+  will-change: transform, box-shadow, border-color;
 }
 
 .findings-accordion-item:hover {
@@ -113,14 +113,14 @@
 }
 
 .findings-accordion-trigger {
+  position: relative;
   padding: 1.5rem;
   font-size: 1.125rem;
   font-weight: 600;
-  text-align: left;
   color: hsl(var(--foreground));
+  text-align: left;
   background: transparent;
   transition: all var(--findings-transition-duration) var(--findings-ease);
-  position: relative;
   will-change: transform, background-color;
 }
 
@@ -139,16 +139,16 @@
 }
 
 .findings-accordion-trigger::after {
-  content: "";
   position: absolute;
-  right: 1.5rem;
   top: 50%;
-  transform: translateY(-50%) rotate(0deg);
+  right: 1.5rem;
   width: 16px;
   height: 16px;
+  content: "";
   border: 2px solid currentColor;
-  border-left: none;
   border-top: none;
+  border-left: none;
+  transform: translateY(-50%) rotate(0deg);
   transition: transform var(--findings-transition-duration) var(--findings-ease);
 }
 
@@ -174,15 +174,15 @@
 
 .findings-source-link {
   display: inline-flex;
-  align-items: center;
   gap: 0.5rem;
-  margin-top: 1rem;
+  align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid hsl(var(--border));
-  color: hsl(var(--primary));
+  margin-top: 1rem;
   font-size: 0.875rem;
   font-weight: 500;
+  color: hsl(var(--primary));
   text-decoration: none;
+  border-top: 1px solid hsl(var(--border));
   transition: all 0.2s var(--findings-ease);
   will-change: transform, color;
 }
@@ -238,9 +238,9 @@
   .findings-accordion-trigger,
   .findings-accordion-content,
   .findings-source-link {
+    transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
   }
 
   .findings-accordion-item:hover {

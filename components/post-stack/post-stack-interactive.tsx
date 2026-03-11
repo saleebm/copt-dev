@@ -6,9 +6,9 @@ import { PostStackObserver } from "./post-stack-observer";
 import { PostStackRenderer } from "./post-stack-renderer";
 import { PostStackStyling } from "./post-stack-styling";
 
-type PostStackInteractiveProps = {
+interface PostStackInteractiveProps {
   serverPostOriginalIds: string[];
-};
+}
 
 /**
  * Coordinator component that orchestrates post stack interactivity

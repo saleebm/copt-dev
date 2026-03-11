@@ -9,10 +9,10 @@ import { PostArticle } from "./post-article";
 import { PostStackHydrationGuard } from "./post-stack-hydration-guard";
 import { PostStackLoading } from "./post-stack-loading";
 
-type PostStackRendererProps = {
-  serverPostOriginalIds: string[];
+interface PostStackRendererProps {
   isHydrated: boolean;
-};
+  serverPostOriginalIds: string[];
+}
 
 /**
  * Focused component for portal rendering with smooth transitions

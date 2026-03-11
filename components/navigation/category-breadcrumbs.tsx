@@ -4,11 +4,11 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import type { CategoryNode } from "@/types/navigation";
 
-type CategoryBreadcrumbsProps = {
+interface CategoryBreadcrumbsProps {
   category: CategoryNode;
-  onNavigate: (category: CategoryNode | null) => void;
   className?: string;
-};
+  onNavigate: (category: CategoryNode | null) => void;
+}
 
 export function CategoryBreadcrumbs({
   category,

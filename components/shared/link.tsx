@@ -2,13 +2,13 @@ import NextLink from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type LinkProps = {
-  href: string;
+interface LinkProps {
   children: ReactNode;
-  variant?: "default" | "primary" | "muted";
   className?: string;
   external?: boolean;
-};
+  href: string;
+  variant?: "default" | "primary" | "muted";
+}
 
 export function Link({
   href,

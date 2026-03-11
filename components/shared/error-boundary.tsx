@@ -4,19 +4,19 @@ import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import React, { Component, type ReactNode } from "react";
 
-type ErrorBoundaryState = {
-  hasError: boolean;
+interface ErrorBoundaryState {
   error: Error | null;
   errorInfo: React.ErrorInfo | null;
-};
+  hasError: boolean;
+}
 
-type ErrorBoundaryProps = {
+interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
-  resetOnPropsChange?: boolean;
   resetKeys?: Array<string | number>;
-};
+  resetOnPropsChange?: boolean;
+}
 
 export class ErrorBoundary extends Component<
   ErrorBoundaryProps,

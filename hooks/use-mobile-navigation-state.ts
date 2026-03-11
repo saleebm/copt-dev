@@ -23,14 +23,14 @@ const DEFAULT_STATE = {
 export type TabId = "session" | "browse" | "timeline";
 export type BrowseMode = "nodes" | "index";
 
-export type MobileNavState = {
+export interface MobileNavState {
   activeTab: TabId;
-  selectedPostTypes: PostType[];
   browseMode: BrowseMode;
-  scrollPositions: Record<TabId, number>;
   expandedCategories: string[];
   lastClosedAt: number;
-};
+  scrollPositions: Record<TabId, number>;
+  selectedPostTypes: PostType[];
+}
 
 /**
  * Hook for managing and persisting mobile navigation state

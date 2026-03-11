@@ -2,11 +2,11 @@
 
 import { Hlexicon } from "@/components/hlexicon";
 
-type HlexiconClientProps = {
-  term: string;
-  definition: string;
+interface HlexiconClientProps {
   className?: string;
-};
+  definition: string;
+  term: string;
+}
 
 /**
  * Client wrapper for Hlexicon component

@@ -3,10 +3,10 @@
 import { motion } from "motion/react";
 import type React from "react";
 
-type BracketedPostNameProps = {
-  postId: string;
+interface BracketedPostNameProps {
   isActive: boolean;
-};
+  postId: string;
+}
 
 export const BracketedPostName: React.FC<BracketedPostNameProps> = ({
   postId,

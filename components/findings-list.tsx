@@ -1,19 +1,19 @@
 import { PostLink } from "@/components/mdx/post-link";
 import { BracketedPostName } from "@/components/shared/bracketed-post-name";
 
-export type Finding = {
-  slug: string;
-  title: string;
+export interface Finding {
+  categories?: string[];
   content: string;
   original_url?: string;
-  categories?: string[];
+  slug: string;
   tags?: string[];
-};
+  title: string;
+}
 
-type FindingsListProps = {
-  findings: Finding[];
+interface FindingsListProps {
   className?: string;
-};
+  findings: Finding[];
+}
 
 export function FindingsList({ findings, className = "" }: FindingsListProps) {
   return (
@@ -40,7 +40,7 @@ export function FindingsList({ findings, className = "" }: FindingsListProps) {
                     {finding.categories.map((category, idx, arr) => (
                       <span
                         className="text-foreground/60"
-                        key={`${finding.slug}-${category}-${idx}`}
+                        key={`${finding.slug}-${category}`}
                       >
                         {category}
                         {idx < arr.length - 1 && "/"}

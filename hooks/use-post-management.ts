@@ -15,16 +15,16 @@ import {
 import type { PostStackMachine } from "@/lib/post-stack-machine";
 import type { PostData, PostId, RenderedPost } from "@/types/post";
 
-type UsePostManagementProps = {
+interface UsePostManagementProps {
+  activePostId: string | null;
   actor: ActorRefFrom<PostStackMachine>;
-  posts: RenderedPost[];
+  currentStackIds: string[];
   dismissingInfo: { id: string } | null;
   goHome: () => void;
-  updateUrl: (stackIds: string[]) => void;
-  currentStackIds: string[];
-  activePostId: string | null;
+  posts: RenderedPost[];
   setActivePost: (postId: string | null) => void;
-};
+  updateUrl: (stackIds: string[]) => void;
+}
 
 export function usePostManagement({
   actor,
@@ -181,14 +181,14 @@ export function usePostManagement({
             type: "POST_LOAD_ERROR",
             error: `Could not load post "${originalPostIdToAdd}"`,
           });
-          alert(`Error: Could not load post "${originalPostIdToAdd}".`);
+          console.error(`Error: Could not load post "${originalPostIdToAdd}".`);
         }
       } catch (_error) {
         actor.send({
           type: "POST_LOAD_ERROR",
           error: "An error occurred while loading the post",
         });
-        alert("An error occurred while loading the post.");
+        console.error("An error occurred while loading the post.");
       }
     },
     [actor, posts, dismissingInfo]
@@ -216,22 +216,24 @@ export function usePostManagement({
       }
 
       // Use helper to validate and correct the index if needed
-      const { isValid, correctIndex, message } = validateAndCorrectIndex(
+      const { isValid, correctIndex } = validateAndCorrectIndex(
         posts,
         postIdToDismiss,
         indexToDismiss
       );
 
-      if (!isValid) {
-        if (message) {
-          // Validation message logged by validate function
+      const resolvedIndex = (() => {
+        if (!isValid) {
+          if (correctIndex === -1) {
+            return -1;
+          }
+          return correctIndex;
         }
+        return indexToDismiss;
+      })();
 
-        if (correctIndex === -1) {
-          return;
-        }
-
-        indexToDismiss = correctIndex;
+      if (resolvedIndex === -1) {
+        return;
       }
 
       // Note: Scroll target is now determined by the state machine during ANIMATION_COMPLETE
@@ -241,7 +243,7 @@ export function usePostManagement({
       actor.send({
         type: "DISMISS_POST",
         postId: postIdToDismiss,
-        index: indexToDismiss,
+        index: resolvedIndex,
       });
 
       // Try to find the DOM element for animation

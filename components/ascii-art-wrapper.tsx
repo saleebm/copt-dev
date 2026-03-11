@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import AsciiArtRenderer from "./ascii-art-renderer";
 
-type AsciiArtWrapperProps = {
+interface AsciiArtWrapperProps {
   asciiArt?: string;
-  src?: string;
   className?: string;
   height?: string | number;
-};
+  src?: string;
+}
 
 /**
  * Simple server wrapper component for AsciiArtRenderer that provides a stable container.
@@ -18,7 +18,7 @@ export function AsciiArtWrapper({
   className = "",
   height,
 }: AsciiArtWrapperProps) {
-  if (!asciiArt && !src) {
+  if (!(asciiArt || src)) {
     return null;
   }
 
@@ -54,8 +54,11 @@ export function AsciiArtWrapper({
     );
   }
 
+  // At this point asciiArt is guaranteed to be defined (early returns handle undefined cases)
+  const resolvedAsciiArt = asciiArt as string;
+
   // Pre-calculate ASCII art metadata on the server
-  const lines = asciiArt.split("\n");
+  const lines = resolvedAsciiArt.split("\n");
   const lineCount = lines.length;
   const maxLineLength = Math.max(...lines.map((line) => line.length));
 
@@ -201,7 +204,7 @@ export function AsciiArtWrapper({
         }
       >
         <AsciiArtRenderer
-          asciiArt={asciiArt}
+          asciiArt={resolvedAsciiArt}
           asciiCategory={asciiCategory}
           // Pass pre-calculated metadata to reduce client-side work
           className={className}

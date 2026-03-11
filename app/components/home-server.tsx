@@ -1,11 +1,11 @@
 import { PostStackDataFetcher } from "@/components/post-stack/post-stack-data-fetcher";
 import type { PostStackParams } from "@/lib/post-stack-utils-client";
 
-type HomeServerProps = {
+interface HomeServerProps {
   searchParams?: Promise<{
     stack?: string; // e.g., "post-alpha,post-bravo" (canonical IDs)
   }>;
-};
+}
 
 export async function HomeServer({ searchParams }: HomeServerProps) {
   const resolvedSearchParams = await searchParams;

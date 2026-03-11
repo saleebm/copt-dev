@@ -10,22 +10,22 @@ import {
   transformHlexiconInContent,
 } from "./hlexicon-utils";
 
-export type PostMetadata = {
-  slug: string;
-  title: string;
-  excerpt?: string;
-  date?: string | null;
-  tags?: string[];
+export interface PostMetadata {
   categories?: string[];
-  type: PostType;
-  status?: "PUBLISHED" | "DRAFT" | "ARCHIVED";
-  published?: boolean;
-  filePath: string;
+  date?: string | null;
+  excerpt?: string;
   fileHash: string;
+  filePath: string;
+  findingsCount?: number;
   hlexiconTerms?: HlexiconTerm[];
   original_url?: string;
-  findingsCount?: number;
-};
+  published?: boolean;
+  slug: string;
+  status?: "PUBLISHED" | "DRAFT" | "ARCHIVED";
+  tags?: string[];
+  title: string;
+  type: PostType;
+}
 
 export type ParsedPost = PostMetadata & {
   content: string;

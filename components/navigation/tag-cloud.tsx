@@ -7,14 +7,14 @@ import type { TagWithMetadata } from "@/types/navigation";
 
 // import { usePostStackActions } from "@/components/post-stack/post-stack-provider-xstate" // For future post navigation
 
-type TagCloudProps = {
-  tags: TagWithMetadata[];
-  onTagClick?: (tag: TagWithMetadata) => void;
-  onNavigate?: () => void;
-  density?: "compact" | "normal" | "expanded";
-  showPostTypes?: boolean;
+interface TagCloudProps {
   className?: string;
-};
+  density?: "compact" | "normal" | "expanded";
+  onNavigate?: () => void;
+  onTagClick?: (tag: TagWithMetadata) => void;
+  showPostTypes?: boolean;
+  tags: TagWithMetadata[];
+}
 
 export function TagCloud({
   tags,

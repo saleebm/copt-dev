@@ -3,14 +3,14 @@
 import React, { useCallback, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-type TooltipProps = {
-  content: string;
+interface TooltipProps {
   children: React.ReactNode;
-  side?: "top" | "bottom" | "left" | "right";
   className?: string;
+  content: string;
   delayDuration?: number;
   disabled?: boolean;
-};
+  side?: "top" | "bottom" | "left" | "right";
+}
 
 export const Tooltip: React.FC<TooltipProps> = ({
   content,
@@ -175,13 +175,13 @@ export const Tooltip: React.FC<TooltipProps> = ({
 };
 
 // Higher-order component for easy wrapping
-type WithTooltipProps = {
-  tooltip: string;
-  side?: "top" | "bottom" | "left" | "right";
+interface WithTooltipProps {
+  className?: string;
   delayDuration?: number;
   disabled?: boolean;
-  className?: string;
-};
+  side?: "top" | "bottom" | "left" | "right";
+  tooltip: string;
+}
 
 export function withTooltip<P extends object>(
   Component: React.ComponentType<P>

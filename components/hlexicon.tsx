@@ -5,11 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTooltipPosition } from "@/hooks/use-tooltip-position";
 
-type HlexiconProps = {
-  term: string;
-  definition: string;
+interface HlexiconProps {
   className?: string;
-};
+  definition: string;
+  term: string;
+}
 
 export function Hlexicon({ term, definition, className = "" }: HlexiconProps) {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
@@ -67,7 +67,7 @@ export function Hlexicon({ term, definition, className = "" }: HlexiconProps) {
         <div className="text-muted-foreground leading-relaxed">
           {definition}
         </div>
-        <div className="-bottom-1 -translate-x-1/2 absolute left-1/2 h-2 w-2 rotate-45 transform border-border border-r border-b bg-popover" />
+        <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 transform border-border border-r border-b bg-popover" />
       </div>
     ) : null;
 

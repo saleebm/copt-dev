@@ -2,11 +2,11 @@
 import type React from "react";
 import { memo, useEffect } from "react";
 
-type PostStackStylingProps = {
+interface PostStackStylingProps {
   activePostId: string | null;
   isHydrated: boolean;
   scrollState?: "idle" | "programmaticScroll" | "userInteraction" | "settling"; // Add scroll state awareness
-};
+}
 
 /**
  * Focused component for active post styling

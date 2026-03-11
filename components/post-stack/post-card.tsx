@@ -15,11 +15,11 @@ import type { RenderedPost } from "@/types/post";
 import PostCardFooter from "./post-card-footer";
 import PostCardHeader from "./post-card-header";
 
-type PostCardProps = {
-  post: RenderedPost;
+interface PostCardProps {
   index: number;
   keyPrefix?: "server" | "client";
-};
+  post: RenderedPost;
+}
 
 const PostCard: React.FC<PostCardProps> = ({
   post,

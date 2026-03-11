@@ -32,5 +32,5 @@
     "next.config.mts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "TRASH"]
+  "exclude": ["node_modules", "TRASH", "scripts/archive"]
 }

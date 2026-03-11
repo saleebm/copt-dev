@@ -1,9 +1,9 @@
 /* Post dismissal animation - Old TV shutoff effect */
 .dismissContainer {
   position: relative;
-  overflow: hidden;
   /* Maintain original height during animation */
   height: var(--original-height, auto);
+  overflow: hidden;
   transition: height 0.3s ease-out 0.5s;
   /* Delayed height collapse after animation */
 }
@@ -17,13 +17,13 @@
 /* Black bars that slide from top and bottom */
 .dismissing::before,
 .dismissing::after {
-  content: "";
   position: absolute;
-  left: 0;
   right: 0;
-  height: 0;
-  background-color: #000;
+  left: 0;
   z-index: 10;
+  height: 0;
+  content: "";
+  background-color: #000;
   transition: height 0.5s ease-in-out;
   /* Add animation name for event listening */
   animation-name: tv-shutdown-bars;
@@ -60,12 +60,11 @@
 
 /* Collapse animation after TV effect */
 .dismissing.collapsing {
+  visibility: hidden;
+  opacity: 0;
   transform: scaleY(0);
   transform-origin: center;
   transition: transform 0.3s ease-out;
-  opacity: 0;
-  /* Ensure post stays invisible during collapse */
-  visibility: hidden;
 }
 
 /* Respect reduced motion preferences */
@@ -80,17 +79,17 @@
   }
 
   .dismissing.collapsing {
+    visibility: hidden;
     transition:
       transform 0.1s ease-out,
       opacity 0.1s ease-out;
-    visibility: hidden;
   }
 }
 
 /* Smooth height transition */
 .dismissContainer.collapsing {
   height: 0 !important;
-  margin: 0;
   padding: 0;
+  margin: 0;
   border: none;
 }

@@ -5,11 +5,11 @@ import { ChevronUp, Terminal } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-type FloatingActionButtonProps = {
-  onClick: () => void;
-  isOpen: boolean;
+interface FloatingActionButtonProps {
   className?: string;
-};
+  isOpen: boolean;
+  onClick: () => void;
+}
 
 export function FloatingActionButton({
   onClick,

@@ -13,10 +13,10 @@ import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import type { useMobileNavigationState } from "@/hooks/use-mobile-navigation-state";
 
-type NavigationTabsProps = {
-  onNavigate?: () => void;
+interface NavigationTabsProps {
   navState?: ReturnType<typeof useMobileNavigationState>;
-};
+  onNavigate?: () => void;
+}
 
 type TabId = "session" | "browse" | "timeline";
 

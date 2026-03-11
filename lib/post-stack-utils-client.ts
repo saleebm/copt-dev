@@ -8,19 +8,19 @@ import { Text } from "@/components/shared/text";
 import { DEFAULT_POST_ID } from "@/lib/constants";
 import type { RenderedPost } from "@/types/post";
 
-export type PostStackParams = {
+export interface PostStackParams {
+  pathParams?: string[]; // e.g., ["post-alpha", "post-bravo"] from catch-all routes
   searchParams?: {
     stack?: string; // e.g., "post-alpha,post-bravo" (canonical IDs)
   };
-  pathParams?: string[]; // e.g., ["post-alpha", "post-bravo"] from catch-all routes
-};
+}
 
-export type ParsedPostIds = {
-  postIds: string[];
+export interface ParsedPostIds {
   pathPostIds: string[];
+  postIds: string[];
   searchPostIds: string[];
   source: "combined" | "path" | "search" | "default";
-};
+}
 
 /**
  * Creates a text element for rendering.

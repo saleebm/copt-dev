@@ -5,9 +5,11 @@ import type React from "react";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/lib/animations";
 
-type GoHomeButtonProps = {
+interface GoHomeButtonProps {
   children?: React.ReactNode;
   className?: string;
+  onClick?: () => void; // Allow override of the default behavior
+  size?: "default" | "sm" | "lg" | "icon";
   variant?:
     | "default"
     | "destructive"
@@ -15,9 +17,7 @@ type GoHomeButtonProps = {
     | "secondary"
     | "ghost"
     | "link";
-  size?: "default" | "sm" | "lg" | "icon";
-  onClick?: () => void; // Allow override of the default behavior
-};
+}
 
 export function GoHomeButton({
   children = "Go Home",

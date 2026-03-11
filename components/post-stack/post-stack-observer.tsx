@@ -7,9 +7,9 @@ import {
 } from "@/components/post-stack/post-stack-provider-xstate";
 import { getMostVisiblePostIndex } from "@/lib/scroll-utils";
 
-type PostStackObserverProps = {
+interface PostStackObserverProps {
   isHydrated: boolean;
-};
+}
 
 /**
  * Focused component for intersection observer logic

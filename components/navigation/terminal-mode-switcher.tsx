@@ -2,12 +2,12 @@
 
 import { cn } from "@/lib/utils";
 
-type TerminalModeSwitcherProps<T extends string> = {
-  modes: readonly { value: T; label: string }[];
+interface TerminalModeSwitcherProps<T extends string> {
   activeMode: T;
-  onModeChange: (mode: T) => void;
   className?: string;
-};
+  modes: readonly { value: T; label: string }[];
+  onModeChange: (mode: T) => void;
+}
 
 /**
  * Terminal-style mode switcher with CLI aesthetic

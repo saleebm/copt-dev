@@ -9,20 +9,20 @@ import { DEFAULT_POST_ID } from "@/lib/constants";
 import { parseCurrentUrl } from "@/lib/post-stack-utils-client";
 import type { RenderedPost } from "@/types/post";
 
-export type NavigationState = {
-  postIds: string[]; // Canonical post IDs from URL
+export interface NavigationState {
   activePostId: string | null; // Currently active post
   isRootPage: boolean; // Whether we're on home route
+  postIds: string[]; // Canonical post IDs from URL
   source: "url" | "state" | "default";
-};
+}
 
-export type NavigationDirection = {
+export interface NavigationDirection {
+  addedPosts: string[];
   direction: "forward" | "backward" | "replace";
   fromStack: string[];
-  toStack: string[];
-  addedPosts: string[];
   removedPosts: string[];
-};
+  toStack: string[];
+}
 
 /**
  * Centralized URL State Manager Class

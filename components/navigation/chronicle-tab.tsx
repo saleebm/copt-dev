@@ -18,15 +18,15 @@ import { PostListItem } from "./navigation-shared-components";
 
 type Grouping = "day" | "week" | "month";
 
-type ChroniclePost = {
+interface ChroniclePost {
+  categories: Array<{ name: string }>;
   id: string;
+  originalDate: Date;
   slug: string;
+  tags: Array<{ name: string }>;
   title: string;
   type: PostType;
-  originalDate: Date;
-  tags: Array<{ name: string }>;
-  categories: Array<{ name: string }>;
-};
+}
 
 // Compute a grouping key given a date
 function getGroupKey(date: Date, mode: Grouping): string {
@@ -70,9 +70,9 @@ function getGroupLabel(date: Date, mode: Grouping): string {
   return `Week of ${formatDateWithoutTimezone(date, { year: "numeric", month: "short", day: "numeric" })}`;
 }
 
-type ChronicleTabProps = {
+interface ChronicleTabProps {
   onNavigate?: () => void;
-};
+}
 
 export function ChronicleTab({ onNavigate }: ChronicleTabProps = {}) {
   const [grouping, setGrouping] = useState<Grouping>("day");

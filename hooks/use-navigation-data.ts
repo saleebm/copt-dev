@@ -4,38 +4,38 @@ import { useMemo } from "react";
 import type { RenderedPost } from "@/types/post";
 
 // Types
-type Category = {
+interface Category {
+  count: number;
   name: string;
   posts: RenderedPost[];
-  count: number;
   type: "CONCRETE" | "BLOG";
-};
+}
 
-type Tag = {
-  name: string;
+interface Tag {
   count: number;
+  name: string;
   posts: string[]; // Post IDs
-};
+}
 
-type TimelineEntry = {
+interface TimelineEntry {
   date: Date;
-  posts: RenderedPost[];
   formattedDate: string;
   monthKey: string;
-};
+  posts: RenderedPost[];
+}
 
-type NavigationData = {
+interface NavigationData {
+  blogPostIds: string[];
   categories: Category[];
   tags: Tag[];
   timeline: TimelineEntry[];
-  blogPostIds: string[];
-};
+}
 
-type UseNavigationDataProps = {
-  posts: RenderedPost[];
+interface UseNavigationDataProps {
   allAvailablePostIds: string[];
   concretePostIds: string[];
-};
+  posts: RenderedPost[];
+}
 
 export function useNavigationData({
   posts,

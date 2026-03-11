@@ -7,16 +7,16 @@ import type { PostStackMachine } from "@/lib/post-stack-machine";
 import type { UrlStateManager } from "@/lib/url-state-manager";
 import type { RenderedPost } from "@/types/post";
 
-type UseUrlManagementProps = {
+interface UseUrlManagementProps {
   actor: ActorRefFrom<PostStackMachine>;
-  urlStateManager: UrlStateManager;
-  posts: RenderedPost[];
   currentStackIds: string[];
   isLoadingNewPost: string | null;
   isRootPage: boolean;
+  posts: RenderedPost[];
   // Gate URL updates during programmatic scroll to prevent top-jump
   scrollState?: "idle" | "programmaticScroll" | "userInteraction" | "settling";
-};
+  urlStateManager: UrlStateManager;
+}
 
 export function useUrlManagement({
   actor,

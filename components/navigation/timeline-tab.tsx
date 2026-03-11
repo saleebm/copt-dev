@@ -12,12 +12,14 @@ import {
   PostListItem,
 } from "./navigation-shared-components";
 
-type TimelineTabProps = {
+interface TimelineTabProps {
   onNavigate?: () => void;
-};
+}
 
-type TimelineEntry = {
+interface TimelineEntry {
   date: Date;
+  formattedDate: string;
+  monthKey: string;
   posts: Array<{
     id: string;
     title: string;
@@ -25,9 +27,7 @@ type TimelineEntry = {
     lastEdited?: Date;
     originalId: string;
   }>;
-  formattedDate: string;
-  monthKey: string;
-};
+}
 
 export function TimelineTab({ onNavigate }: TimelineTabProps) {
   const { timeline } = usePostStackState();
@@ -239,7 +239,7 @@ export function TimelineTab({ onNavigate }: TimelineTabProps) {
 
                     return (
                       <PostListItem
-                        key={`${entry.monthKey}-${post.id}-${index}`}
+                        key={`${entry.monthKey}-${post.id}`}
                         onClick={handlePostClick}
                         post={postForNavigation}
                       />

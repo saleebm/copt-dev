@@ -2,11 +2,11 @@
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
-type PostStackHydrationGuardProps = {
+interface PostStackHydrationGuardProps {
   children: ReactNode;
-  serverPostOriginalIds: string[];
   fallback?: ReactNode;
-};
+  serverPostOriginalIds: string[];
+}
 
 /**
  * PostStackHydrationGuard prevents double-rendering during hydration

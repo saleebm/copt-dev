@@ -4,33 +4,36 @@ import { cancelCurrentScroll } from "@/lib/scroll-utils";
 import type { RenderedPost } from "@/types/post";
 
 // Define the machine context type
-export type PostStackContext = {
-  posts: RenderedPost[];
-  currentStackIds: string[]; // Post IDs currently in the client's view
+export interface PostStackContext {
   activePostId: string | null; // Currently active/focused post ID
-  dismissingInfo: { id: string } | null; // Post ID of the post being dismissed
-  isLoadingNewPost: string | null; // Post ID of the post being loaded
   allAvailablePostIds: string[]; // For footer links
-  serverInitialStackIds: string[]; // Original stack IDs from server
-  scrollState: ScrollState;
+  currentStackIds: string[]; // Post IDs currently in the client's view
+  dismissingInfo: { id: string } | null; // Post ID of the post being dismissed
   error: string | null;
-  programmaticScrollTarget: string | null; // Track programmatic scroll target
   isInitialLoad: boolean; // Track initial load to prevent intersection observer interference
-  postCache: RenderedPost[]; // Cache of all loaded posts for browser navigation
-  visiblePostIds: string[]; // IDs of posts that should be visible (for browser navigation)
+  isLoadingNewPost: string | null; // Post ID of the post being loaded
   isProgrammaticScroll: boolean; // Lock to prevent observer interference during programmatic scrolls
+  pendingNavigation: {
+    stackIds: string[];
+    direction: "forward" | "backward";
+  } | null; // Store pending navigation during scroll cancellation
+  postCache: RenderedPost[]; // Cache of all loaded posts for browser navigation
+  posts: RenderedPost[];
+  programmaticScrollTarget: string | null; // Track programmatic scroll target
   scrollOperationId: number; // Track current scroll operation to ignore stale completions
-  pendingNavigation: { stackIds: string[]; direction: "forward" | "backward" } | null; // Store pending navigation during scroll cancellation
-};
+  scrollState: ScrollState;
+  serverInitialStackIds: string[]; // Original stack IDs from server
+  visiblePostIds: string[]; // IDs of posts that should be visible (for browser navigation)
+}
 
 // Define the input type for the machine
-export type PostStackInput = {
-  posts: RenderedPost[];
-  currentStackIds: string[];
-  allAvailablePostIds: string[];
-  serverInitialStackIds: string[];
+export interface PostStackInput {
   activePostId: string | null;
-};
+  allAvailablePostIds: string[];
+  currentStackIds: string[];
+  posts: RenderedPost[];
+  serverInitialStackIds: string[];
+}
 
 // Define all possible events
 export type PostStackEvent =
@@ -163,7 +166,10 @@ export const postStackMachine = setup({
           target: "settlingScroll",
           guard: ({ context, event }) => {
             // Only accept success from current operation
-            return !event.operationId || event.operationId === context.scrollOperationId;
+            return (
+              !event.operationId ||
+              event.operationId === context.scrollOperationId
+            );
           },
           actions: assign({
             scrollState: "settling",
@@ -173,7 +179,10 @@ export const postStackMachine = setup({
           target: "settlingScroll",
           guard: ({ context, event }) => {
             // Only accept error from current operation
-            return !event.operationId || event.operationId === context.scrollOperationId;
+            return (
+              !event.operationId ||
+              event.operationId === context.scrollOperationId
+            );
           },
           actions: assign({
             scrollState: "settling",
@@ -230,9 +239,7 @@ export const postStackMachine = setup({
 
             // Apply the pending navigation
             const newPosts = nav.stackIds
-              .map((id) =>
-                context.postCache.find((p) => p.originalId === id)
-              )
+              .map((id) => context.postCache.find((p) => p.originalId === id))
               .filter((p): p is RenderedPost => p !== undefined);
 
             // Ensure no duplicates by using Map with post ID as key
@@ -766,7 +773,10 @@ export const postStackMachine = setup({
           target: "settled",
           guard: ({ context, event }) => {
             // Only accept completion from current operation
-            return !event.operationId || event.operationId === context.scrollOperationId;
+            return (
+              !event.operationId ||
+              event.operationId === context.scrollOperationId
+            );
           },
           actions: assign({
             scrollState: "settling",

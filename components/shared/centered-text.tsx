@@ -1,7 +1,7 @@
-type CenteredTextProps = {
+interface CenteredTextProps {
   children: React.ReactNode;
   className?: string;
-};
+}
 
 export function CenteredText({ children, className = "" }: CenteredTextProps) {
   return (

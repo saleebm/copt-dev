@@ -3,13 +3,13 @@ import { SearchIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-type SearchInputProps = {
-  value: string;
+interface SearchInputProps {
+  className?: string;
   onChange: (value: string) => void;
   placeholder: string;
-  className?: string;
   showClear?: boolean;
-};
+  value: string;
+}
 
 export function SearchInput({
   value,

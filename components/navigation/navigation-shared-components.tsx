@@ -9,13 +9,13 @@ import { PostType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 
 // Generic drilldown item for categories, tags, etc.
-type DrilldownListItemProps = {
+interface DrilldownListItemProps {
+  ariaLabel?: string;
+  count: number;
   icon: React.ReactNode;
   name: string;
-  count: number;
   onClick: () => void;
-  ariaLabel?: string;
-};
+}
 
 export const DrilldownListItem: React.FC<DrilldownListItemProps> = ({
   icon,
@@ -45,20 +45,20 @@ export const DrilldownListItem: React.FC<DrilldownListItemProps> = ({
 );
 
 // Generic post item for displaying in lists
-type PostForNavigation = {
+interface PostForNavigation {
+  categories?: Array<{ name: string }>;
   id: string;
+  lastEdited: Date;
   slug: string;
+  tags?: Array<{ name: string }>;
   title: string;
   type: PostType;
-  lastEdited: Date;
-  tags?: Array<{ name: string }>;
-  categories?: Array<{ name: string }>;
-};
+}
 
-type PostListItemProps = {
-  post: PostForNavigation;
+interface PostListItemProps {
   onClick: (post: PostForNavigation) => void;
-};
+  post: PostForNavigation;
+}
 
 export const PostListItem: React.FC<PostListItemProps> = ({
   post,
@@ -121,11 +121,11 @@ export const PostListItem: React.FC<PostListItemProps> = ({
 };
 
 // Generic back button
-type BackButtonProps = {
+interface BackButtonProps {
+  ariaLabel?: string;
   onClick: () => void;
   text: string;
-  ariaLabel?: string;
-};
+}
 
 export const BackButton: React.FC<BackButtonProps> = ({
   onClick,
@@ -147,9 +147,9 @@ export const BackButton: React.FC<BackButtonProps> = ({
 );
 
 // Generic loading state component
-type LoadingStateProps = {
+interface LoadingStateProps {
   message: string;
-};
+}
 
 export const LoadingState: React.FC<LoadingStateProps> = ({ message }) => (
   <div className="flex items-center justify-center py-8">
@@ -161,9 +161,9 @@ export const LoadingState: React.FC<LoadingStateProps> = ({ message }) => (
 );
 
 // Generic error state component
-type ErrorStateProps = {
+interface ErrorStateProps {
   message: string;
-};
+}
 
 export const ErrorState: React.FC<ErrorStateProps> = ({ message }) => (
   <div className="flex items-center justify-center py-8">
@@ -175,10 +175,10 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ message }) => (
 );
 
 // Generic empty state component
-type EmptyStateProps = {
+interface EmptyStateProps {
   icon?: React.ReactNode;
   message: string;
-};
+}
 
 export const EmptyState: React.FC<EmptyStateProps> = ({ icon, message }) => (
   <div className="flex items-center justify-center py-8">
@@ -190,9 +190,9 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon, message }) => (
 );
 
 // Generic search empty state component
-type SearchEmptyStateProps = {
+interface SearchEmptyStateProps {
   searchTerm: string;
-};
+}
 
 export const SearchEmptyState: React.FC<SearchEmptyStateProps> = ({
   searchTerm,
@@ -208,12 +208,12 @@ export const SearchEmptyState: React.FC<SearchEmptyStateProps> = ({
 );
 
 // Generic two-panel layout with sliding animation
-type TwoPanelLayoutProps = {
-  isSecondPanelActive: boolean;
-  firstPanel: React.ReactNode;
-  secondPanel: React.ReactNode;
+interface TwoPanelLayoutProps {
   ariaLabel?: string;
-};
+  firstPanel: React.ReactNode;
+  isSecondPanelActive: boolean;
+  secondPanel: React.ReactNode;
+}
 
 export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
   isSecondPanelActive,
@@ -242,10 +242,10 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
 );
 
 // Generic navigation panel wrapper
-type NavigationPanelProps = {
+interface NavigationPanelProps {
   children: React.ReactNode;
   className?: string;
-};
+}
 
 export const NavigationPanel: React.FC<NavigationPanelProps> = ({
   children,
@@ -253,13 +253,13 @@ export const NavigationPanel: React.FC<NavigationPanelProps> = ({
 }) => <div className={cn("space-y-4 p-4", className)}>{children}</div>;
 
 // Generic item count display
-type ItemCountDisplayProps = {
-  icon: React.ReactNode;
+interface ItemCountDisplayProps {
   count: number;
   filteredCount?: number;
+  icon: React.ReactNode;
   itemType: string;
   searchTerm?: string;
-};
+}
 
 export const ItemCountDisplay: React.FC<ItemCountDisplayProps> = ({
   icon,

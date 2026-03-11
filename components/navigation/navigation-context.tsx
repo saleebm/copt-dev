@@ -14,27 +14,27 @@ import type {
   TagWithMetadata,
 } from "@/types/navigation";
 
-type NavigationProviderProps = {
-  children: ReactNode;
+interface NavigationProviderProps {
   // Server-provided navigation data
   categories: CategoryNode[];
-  tags: TagWithMetadata[];
+  children: ReactNode;
   postTypeCounts: PostTypeCount[];
-};
+  tags: TagWithMetadata[];
+}
 
-type NavigationContextType = {
-  selectedPostTypes: PostType[];
-  setSelectedPostTypes: (types: PostType[]) => void;
-  handleTypeToggle: (type: PostType) => void;
-  resetToDefaults: () => void;
+interface NavigationContextType {
   // Server-provided navigation data (no loading needed)
   categories: CategoryNode[];
-  tags: TagWithMetadata[];
-  postTypeCounts: PostTypeCount[];
+  error: string | null;
+  handleTypeToggle: (type: PostType) => void;
   // Loading states (always false since data comes from server)
   loading: boolean;
-  error: string | null;
-};
+  postTypeCounts: PostTypeCount[];
+  resetToDefaults: () => void;
+  selectedPostTypes: PostType[];
+  setSelectedPostTypes: (types: PostType[]) => void;
+  tags: TagWithMetadata[];
+}
 
 // Default filters: Exclude AI-generated types from main tabs per segregation rules
 const DEFAULT_POST_TYPES: PostType[] = [PostType.BLOG, PostType.CONCRETE];

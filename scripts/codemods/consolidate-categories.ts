@@ -11,8 +11,8 @@ import {
 import { dirname, join, sep } from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import { PrismaClient } from "@/lib/generated/prisma";
-import type { CodemodDefinition } from "./types";
 import { resolveApiKey } from "../lib/ai-config";
+import type { CodemodDefinition } from "./types";
 
 // Configuration for category analysis and consolidation
 type CategoryAnalysisConfig = {

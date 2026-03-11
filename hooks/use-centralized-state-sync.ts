@@ -13,14 +13,14 @@ import type { PostStackMachine } from "@/lib/post-stack-machine";
 import type { UrlStateManager } from "@/lib/url-state-manager";
 import type { RenderedPost } from "@/types/post";
 
-type UseCentralizedStateSyncProps = {
+interface UseCentralizedStateSyncProps {
   actor: ActorRefFrom<PostStackMachine>;
-  urlStateManager: UrlStateManager;
-  posts: RenderedPost[];
   currentStackIds: string[];
   isLoadingNewPost: string | null;
   isRootPage: boolean;
-};
+  posts: RenderedPost[];
+  urlStateManager: UrlStateManager;
+}
 
 /**
  * DEPRECATED: This hook is now a no-op

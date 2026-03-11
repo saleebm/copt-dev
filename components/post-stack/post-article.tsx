@@ -2,12 +2,12 @@ import type React from "react";
 import type { RenderedPost } from "@/types/post";
 import PostCard from "./post-card";
 
-type PostArticleProps = {
-  post: RenderedPost;
+interface PostArticleProps {
+  children?: React.ReactNode;
   index: number;
   keyPrefix?: "server" | "client";
-  children?: React.ReactNode;
-};
+  post: RenderedPost;
+}
 
 /**
  * Wrapper component that provides consistent post structure and styling
