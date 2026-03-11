@@ -1,12 +1,23 @@
 import { z } from "zod";
 import type { PostType } from "@/lib/generated/prisma";
+import { getPostTypeValues } from "@/lib/records/loaders";
 
 /**
  * Centralized validation schemas for navigation-related server actions
- *
- * Following DRY principles by creating reusable schemas that can be composed
- * and imported across different parts of the application.
  */
+
+// Exhaustive check: assert registry keys match the schema enum at module load.
+// If a new type is added to records/post-types.json but not here, this throws immediately.
+const _registryValues = new Set(getPostTypeValues());
+const _schemaValues = new Set(["CONCRETE", "BLOG", "FINDING", "SIGHT"]);
+for (const v of _registryValues) {
+  if (!_schemaValues.has(v))
+    throw new Error(`PostType "${v}" in registry but missing from PostTypeSchema — add it here`);
+}
+for (const v of _schemaValues) {
+  if (!_registryValues.has(v))
+    throw new Error(`PostType "${v}" in PostTypeSchema but missing from registry`);
+}
 
 // Base primitive validators
 export const SlugSchema = z
@@ -49,7 +60,8 @@ export const CategoryPathSchema = z
   .min(1, "Category path cannot be empty")
   .max(10, "Category path too deep");
 
-// Post type validation with strict enum checking
+// Post type validation with strict enum checking.
+// The runtime assertion above guarantees this stays in sync with the JSON registry.
 export const PostTypeSchema = z.enum([
   "CONCRETE",
   "BLOG",

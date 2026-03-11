@@ -87,9 +87,13 @@ Key files:
 4. Press browser back — stack should pop.
 5. Check scroll position is restored when returning to a previous post.
 
-### 3c. MDX Content & Sync Pipeline
+### 3c. Content Pipeline (MDX + JSON providers)
 
-Posts live in `/posts/{type}/` as `.mdx` or `.md` files. The sync script reads them and upserts into PostgreSQL.
+Content comes from two providers registered in `records/providers.json`:
+- **MDX provider** — reads `/posts/{type}/*.mdx` files via `lib/content-sources/mdx-provider.ts`
+- **JSON provider** — reads `records/posts/*.json` via `lib/content-sources/json-provider.ts`
+
+Both produce `NormalizedPost` records (defined in `lib/content-sources/schema.ts`) that get upserted into PostgreSQL. Prisma tracks provider provenance on each post.
 
 **How to test after editing posts:**
 
@@ -103,9 +107,29 @@ DATABASE_URL="postgresql://user:password@localhost:5432/coptdev?schema=public" b
 
 Verify the output shows the expected created/updated/skipped counts. Then reload the dev server to see changes in the UI.
 
-### 3d. Database / Prisma Schema
+### 3d. Records & Registries
 
-Schema: `prisma/schema.prisma`. Models: `Post`, `Tag`, `Category`, `HlexiconEntry`, `CategoryEmbedding`, `TagEmbedding`. Enums: `PostType`, `PostStatus`.
+JSON registries in `records/` define post type metadata, scaffold templates, and provider config. Loaded via Zod-validated loaders in `lib/records/loaders.ts`.
+
+| File | Purpose |
+|------|---------|
+| `records/post-types.json` | Post type labels, descriptions, order, prompt copy |
+| `records/templates.json` | Scaffold template definitions |
+| `records/providers.json` | Content provider config (MDX, JSON) |
+| `records/posts/` | JSON-managed post records |
+
+**How to test after editing registries:**
+
+```bash
+# Validate all JSON registries + provider parity
+bun run records:validate
+```
+
+This checks schema correctness, referential integrity, and MdxProvider parity. Zero errors = pass.
+
+### 3e. Database / Prisma Schema
+
+Schema: `prisma/schema.prisma`. Models: `Post`, `Tag`, `Category`, `HlexiconEntry`, `CategoryEmbedding`, `TagEmbedding`. Enums: `PostType`, `PostStatus`. Posts track provider provenance.
 
 **After schema changes:**
 
@@ -126,7 +150,7 @@ To inspect the database interactively:
 DATABASE_URL="postgresql://user:password@localhost:5432/coptdev?schema=public" bun run db:studio
 ```
 
-### 3e. Components
+### 3f. Components
 
 | Directory | Purpose |
 |-----------|---------|
@@ -139,11 +163,12 @@ DATABASE_URL="postgresql://user:password@localhost:5432/coptdev?schema=public" b
 
 Server components by default. Only add `"use client"` when hooks or browser APIs are needed.
 
-### 3f. Scripts
+### 3g. Scripts
 
 | Script | Command | Purpose |
 |--------|---------|---------|
-| Sync posts | `bun run db:sync-posts` | MDX → database |
+| Sync posts | `bun run db:sync-posts` | Content → database |
+| Validate records | `bun run records:validate` | JSON registry + provider parity checks |
 | Scaffold post | `bun run new-post` | Interactive new post creator |
 | Codemods | `bun run codemods` | Batch MDX transformations (dry run) |
 | Deduplicate | `bun run deduplicate` | Find duplicate slugs |

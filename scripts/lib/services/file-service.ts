@@ -6,7 +6,7 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import type { PostType } from "@/lib/generated/prisma";
-import { getPostDirectory as getPostDir } from "../post-type-meta";
+import { getPostDirectory as getPostDir, getPostTypeMeta } from "../post-type-meta";
 
 export type FileCreationRequest = {
   content: string;
@@ -132,7 +132,7 @@ export class BunFileService implements FileService {
     const baseDir = join(this.projectRoot, "posts");
     const typeDir = join(baseDir, getPostDir(type));
 
-    if (category) {
+    if (category && getPostTypeMeta(type).supportsCategory) {
       return join(typeDir, this.slugify(category));
     }
     return typeDir;
@@ -183,7 +183,7 @@ export class MockFileService implements FileService {
     const typeDir = getPostDir(type);
 
     let dir = `posts/${typeDir}`;
-    if (category) {
+    if (category && getPostTypeMeta(type).supportsCategory) {
       dir += `/${category}`;
     }
 

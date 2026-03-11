@@ -1,0 +1,22 @@
+[
+  {
+    "key": "minimal",
+    "name": "Minimal",
+    "description": "Basic structure for quick starts"
+  },
+  {
+    "key": "detailed",
+    "name": "Detailed",
+    "description": "Comprehensive sections and structure"
+  },
+  {
+    "key": "academic",
+    "name": "Academic",
+    "description": "Research-focused with methodology"
+  },
+  {
+    "key": "tutorial",
+    "name": "Tutorial",
+    "description": "Step-by-step instructional format"
+  }
+]

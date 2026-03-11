@@ -86,6 +86,20 @@ function testFileService() {
     "Concrete posts should not have date prefix"
   );
 
+  const concreteWithCategory = mockFileService.generateFilePath(
+    "Core Principle",
+    "CONCRETE",
+    "some-category"
+  );
+  console.assert(
+    !concreteWithCategory.includes("some-category"),
+    "CONCRETE posts must ignore category in path"
+  );
+  console.assert(
+    concreteWithCategory === concretePath,
+    "CONCRETE path with category should equal path without category"
+  );
+
   console.log("✅ File Service tests passed");
 }
 

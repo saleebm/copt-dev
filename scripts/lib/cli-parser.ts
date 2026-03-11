@@ -4,6 +4,8 @@
 
 import { parseArgs } from "node:util";
 import type { PostType } from "@/lib/generated/prisma";
+import { getTemplateRegistry, isValidTemplateKey } from "@/lib/records/loaders";
+import { isValidPostType, getAllPostTypeMeta } from "./post-type-meta";
 
 export type CLIArguments = {
   interactive: boolean;
@@ -117,11 +119,11 @@ EXAMPLES:
 
 OPTIONS:
   -i, --interactive     Run in interactive mode (default if no title provided)
-  -t, --type TYPE       Post type: CONCRETE, BLOG, FINDING, SIGHT
+  -t, --type TYPE       Post type: ${getAllPostTypeMeta().map((m) => m.value).join(", ")}
   -T, --title TITLE     Post title
   -c, --category CAT    Post category
   --tags TAG1,TAG2      Comma-separated tags
-  --template TEMPLATE   Template variation: minimal, detailed, academic, tutorial
+  --template TEMPLATE   Template variation: ${getTemplateRegistry().map((t) => t.key).join(", ")}
   -o, --outline         Generate AI outline (default: false)
   -O, --output PATH     Custom output file path
   -v, --verbose         Verbose logging
@@ -129,16 +131,10 @@ OPTIONS:
   -h, --help            Show this help message
 
 POST TYPES:
-  CONCRETE              Foundational, principle-based content
-  BLOG                  Personal, chronological posts
-  FINDING               Research discoveries and external content
-  SIGHT                 Visual/image posts
+${getAllPostTypeMeta().map((m) => `  ${m.value.padEnd(20)}${m.description}`).join("\n")}
 
 TEMPLATE VARIATIONS:
-  minimal               Basic structure for quick starts
-  detailed              Comprehensive sections and structure
-  academic              Research-focused with methodology
-  tutorial              Step-by-step instructional format
+${getTemplateRegistry().map((t) => `  ${t.key.padEnd(20)}${t.description}`).join("\n")}
 
 ENVIRONMENT:
   GEMINI_API_KEY        Required for AI outline generation (or GOOGLE_API_KEY)
@@ -154,20 +150,21 @@ export function validateCliArguments(args: CLIArguments): string[] {
   const errors: string[] = [];
 
   // Validate post type
-  if (args.type && !["CONCRETE", "BLOG", "FINDING", "SIGHT"].includes(args.type)) {
+  if (args.type && !isValidPostType(args.type)) {
+    const validTypes = getAllPostTypeMeta().map((m) => m.value).join(", ");
     errors.push(
-      `Invalid post type: ${args.type}. Must be CONCRETE, BLOG, FINDING, or SIGHT.`
+      `Invalid post type: ${args.type}. Must be one of: ${validTypes}.`
     );
   }
 
   // Validate template
-  if (
-    args.template &&
-    !["minimal", "detailed", "academic", "tutorial"].includes(args.template)
-  ) {
-    errors.push(
-      `Invalid template: ${args.template}. Must be minimal, detailed, academic, or tutorial.`
-    );
+  if (args.template) {
+    if (!isValidTemplateKey(args.template)) {
+      const validKeys = getTemplateRegistry().map((t) => t.key).join(", ");
+      errors.push(
+        `Invalid template: ${args.template}. Must be one of: ${validKeys}.`
+      );
+    }
   }
 
   // Validate title if provided

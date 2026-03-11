@@ -1,0 +1,12 @@
+{
+  "_comment": "Example JSON post record. Rename to <slug>.json to activate. Delete this file or keep the underscore prefix to skip.",
+  "slug": "example-json-post",
+  "title": "Example JSON-Managed Post",
+  "content": "# Example\n\nThis post is managed via the JSON control plane.\n\nEdit `records/posts/example-json-post.json` to change it, then run `bun run db:sync-posts`.",
+  "type": "BLOG",
+  "status": "DRAFT",
+  "date": "2026-03-11",
+  "tags": ["example", "json-managed"],
+  "categories": ["Meta"],
+  "categoryPath": ["meta"]
+}
