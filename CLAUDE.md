@@ -30,6 +30,12 @@ When sources conflict, higher-numbered sources lose. Verify against code before 
 - **Do not expand volatile docs** with detailed prose that will go stale. Keep docs short; point to the live source of truth (types, schema, code).
 - **Archive files are out of scope** unless a live path references them.
 
+### Testing Philosophy
+
+- **Prefer black-box integration testing.** Test observable behavior at real boundaries: routes, UI flows, scripts, database interactions, and CLI entrypoints.
+- **Avoid low-signal test bloat.** Do not add mock-heavy, implementation-coupled tests that only restate the code.
+- **Optimize for regression detection, not coverage theater.** Add the smallest high-value test surface that would catch real breakage.
+
 ### Skill & Doc Precedence
 
 Domain-specific agent skills extend this file — they do not override it:
@@ -37,6 +43,25 @@ Domain-specific agent skills extend this file — they do not override it:
 - Next.js conventions: `.agents/skills/next-best-practices/SKILL.md`
 - Next.js 16 caching: `.agents/skills/next-cache-components/SKILL.md`
 - Prisma: `.agents/skills/prisma-*/SKILL.md`
+- Post Stack system: `.agents/skills/post-stack/SKILL.md`
+
+### Skill Self-Validation Protocol
+
+Skills are prose — they rot. Agents must actively question skill docs against live code before trusting them.
+
+**When consulting any skill doc, apply the Truth Hierarchy:**
+1. **Verify file paths exist.** If a skill references `lib/foo.ts`, confirm the file is there. Missing file = stale doc.
+2. **Verify exports match.** If a skill claims `export function bar()`, read the file and confirm. Renamed/removed export = stale doc.
+3. **Verify line references.** If a skill cites `file.ts:42`, read that line range. Drifted content = update the reference.
+4. **Verify invariants hold.** If a skill states "X always does Y", read the code path and confirm. Broken invariant = either the code has a bug or the doc is wrong — investigate which.
+5. **Verify architectural claims.** If a skill describes a flow (A -> B -> C), trace it in the actual code. Missing step or changed order = stale doc.
+
+**When staleness is found:**
+- If the agent's current task touches the skill's domain: fix the skill doc inline as part of the task.
+- If the agent's current task is unrelated: note the staleness but do not fix (scope guardrail).
+- Never silently trust a stale pointer. Always resolve against live code first.
+
+**Skills with a `## Validation Checklist` section** list specific probes. Run them when the skill is loaded for a task in its domain.
 
 ## Commands
 

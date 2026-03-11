@@ -4,6 +4,7 @@
 
 import { parseArgs } from "node:util";
 import type { PostType } from "@/lib/generated/prisma";
+import { isValidPostType, getAllPostTypeMeta } from "./post-type-meta";
 
 export type CLIArguments = {
   interactive: boolean;
@@ -117,7 +118,7 @@ EXAMPLES:
 
 OPTIONS:
   -i, --interactive     Run in interactive mode (default if no title provided)
-  -t, --type TYPE       Post type: CONCRETE, BLOG, FINDING, SIGHT
+  -t, --type TYPE       Post type: ${getAllPostTypeMeta().map((m) => m.value).join(", ")}
   -T, --title TITLE     Post title
   -c, --category CAT    Post category
   --tags TAG1,TAG2      Comma-separated tags
@@ -129,10 +130,7 @@ OPTIONS:
   -h, --help            Show this help message
 
 POST TYPES:
-  CONCRETE              Foundational, principle-based content
-  BLOG                  Personal, chronological posts
-  FINDING               Research discoveries and external content
-  SIGHT                 Visual/image posts
+${getAllPostTypeMeta().map((m) => `  ${m.value.padEnd(20)}${m.description}`).join("\n")}
 
 TEMPLATE VARIATIONS:
   minimal               Basic structure for quick starts
@@ -154,9 +152,10 @@ export function validateCliArguments(args: CLIArguments): string[] {
   const errors: string[] = [];
 
   // Validate post type
-  if (args.type && !["CONCRETE", "BLOG", "FINDING", "SIGHT"].includes(args.type)) {
+  if (args.type && !isValidPostType(args.type)) {
+    const validTypes = getAllPostTypeMeta().map((m) => m.value).join(", ");
     errors.push(
-      `Invalid post type: ${args.type}. Must be CONCRETE, BLOG, FINDING, or SIGHT.`
+      `Invalid post type: ${args.type}. Must be one of: ${validTypes}.`
     );
   }
 

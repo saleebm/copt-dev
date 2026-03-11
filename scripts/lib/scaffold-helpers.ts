@@ -7,7 +7,7 @@ import type { GoogleGenAI } from "@google/genai";
 import { format } from "date-fns";
 import type { PostType } from "@/lib/generated/prisma";
 import { getAIConfig } from "./ai-config";
-import { getPostDirectory as getPostDir, getPromptContext } from "./post-type-meta";
+import { getPostDirectory as getPostDir, getPostTypeMeta, getPromptContext } from "./post-type-meta";
 
 /**
  * Create a URL-safe slug from text
@@ -42,7 +42,7 @@ export function getPostDirectory(type: PostType, category?: string): string {
   const baseDir = join(process.cwd(), "posts");
   const typeDir = join(baseDir, getPostDir(type));
 
-  if (category) {
+  if (category && getPostTypeMeta(type).supportsCategory) {
     return join(typeDir, slugify(category));
   }
   return typeDir;
