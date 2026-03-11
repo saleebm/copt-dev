@@ -16,6 +16,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import { getAllPosts, type ParsedPost } from "@/lib/mdx-parser";
+import { resolveApiKey, getAIConfig } from "./lib/ai-config";
 
 type DuplicateGroup = {
   slug: string;
@@ -141,8 +142,9 @@ Return ONLY a JSON object with:
 }
 `;
 
+    const config = getAIConfig(apiKey);
     const result = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
+      model: config.model,
       contents: prompt,
     });
     const text = result.text || "";
@@ -229,8 +231,7 @@ async function deduplicatePosts(execute = false, verbose = false) {
   );
 
   // Check for API key if we might need AI scoring
-  const apiKey =
-    process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY || "";
+  const apiKey = resolveApiKey() || "";
   const useAI = !!apiKey;
 
   if (useAI) {
@@ -375,7 +376,7 @@ Options:
   --help, -h       Show this help message
 
 Environment Variables (optional):
-  GOOGLE_GENAI_API_KEY or GEMINI_API_KEY
+  GEMINI_API_KEY (or GOOGLE_API_KEY)
   If set, uses AI to help pick the best location when scores are close
 
 The tool will:

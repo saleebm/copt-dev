@@ -6,6 +6,8 @@ import { join } from "node:path";
 import type { GoogleGenAI } from "@google/genai";
 import { format } from "date-fns";
 import type { PostType } from "@/lib/generated/prisma";
+import { getAIConfig } from "./ai-config";
+import { getPostDirectory as getPostDir, getPromptContext } from "./post-type-meta";
 
 /**
  * Create a URL-safe slug from text
@@ -38,26 +40,12 @@ export function generateFileName(title: string, type: PostType): string {
  */
 export function getPostDirectory(type: PostType, category?: string): string {
   const baseDir = join(process.cwd(), "posts");
+  const typeDir = join(baseDir, getPostDir(type));
 
-  switch (type) {
-    case "CONCRETE":
-      return join(baseDir, "concrete");
-
-    case "BLOG":
-      if (category) {
-        return join(baseDir, "blog", slugify(category));
-      }
-      return join(baseDir, "blog");
-
-    case "FINDING":
-      if (category) {
-        return join(baseDir, "finding", slugify(category));
-      }
-      return join(baseDir, "finding");
-
-    default:
-      return baseDir;
+  if (category) {
+    return join(typeDir, slugify(category));
   }
+  return typeDir;
 }
 
 /**
@@ -73,8 +61,9 @@ export async function createPostOutline(
   const prompt = createOutlinePrompt(title, type, category);
 
   try {
+    const config = getAIConfig();
     const response = await genai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: config.model,
       contents: prompt,
     });
 
@@ -98,23 +87,8 @@ function createOutlinePrompt(
   type: PostType,
   category?: string
 ): string {
-  const baseContext = `You are helping create an outline for a blog post titled "${title}".`;
-
-  let typeContext = "";
-  switch (type) {
-    case "CONCRETE":
-      typeContext =
-        "This is a CONCRETE post - foundational, principle-based content that serves as a cornerstone reference. It should be comprehensive, well-structured, and timeless.";
-      break;
-    case "BLOG":
-      typeContext =
-        "This is a BLOG post - personal, chronological content that reflects thoughts, experiences, or insights. It should be engaging and conversational.";
-      break;
-    case "FINDING":
-      typeContext =
-        "This is a FINDING post - research discoveries, insights, or curated external content. It should be analytical and informative.";
-      break;
-  }
+  const baseContext = `You are helping create an outline for a ${type.toLowerCase()} post titled "${title}".`;
+  const typeContext = getPromptContext(type);
 
   const categoryContext = category
     ? `The post is categorized under "${category}".`

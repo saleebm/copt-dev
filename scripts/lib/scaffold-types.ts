@@ -52,24 +52,9 @@ export type ScaffoldResult = {
 };
 
 /**
- * Available post type choices for CLI
+ * Available post type choices for CLI — derived from shared post-type-meta.
  */
-export const POST_TYPE_CHOICES = [
-  {
-    value: "CONCRETE" as const,
-    label: "CONCRETE",
-    description:
-      "Foundational, principle-based content (timeless reference material)",
-  },
-  {
-    value: "BLOG" as const,
-    label: "BLOG",
-    description:
-      "Personal, chronological posts (thoughts, experiences, insights)",
-  },
-  {
-    value: "FINDING" as const,
-    label: "FINDING",
-    description: "Research discoveries and curated external content",
-  },
-] as const;
+export { getPostTypeChoices as getPostTypeChoicesFromMeta } from "./post-type-meta";
+import { getPostTypeChoices } from "./post-type-meta";
+
+export const POST_TYPE_CHOICES = getPostTypeChoices();

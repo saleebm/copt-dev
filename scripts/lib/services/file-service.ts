@@ -6,6 +6,7 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import type { PostType } from "@/lib/generated/prisma";
+import { getPostDirectory as getPostDir } from "../post-type-meta";
 
 export type FileCreationRequest = {
   content: string;
@@ -129,26 +130,12 @@ export class BunFileService implements FileService {
 
   private getPostDirectory(type: PostType, category?: string): string {
     const baseDir = join(this.projectRoot, "posts");
+    const typeDir = join(baseDir, getPostDir(type));
 
-    switch (type) {
-      case "CONCRETE":
-        return join(baseDir, "concrete");
-
-      case "BLOG":
-        if (category) {
-          return join(baseDir, "blog", this.slugify(category));
-        }
-        return join(baseDir, "blog");
-
-      case "FINDING":
-        if (category) {
-          return join(baseDir, "finding", this.slugify(category));
-        }
-        return join(baseDir, "finding");
-
-      default:
-        return baseDir;
+    if (category) {
+      return join(typeDir, this.slugify(category));
     }
+    return typeDir;
   }
 }
 
@@ -193,14 +180,11 @@ export class MockFileService implements FileService {
       .replace(/[^\w\s-]/g, "")
       .replace(/[\s_-]+/g, "-");
     const fileName = type === "BLOG" ? `01012025-${slug}.mdx` : `${slug}.mdx`;
+    const typeDir = getPostDir(type);
 
-    let dir = "posts";
-    if (type === "CONCRETE") {
-      dir += "/concrete";
-    } else if (type === "BLOG") {
-      dir += category ? `/blog/${category}` : "/blog";
-    } else if (type === "FINDING") {
-      dir += category ? `/finding/${category}` : "/finding";
+    let dir = `posts/${typeDir}`;
+    if (category) {
+      dir += `/${category}`;
     }
 
     return `${dir}/${fileName}`;

@@ -131,7 +131,7 @@ bun run consolidate:categories:execute
 ```
 
 **Prerequisites**:
-- Set `GOOGLE_GENAI_API_KEY` or `GEMINI_API_KEY` environment variable
+- Set `GEMINI_API_KEY` environment variable (see `.env.example`)
 - `@google/genai` package installed
 
 **Output**:
@@ -142,7 +142,7 @@ bun run consolidate:categories:execute
 
 **Configuration**:
 - Similarity threshold: 85% (adjustable in code)
-- Uses `text-embedding-004` model with 256-dimensional embeddings
+- Embedding model configured via `EMBEDDING_MODEL` env var (default: `gemini-embedding-001`)
 - Optimized for clustering tasks
 
 ### `remove-blank-first-line`

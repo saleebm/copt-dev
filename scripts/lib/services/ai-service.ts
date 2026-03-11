@@ -5,6 +5,8 @@
 
 import { GoogleGenAI } from "@google/genai";
 import type { PostType } from "@/lib/generated/prisma";
+import { getAIConfig } from "../ai-config";
+import { getPromptContext } from "../post-type-meta";
 
 export type AIOutlineRequest = {
   title: string;
@@ -28,11 +30,14 @@ export type AIService = {
  * Gemini AI Service Implementation
  */
 export class GeminiAIService implements AIService {
-  private static readonly MODEL = "gemini-2.5-flash";
   private readonly client: GoogleGenAI;
-
+  private readonly model: string;
+  private readonly temperature: number;
   constructor(apiKey: string) {
-    this.client = new GoogleGenAI({ apiKey });
+    const config = getAIConfig(apiKey);
+    this.client = new GoogleGenAI({ apiKey: config.apiKey });
+    this.model = config.model;
+    this.temperature = config.temperature;
   }
 
   async generateOutline(request: AIOutlineRequest): Promise<AIOutlineResponse> {
@@ -42,8 +47,11 @@ export class GeminiAIService implements AIService {
       const prompt = this.createPrompt(request);
 
       const response = await this.client.models.generateContent({
-        model: GeminiAIService.MODEL,
+        model: this.model,
         contents: prompt,
+        config: {
+          temperature: this.temperature,
+        },
       });
 
       if (!response.text) {
@@ -72,7 +80,7 @@ export class GeminiAIService implements AIService {
 
     const baseContext = `You are helping create an outline for a ${type.toLowerCase()} post titled "${title}".`;
 
-    const typeContext = this.getTypeContext(type);
+    const typeContext = getPromptContext(type);
     const categoryContext = category
       ? `The post is categorized under "${category}".`
       : "";
@@ -92,19 +100,6 @@ ${detailContext}
 Format the response as clean markdown with proper header hierarchy.`;
 
     return `${baseContext} ${typeContext} ${categoryContext}\n\n${instructions}`;
-  }
-
-  private getTypeContext(type: PostType): string {
-    switch (type) {
-      case "CONCRETE":
-        return "This is a CONCRETE post - foundational, principle-based content that serves as a cornerstone reference. It should be comprehensive, well-structured, and timeless.";
-      case "BLOG":
-        return "This is a BLOG post - personal, chronological content that reflects thoughts, experiences, or insights. It should be engaging and conversational.";
-      case "FINDING":
-        return "This is a FINDING post - research discoveries, insights, or curated external content. It should be analytical and informative.";
-      default:
-        return "";
-    }
   }
 
   private getDetailContext(level: string): string {

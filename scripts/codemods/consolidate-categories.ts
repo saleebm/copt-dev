@@ -12,6 +12,7 @@ import { dirname, join, sep } from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import { PrismaClient } from "@/lib/generated/prisma";
 import type { CodemodDefinition } from "./types";
+import { resolveApiKey } from "../lib/ai-config";
 
 // Configuration for category analysis and consolidation
 type CategoryAnalysisConfig = {
@@ -65,7 +66,7 @@ const DEFAULT_CONFIG: CategoryAnalysisConfig = {
   minFilesForCategory: 1, // Minimum files required to keep a category
   preventParentChildDuplication: true, // Prevent parent/child categories from being merged
   embeddingDimensionality: 256,
-  modelVersion: "gemini-embedding-001",
+  modelVersion: process.env.EMBEDDING_MODEL ?? "gemini-embedding-001",
 };
 
 /**
@@ -820,13 +821,12 @@ export const consolidateCategories: CodemodDefinition = {
 
     try {
       // Get API key from environment
-      const apiKey =
-        process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY;
+      const apiKey = resolveApiKey();
       if (!apiKey) {
         return {
           modified: false,
           message:
-            "GOOGLE_GENAI_API_KEY or GEMINI_API_KEY environment variable required",
+            "GEMINI_API_KEY environment variable required (see .env.example)",
         };
       }
 
