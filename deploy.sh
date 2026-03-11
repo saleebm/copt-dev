@@ -9,8 +9,8 @@ cd "$APP_DIR"
 
 export BUN_INSTALL="$HOME/.bun"
 export NVM_DIR="$HOME/.nvm"
-# shellcheck source=/dev/null
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+# Source nvm for pm2/node access (unset -e briefly as nvm.sh can return non-zero)
+set +e; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"; set -e
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 echo "==> Pulling latest code"
