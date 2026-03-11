@@ -4,25 +4,25 @@ overview: "Tighten the JSON control-plane plan so it covers the whole system, no
 todos:
   - id: canonical-normalized-contract
     content: Define one shared normalized content/provider schema plus unified publish semantics before any JSON cutover.
-    status: pending
+    status: completed
   - id: provider-provenance-model
     content: Extend Prisma to track provider/source provenance, sync status, and safe multi-provider reconcile keys.
-    status: pending
+    status: completed
   - id: extract-mdx-provider
     content: Refactor current MDX ingest into a zero-behavior-change provider adapter preserving all existing derived behaviors.
-    status: pending
+    status: completed
   - id: typed-json-registries
     content: Move post-type/template registries into validated JSON and make scripts, validation, types, and navigation UIs consume one shared loader output.
-    status: pending
+    status: completed
   - id: parity-proof-harness
     content: Add shadow-mode sync plus normalized-output, DB-diff, and public-query parity tests that gate JSON-provider cutover.
-    status: pending
+    status: completed
   - id: json-provider-cutover
     content: Add a provider-aware JSON post source and roll it out incrementally by source/post type while keeping Prisma as the serving model.
-    status: pending
+    status: completed
   - id: automation-seams
     content: Define typed provider settings for future deployment/publish automations without implementing the full job control plane yet.
-    status: pending
+    status: completed
 isProject: false
 ---
 

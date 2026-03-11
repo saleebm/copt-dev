@@ -32,7 +32,8 @@
     "lint:check": "biome check . --max-diagnostics=50",
     "lint:fix": "biome check . --write",
     "lint:fix:unsafe": "biome check . --write --unsafe",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "records:validate": "bun run scripts/validate-records.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.72",

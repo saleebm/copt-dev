@@ -4,7 +4,9 @@
  */
 
 import type { PostType } from "@/lib/generated/prisma";
+import { getTemplateRegistry } from "@/lib/records/loaders";
 import { POST_TYPE_CHOICES } from "../scaffold-types";
+import { getPostTypeMeta } from "../post-type-meta";
 import type { DatabaseService } from "./database-service";
 
 export type InteractiveInputs = {
@@ -53,7 +55,7 @@ export class BunInteractiveService implements InteractiveService {
     });
 
     while (true) {
-      process.stdout.write("\nChoice (1-3): ");
+      process.stdout.write(`\nChoice (1-${POST_TYPE_CHOICES.length}): `);
       const choice = await this.readLine();
       const choiceNum = Number.parseInt(choice.trim(), 10);
 
@@ -61,7 +63,7 @@ export class BunInteractiveService implements InteractiveService {
         return POST_TYPE_CHOICES[choiceNum - 1].value;
       }
 
-      console.log("❌ Invalid choice. Please select 1, 2, or 3.");
+      console.log(`❌ Invalid choice. Please select 1-${POST_TYPE_CHOICES.length}.`);
     }
   }
 
@@ -82,8 +84,8 @@ export class BunInteractiveService implements InteractiveService {
   private async selectCategory(
     postType: PostType
   ): Promise<string | undefined> {
-    if (postType === "CONCRETE") {
-      return; // CONCRETE posts don't typically use categories
+    if (!getPostTypeMeta(postType).supportsCategory) {
+      return;
     }
 
     console.log("\n🏷️  Category (optional):");
@@ -158,28 +160,7 @@ export class BunInteractiveService implements InteractiveService {
 
   private async selectTemplate(): Promise<string> {
     console.log("\n📄 Select template variation:");
-    const templates = [
-      {
-        key: "minimal",
-        name: "Minimal",
-        description: "Basic structure for quick starts",
-      },
-      {
-        key: "detailed",
-        name: "Detailed",
-        description: "Comprehensive sections and structure",
-      },
-      {
-        key: "academic",
-        name: "Academic",
-        description: "Research-focused with methodology",
-      },
-      {
-        key: "tutorial",
-        name: "Tutorial",
-        description: "Step-by-step instructional format",
-      },
-    ];
+    const templates = getTemplateRegistry();
 
     templates.forEach((template, index) => {
       console.log(
@@ -210,7 +191,7 @@ export class BunInteractiveService implements InteractiveService {
   }
 
   private async confirmAIOutline(): Promise<boolean> {
-    console.log("\n🤖 Generate AI outline with Gemini 2.5 Flash?");
+    console.log("\n🤖 Generate AI outline?");
     process.stdout.write("Generate outline (y/N): ");
     const response = await this.readLine();
     return ["y", "yes", "Y", "YES"].includes(response.trim());

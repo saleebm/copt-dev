@@ -1,0 +1,22 @@
+[
+  {
+    "id": "filesystem",
+    "name": "Local Filesystem (MDX)",
+    "sourceType": "mdx",
+    "enabled": true,
+    "description": "Posts stored as MDX files in the /posts directory",
+    "syncDirection": "ingest",
+    "triggerMode": "manual",
+    "allowedActions": ["create", "update", "delete"]
+  },
+  {
+    "id": "json",
+    "name": "JSON Records",
+    "sourceType": "json",
+    "enabled": true,
+    "description": "Posts managed via JSON files in records/posts/",
+    "syncDirection": "ingest",
+    "triggerMode": "manual",
+    "allowedActions": ["create", "update", "delete", "publish", "unpublish"]
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "value": "CONCRETE",
+    "label": "Concrete",
+    "description": "Foundational, principle-based content (timeless reference material)",
+    "directory": "concrete",
+    "promptContext": "This is a CONCRETE post — foundational, principle-based content that serves as a cornerstone reference. It should be comprehensive, well-structured, and timeless.",
+    "supportsCategory": false,
+    "order": 2,
+    "shortLabel": "C",
+    "icon": "▪",
+    "primary": true
+  },
+  {
+    "value": "BLOG",
+    "label": "Blog",
+    "description": "Personal, chronological posts (thoughts, experiences, insights)",
+    "directory": "blog",
+    "promptContext": "This is a BLOG post — personal, chronological content that reflects thoughts, experiences, or insights. It should be engaging and conversational.",
+    "supportsCategory": true,
+    "order": 1,
+    "shortLabel": "B",
+    "icon": "◊",
+    "primary": true
+  },
+  {
+    "value": "FINDING",
+    "label": "Findings",
+    "description": "Research discoveries and curated external content",
+    "directory": "finding",
+    "promptContext": "This is a FINDING post — research discoveries, insights, or curated external content. It should be analytical and informative.",
+    "supportsCategory": true,
+    "order": 3,
+    "shortLabel": "F",
+    "icon": "◈",
+    "primary": false
+  },
+  {
+    "value": "SIGHT",
+    "label": "Sights",
+    "description": "Visual/image posts",
+    "directory": "sight",
+    "promptContext": "This is a SIGHT post — visual or image-based content. It should be concise with emphasis on the visual element.",
+    "supportsCategory": true,
+    "order": 4,
+    "shortLabel": "S",
+    "icon": "◉",
+    "primary": false
+  }
+]

@@ -6,6 +6,10 @@ Personal website/blog built with Next.js 16, App Router, MDX, Prisma + PostgreSQ
 
 This file is the top-level authority for all AI agents operating in this repo. Follow it strictly.
 
+- Don't ship features just because you can
+- leave the code better than you found it
+- fixing features & processes > new features
+
 ### Truth Hierarchy (highest to lowest)
 
 1. **Live code & runtime behavior** — what the code actually does beats any doc.
@@ -77,6 +81,7 @@ bun run db:migrate:dev   # Run migrations + generate
 bun run db:sync-posts    # Sync MDX files from /posts/ into database
 bun run db:sync-posts:dry # Dry run with verbose output
 bun run new-post         # Scaffold a new post (interactive)
+bun run records:validate # Validate JSON registries + provider parity
 bun run codemods         # Run codemods (dry run by default)
 ```
 
@@ -110,12 +115,26 @@ posts/
   finding/                # FINDING posts (short discoveries/observations)
   sight/                  # SIGHT posts (visual/image posts)
 scripts/
-  sync-posts.ts           # MDX -> database sync pipeline
+  sync-posts.ts           # Content -> database sync pipeline
   scaffold-post-v2.ts     # Interactive post scaffolding
+  validate-records.ts     # JSON registry + parity validation
   lib/ai-config.ts        # Shared AI config (canonical env vars, model defaults)
-  lib/post-type-meta.ts   # Post type metadata derived from Prisma schema
+  lib/post-type-meta.ts   # Post type metadata (derived from records/post-types.json)
+records/
+  post-types.json         # Post type registry (labels, descriptions, order, prompt copy)
+  templates.json          # Scaffold template registry
+  providers.json          # Content provider definitions
+  posts/                  # JSON-managed post records
 prisma/
-  schema.prisma           # Database schema (source of truth for PostType, PostStatus)
+  schema.prisma           # Database schema (source of truth for PostType, PostStatus + provenance)
+lib/
+  content-sources/        # Content provider abstraction
+    schema.ts             # NormalizedPost contract + provider interface
+    mdx-provider.ts       # Filesystem MDX adapter
+    json-provider.ts      # JSON records adapter
+    registry.ts           # Provider registry
+  records/                # Zod-backed JSON record loaders
+    loaders.ts            # Validated loaders for all registries
 types/
   post.ts                 # Post-related types (RenderedPost, etc.)
   navigation.ts           # Navigation types
@@ -123,9 +142,11 @@ types/
 
 ## Post Types & MDX Pipeline
 
-Four post types: `CONCRETE`, `BLOG`, `FINDING`, `SIGHT` — defined in `prisma/schema.prisma` as `PostType` enum. That enum is the single source of truth; all scaffolding, prompts, CLI validation, and directory logic must derive from it.
+Four post types: `CONCRETE`, `BLOG`, `FINDING`, `SIGHT` — defined in `prisma/schema.prisma` as `PostType` enum. Editable metadata (labels, descriptions, order, prompt copy) lives in `records/post-types.json` and is loaded via `lib/records/loaders.ts`. All consumers derive from the JSON registry; do not hardcode post-type facts.
 
-Content lives in `/posts/{type}/` as `.mdx` or `.md` files with frontmatter. The sync pipeline (`bun run db:sync-posts`) reads files via `lib/mdx-parser.ts`, extracts metadata (title, tags, categories, hlexicon terms), computes file hashes for change detection, and upserts into PostgreSQL via Prisma.
+Content comes from providers registered in `records/providers.json`. The MDX provider reads `/posts/{type}/` files; the JSON provider reads `records/posts/*.json`. Both produce `NormalizedPost` records (defined in `lib/content-sources/schema.ts`) that the sync pipeline upserts into PostgreSQL via Prisma. Prisma tracks provider provenance on each post.
+
+Run `bun run records:validate` to check JSON registry integrity and MdxProvider parity.
 
 ## Post Stack System
 

@@ -4,6 +4,7 @@
 
 import { parseArgs } from "node:util";
 import type { PostType } from "@/lib/generated/prisma";
+import { getTemplateRegistry, isValidTemplateKey } from "@/lib/records/loaders";
 import { isValidPostType, getAllPostTypeMeta } from "./post-type-meta";
 
 export type CLIArguments = {
@@ -122,7 +123,7 @@ OPTIONS:
   -T, --title TITLE     Post title
   -c, --category CAT    Post category
   --tags TAG1,TAG2      Comma-separated tags
-  --template TEMPLATE   Template variation: minimal, detailed, academic, tutorial
+  --template TEMPLATE   Template variation: ${getTemplateRegistry().map((t) => t.key).join(", ")}
   -o, --outline         Generate AI outline (default: false)
   -O, --output PATH     Custom output file path
   -v, --verbose         Verbose logging
@@ -133,10 +134,7 @@ POST TYPES:
 ${getAllPostTypeMeta().map((m) => `  ${m.value.padEnd(20)}${m.description}`).join("\n")}
 
 TEMPLATE VARIATIONS:
-  minimal               Basic structure for quick starts
-  detailed              Comprehensive sections and structure
-  academic              Research-focused with methodology
-  tutorial              Step-by-step instructional format
+${getTemplateRegistry().map((t) => `  ${t.key.padEnd(20)}${t.description}`).join("\n")}
 
 ENVIRONMENT:
   GEMINI_API_KEY        Required for AI outline generation (or GOOGLE_API_KEY)
@@ -160,13 +158,13 @@ export function validateCliArguments(args: CLIArguments): string[] {
   }
 
   // Validate template
-  if (
-    args.template &&
-    !["minimal", "detailed", "academic", "tutorial"].includes(args.template)
-  ) {
-    errors.push(
-      `Invalid template: ${args.template}. Must be minimal, detailed, academic, or tutorial.`
-    );
+  if (args.template) {
+    if (!isValidTemplateKey(args.template)) {
+      const validKeys = getTemplateRegistry().map((t) => t.key).join(", ");
+      errors.push(
+        `Invalid template: ${args.template}. Must be one of: ${validKeys}.`
+      );
+    }
   }
 
   // Validate title if provided

@@ -21,22 +21,34 @@ model Post {
   excerpt         String?
   type            PostType
   status          PostStatus      @default(DRAFT)
-  filePath        String // Store the original file path for sync tracking
-  fileHash        String // Store file hash for change detection
-  findingsCount   Int? // For aggregated findings posts, store count of individual findings
-  originalDate    DateTime? // Store the frontmatter date (for findings posts, this is the actual finding date)
+  filePath        String
+  fileHash        String
+  findingsCount   Int?
+  originalDate    DateTime?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   lastEdited      DateTime        @updatedAt
   published       Boolean         @default(false)
+
+  // Provider provenance — tracks where this post came from
+  sourceType      String          @default("mdx") // "mdx" | "json" | "api"
+  providerId      String          @default("filesystem") // provider identifier
+  sourceRecordId  String?         // external/provider-specific record id
+  sourceHash      String?         // hash of the source record for change detection
+  syncStatus      String          @default("synced") // "synced" | "pending" | "error" | "tombstone"
+  lastSyncedAt    DateTime?
+
   tags            Tag[]           @relation("PostToTag")
   categories      Category[]      @relation("PostToCategory")
   hlexiconEntries HlexiconEntry[] @relation("PostToHlexicon")
 
+  @@unique([providerId, slug]) // prevent cross-provider slug collisions
   @@index([slug])
   @@index([type])
   @@index([status])
   @@index([published])
+  @@index([providerId])
+  @@index([syncStatus])
 }
 
 enum PostType {
