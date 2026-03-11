@@ -8,6 +8,9 @@ BUILD_DIR=".next-builds/$DEPLOY_ID"
 cd "$APP_DIR"
 
 export BUN_INSTALL="$HOME/.bun"
+export NVM_DIR="$HOME/.nvm"
+# shellcheck source=/dev/null
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 echo "==> Pulling latest code"
