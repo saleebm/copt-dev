@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "copt-dev",
       script: "node_modules/next/dist/bin/next",
-      args: "start -p 3000",
+      args: "start -p 3000 -H 127.0.0.1",
       cwd: "/home/deploy/apps/copt-dev",
       env: {
         NODE_ENV: "production",

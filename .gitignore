@@ -62,3 +62,6 @@ playwright-report/
 # IDE configs
 .idea/
 .vscode/
+
+# server secrets
+.cursor/plans/server-secrets.md
