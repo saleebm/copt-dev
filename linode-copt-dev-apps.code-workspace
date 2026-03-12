@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"path": "../../business/botanical-bros"
+		},
+		{
+			"path": "."
+		}
+	],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "tailwindCSS.classAttributes": [
+      "class",
+      "className",
+      "classList",
+      "class:list"
+    ],
+    "emmet.includeLanguages": {
+      "typescript": "typescriptreact",
+      "javascript": "javascriptreact"
+    },
+    "git.confirmSync": false,
+    "emmet.showExpandedAbbreviation": "never"
+  }
+}
