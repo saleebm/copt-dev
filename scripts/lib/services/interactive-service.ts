@@ -5,8 +5,8 @@
 
 import type { PostType } from "@/lib/generated/prisma";
 import { getTemplateRegistry } from "@/lib/records/loaders";
-import { POST_TYPE_CHOICES } from "../scaffold-types";
 import { getPostTypeMeta } from "../post-type-meta";
+import { POST_TYPE_CHOICES } from "../scaffold-types";
 import type { DatabaseService } from "./database-service";
 
 export type InteractiveInputs = {

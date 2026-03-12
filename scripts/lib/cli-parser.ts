@@ -5,7 +5,7 @@
 import { parseArgs } from "node:util";
 import type { PostType } from "@/lib/generated/prisma";
 import { getTemplateRegistry, isValidTemplateKey } from "@/lib/records/loaders";
-import { isValidPostType, getAllPostTypeMeta } from "./post-type-meta";
+import { getAllPostTypeMeta, isValidPostType } from "./post-type-meta";
 
 export type CLIArguments = {
   interactive: boolean;

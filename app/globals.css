@@ -413,10 +413,6 @@
 }
 
 @layer utilities {
-  body {
-    font-family: Arial, Helvetica, sans-serif;
-  }
-
   /* Hacker/Terminal Theme Semantic Classes */
   .terminal-prompt {
     @apply text-primary;

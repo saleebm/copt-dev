@@ -28,7 +28,7 @@ const ConcretePostLink: React.FC<{
   <motion.div custom={index} key={postId} variants={staggerItemVariants}>
     <Button
       asChild
-      className="h-auto p-2 text-base transition-colors duration-200 hover:bg-transparent"
+      className="group h-auto p-2 font-mono text-base transition-colors duration-200 hover:bg-transparent"
       disabled={isLoading}
       onClick={() => onSelectPost(postId)}
       size="lg"
@@ -101,8 +101,7 @@ const PostCardFooter: React.FC<{ currentPostId: string }> = ({
       {/* Open Another Post section */}
       <motion.div variants={staggerContainerVariants}>
         <motion.div
-          className="flex flex-wrap justify-center gap-3"
-          style={{ fontFamily: "monospace" }}
+          className="flex flex-wrap justify-center gap-3 font-mono"
           variants={staggerContainerVariants}
         >
           {otherConcretePostIds.map((otherOriginalId, index) => (

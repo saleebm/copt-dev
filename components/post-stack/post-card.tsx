@@ -185,7 +185,11 @@ const PostCard: React.FC<PostCardProps> = ({
           return isClientPost ? clientPostEntrance : postCardVariants;
         })()}
       >
-        <PostCardHeader index={index} post={post} />
+        <PostCardHeader
+          index={index}
+          post={post}
+          shouldAnimate={shouldAnimate}
+        />
 
         <motion.div
           animate={{

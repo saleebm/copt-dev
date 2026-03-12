@@ -1,74 +1,80 @@
 # Deployment: copt.dev
 
-## Architecture
+## Current Production Shape
 
+```text
+Internet -> Caddy (80/443) -> 127.0.0.1:3000 -> PM2 cluster -> Next.js
+                                              -> PostgreSQL 17 on localhost
 ```
-Internet --> Caddy (443/80) --> localhost:3000 (Next.js via PM2 cluster)
-                                       |
-                                 PostgreSQL 16 (localhost:5432)
-```
 
-## Server Stack
+## Current Server Stack
 
-Ubuntu 24.04 | Node 22 (nvm) | Bun 1.3.x | PostgreSQL 16 | Caddy 2.x (auto-TLS) | PM2
+Ubuntu 25.10 | Node 22 via `nvm` | Bun 1.3.x | PostgreSQL 17 | Caddy 2.x | PM2
 
-## Deployment Files
+## copt.dev Files
 
 | File | Purpose |
 |---|---|
-| `ecosystem.config.cjs` | PM2 cluster config (2 instances, env vars, log paths, memory limits) |
-| `deploy.sh` | Full deploy: pull, install, migrate, sync posts, build, zero-downtime reload |
+| `scripts/deploy-remote.sh` | Local push -> SSH -> `deploy.sh` -> HTTP 200 verify |
+| `deploy.sh` | Remote deploy flow with install, migrate, sync, build, reload, prune |
+| `ecosystem.config.cjs` | PM2 runtime config for `copt-dev` |
+| `next.config.mts` | Reads `BUILD_DIR` so deploys can switch builds via symlink |
 
-## Deploy Workflow
-
-From local machine:
+## Deploy Command
 
 ```bash
 bun run deploy
 ```
 
-This runs `scripts/deploy-remote.sh`, which pushes to main, SSHes in, and runs `deploy.sh`.
+Deploy order:
 
-Each deploy:
+1. Push `main`
+2. SSH to `/home/deploy/apps/copt-dev`
+3. Run `./deploy.sh`
+4. Verify `https://copt.dev` returns `200`
+
+Remote `deploy.sh` order:
+
 1. `git pull --ff-only origin main`
 2. `bun install`
 3. `bun run db:migrate:deploy`
-4. `bun run db:sync-posts` (marks deleted post files as unpublished)
-5. Builds to `.next-builds/<timestamp>/`, symlinks `.next-builds/current`
-6. `pm2 reload` rolls cluster instances one-by-one (zero downtime)
-7. Prunes old builds, keeping last 3
+4. `bun run db:sync-posts`
+5. Build into `.next-builds/<deploy-id>`
+6. Point `.next-builds/current` at the new build
+7. `pm2 reload ecosystem.config.cjs --update-env`
+8. Prune old builds, keep the latest 3
 
-## One-Time Migration (fork -> cluster)
+## Shared-Server Pattern
 
-If PM2 is currently running in fork mode, the first deploy must recreate the process:
+The canonical guide for deploying this app or onboarding another app to the same server lives at:
 
-```bash
-pm2 delete copt-dev
-pm2 start ecosystem.config.cjs
-pm2 save
-```
+`docs/deployment/shared-server-app.md`
 
-After that, `deploy.sh` uses `pm2 reload` automatically.
+That guide is the source of truth for:
 
-## Server File Layout
+1. App directory and log conventions
+2. Caddy site block shape
+3. PM2 config shape
+4. Mutable data handling outside the git checkout
+5. Validation and rollback steps
 
-```
+## copt.dev Layout On Server
+
+```text
 /home/deploy/
-  apps/
-    copt-dev/            # git repo
-      .env               # production env (not in git)
-      ecosystem.config.cjs
-      .next-builds/
-        current -> <latest>  # symlink to active build
-        20260311-143000/
-        20260311-120000/
-      deploy.sh
+  apps/copt-dev/
+    .env
+    deploy.sh
+    ecosystem.config.cjs
+    .next-builds/
+      current -> <deploy-id>
   logs/
     copt-dev-out.log
     copt-dev-error.log
 ```
 
-## Reference
+## Notes
 
-Full server provisioning steps (Ubuntu setup, Postgres, Node, Caddy, security hardening):
-`.cursor/plans/deploy-server-setup.reference.md`
+1. `copt-dev` uses Caddy, not Nginx.
+2. `pm2 reload` assumes the app is already in cluster mode.
+3. If PM2 still has an old fork-mode process, recreate it once with `pm2 delete copt-dev && pm2 start ecosystem.config.cjs && pm2 save`.

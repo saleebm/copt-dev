@@ -8,9 +8,9 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {
-  NormalizedPostSchema,
   type ContentProvider,
   type NormalizedPost,
+  NormalizedPostSchema,
   type SourceType,
 } from "./schema";
 
@@ -43,10 +43,7 @@ export class JsonProvider implements ContentProvider {
       try {
         const raw = fs.readFileSync(filePath, "utf-8");
         const data = JSON.parse(raw);
-        const sourceHash = crypto
-          .createHash("md5")
-          .update(raw)
-          .digest("hex");
+        const sourceHash = crypto.createHash("md5").update(raw).digest("hex");
 
         const withProvenance = {
           ...data,

@@ -1,26 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy copt.dev from local machine.
-# Pushes current branch to main, then runs deploy.sh on the server via SSH.
+# Deploy this app from the local machine.
+# Pattern: push -> SSH -> remote deploy.sh -> HTTP 200 verify.
 
-SERVER="deploy@172.239.45.200"
-SSH_KEY="$HOME/.ssh/id_copt_dev_v1"
-APP_DIR="apps/copt-dev"
+APP_NAME="${DEPLOY_APP_NAME:-copt-dev}"
+BRANCH="${DEPLOY_BRANCH:-main}"
+SERVER="${DEPLOY_SERVER:-deploy@172.239.45.200}"
+SSH_KEY="${DEPLOY_SSH_KEY:-$HOME/.ssh/id_copt_dev_v1}"
+APP_DIR="${DEPLOY_APP_DIR:-apps/copt-dev}"
+VERIFY_URL="${DEPLOY_VERIFY_URL:-https://copt.dev}"
 
-echo "==> Pushing to origin main"
-git push origin main
+echo "==> Pushing $APP_NAME to origin/$BRANCH"
+git push origin "$BRANCH"
 
-echo "==> Deploying on server"
+echo "==> Running remote deploy.sh for $APP_NAME"
 ssh -i "$SSH_KEY" "$SERVER" "cd ~/$APP_DIR && ./deploy.sh"
 
-echo "==> Verifying"
-STATUS=$(curl -sI https://copt.dev | head -1)
-echo "$STATUS"
+echo "==> Verifying $VERIFY_URL"
+STATUS_CODE="$(curl -fsS -o /dev/null -w "%{http_code}" "$VERIFY_URL" || true)"
+echo "HTTP $STATUS_CODE"
 
-if echo "$STATUS" | grep -q "200"; then
+if [ "$STATUS_CODE" = "200" ]; then
   echo "==> Deploy successful"
-else
-  echo "==> WARNING: Site did not return 200"
-  exit 1
+  exit 0
 fi
+
+echo "==> Deploy failed verification"
+exit 1

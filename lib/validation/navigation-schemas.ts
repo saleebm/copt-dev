@@ -11,12 +11,18 @@ import { getPostTypeValues } from "@/lib/records/loaders";
 const _registryValues = new Set(getPostTypeValues());
 const _schemaValues = new Set(["CONCRETE", "BLOG", "FINDING", "SIGHT"]);
 for (const v of _registryValues) {
-  if (!_schemaValues.has(v))
-    throw new Error(`PostType "${v}" in registry but missing from PostTypeSchema — add it here`);
+  if (!_schemaValues.has(v)) {
+    throw new Error(
+      `PostType "${v}" in registry but missing from PostTypeSchema — add it here`
+    );
+  }
 }
 for (const v of _schemaValues) {
-  if (!_registryValues.has(v))
-    throw new Error(`PostType "${v}" in PostTypeSchema but missing from registry`);
+  if (!_registryValues.has(v)) {
+    throw new Error(
+      `PostType "${v}" in PostTypeSchema but missing from registry`
+    );
+  }
 }
 
 // Base primitive validators

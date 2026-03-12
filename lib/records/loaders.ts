@@ -7,8 +7,8 @@
 import { z } from "zod";
 import { PostTypeSchema, SourceTypeSchema } from "@/lib/content-sources/schema";
 import postTypesData from "@/records/post-types.json";
-import templatesData from "@/records/templates.json";
 import providersData from "@/records/providers.json";
+import templatesData from "@/records/templates.json";
 
 // ── Post Type Registry ──────────────────────────────────────────────
 
@@ -26,15 +26,13 @@ export const PostTypeRecordSchema = z.object({
 });
 export type PostTypeRecord = z.infer<typeof PostTypeRecordSchema>;
 
-const PostTypeRegistrySchema = z
-  .array(PostTypeRecordSchema)
-  .refine(
-    (arr) => {
-      const values = arr.map((r) => r.value);
-      return new Set(values).size === values.length;
-    },
-    { message: "Duplicate post type values in registry" }
-  );
+const PostTypeRegistrySchema = z.array(PostTypeRecordSchema).refine(
+  (arr) => {
+    const values = arr.map((r) => r.value);
+    return new Set(values).size === values.length;
+  },
+  { message: "Duplicate post type values in registry" }
+);
 
 const _postTypeRegistry = PostTypeRegistrySchema.parse(postTypesData);
 
@@ -42,9 +40,7 @@ export function getPostTypeRegistry(): readonly PostTypeRecord[] {
   return _postTypeRegistry;
 }
 
-export function getPostTypeRecord(
-  value: string
-): PostTypeRecord | undefined {
+export function getPostTypeRecord(value: string): PostTypeRecord | undefined {
   return _postTypeRegistry.find((r) => r.value === value);
 }
 

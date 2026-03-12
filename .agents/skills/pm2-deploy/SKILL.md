@@ -5,7 +5,7 @@ description: PM2 process management and deployment for copt.dev production serve
 
 # PM2 Deploy — copt.dev
 
-Manage deployment and PM2 process control for the copt.dev production server.
+Manage deployment and PM2 process control for the shared production server that currently hosts `copt.dev`.
 
 ## Server Access
 
@@ -39,7 +39,7 @@ ssh -i ~/.ssh/id_copt_dev_v1 deploy@172.239.45.200 "pm2 status"
 | SSH Key | `~/.ssh/id_copt_dev_v1` |
 | App Dir | `/home/deploy/apps/copt-dev` |
 | Logs Dir | `/home/deploy/logs/` |
-| Stack | Ubuntu 24.04, Node 22 (nvm), Bun 1.3.x, PostgreSQL 16, Caddy 2.x, PM2 |
+| Stack | Ubuntu 25.10, Node 22 (nvm), Bun 1.3.x, PostgreSQL 17, Caddy 2.x, PM2 |
 
 ## Deploy
 
@@ -60,6 +60,18 @@ This runs `scripts/deploy-remote.sh`, which pushes to main, SSHes in, runs `depl
 5. Build to `.next-builds/<timestamp>/`, symlink `.next-builds/current`
 6. `pm2 reload` (zero-downtime, rolls cluster instances one-by-one)
 7. Prune old builds, keeping last 3
+
+The reusable pattern for onboarding another app to the same server is documented in:
+
+`docs/deployment/shared-server-app.md`
+
+Use that guide when you need to:
+
+1. Add a new app directory under `/home/deploy/apps/`
+2. Add a new Caddy site block
+3. Choose a new localhost port
+4. Externalize mutable runtime data under `/home/deploy/data/<app-name>`
+5. Copy the `deploy-remote.sh` / `deploy.sh` / `ecosystem.config.cjs` shape to another repo
 
 ## PM2 Operations
 
@@ -102,12 +114,14 @@ pm2 delete copt-dev             # Remove from PM2 list
 
 ### Scaling
 
-The app runs in cluster mode with 2 instances (per `ecosystem.config.cjs`).
+`copt-dev` runs in cluster mode with 2 instances (per `ecosystem.config.cjs`).
 
 ```bash
 pm2 scale copt-dev +1           # Add a worker
 pm2 scale copt-dev 2            # Set to exactly 2
 ```
+
+For other apps on this server, do not assume `instances: 2`. Apps with filesystem-backed mutations, SQLite, or runtime `revalidatePath` may need `instances: 1` until they have a shared cache/storage strategy.
 
 ### Persistence
 
@@ -146,6 +160,8 @@ git log --oneline -5            # Find target commit
 git checkout <commit> -- .
 pm2 reload copt-dev
 ```
+
+If you are rolling back another app on the same server, use the same sequence but swap in that app's directory, process name, and build symlink.
 
 ## Troubleshooting
 

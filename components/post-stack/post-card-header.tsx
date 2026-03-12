@@ -27,14 +27,18 @@ import { PostTags } from "./post-tags";
 interface PostCardHeaderProps {
   index: number;
   post: RenderedPost;
+  shouldAnimate?: boolean;
 }
 
-const PostCardHeader: React.FC<PostCardHeaderProps> = ({ post, index }) => {
+const PostCardHeader: React.FC<PostCardHeaderProps> = ({
+  post,
+  index,
+  shouldAnimate = false,
+}) => {
   const { posts, dismissingInfo, isLoadingNewPost } = usePostStackState();
   const { dismissPost, copyPermalink } = usePostStackActions();
 
   const handleDismiss = () => {
-    // Use helper to get current index with validation and logging
     const currentIndex = getCurrentPostIndex(
       posts,
       post.id,
@@ -45,42 +49,52 @@ const PostCardHeader: React.FC<PostCardHeaderProps> = ({ post, index }) => {
     if (currentIndex !== -1) {
       dismissPost(post.id, currentIndex);
     }
-    // Post index not found, dismiss not possible
   };
+
+  const headerVariants = shouldAnimate ? postHeaderVariants : undefined;
+  const containerVariants = shouldAnimate
+    ? staggerContainerVariants
+    : undefined;
+  const itemVariants = shouldAnimate ? staggerItemVariants : undefined;
 
   return (
     <TooltipProvider>
       <motion.header
+        animate={shouldAnimate ? "visible" : undefined}
         className="flex shrink-0 items-start justify-between rounded-t-lg border-border border-b bg-card/40 p-6"
-        variants={postHeaderVariants}
+        initial={shouldAnimate ? "hidden" : false}
+        variants={headerVariants}
       >
         <motion.div
           className="min-w-0 flex-1"
-          variants={staggerContainerVariants}
+          initial={shouldAnimate ? "hidden" : false}
+          variants={containerVariants}
         >
           <motion.div
             className="flex items-start gap-3"
-            variants={staggerItemVariants}
+            initial={shouldAnimate ? "hidden" : false}
+            variants={itemVariants}
           >
             <motion.div
               animate={{ scale: 1 }}
               className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary opacity-60"
-              initial={{ scale: 0 }}
+              initial={shouldAnimate ? { scale: 0 } : false}
               transition={{ delay: 0.2, duration: 0.3 }}
             />
             <div className="min-w-0 flex-1">
               <motion.h1
                 className="mb-2 font-bold text-card-foreground text-xl leading-tight tracking-tight md:text-2xl"
-                variants={staggerItemVariants}
+                initial={shouldAnimate ? "hidden" : false}
+                variants={itemVariants}
               >
                 {post.title}
               </motion.h1>
-              {/* Display lastEdited if available, otherwise show createdAt - but not for finding posts */}
               {(post.lastEdited || post.createdAt) &&
                 post.type !== "FINDING" && (
                   <motion.p
                     className="font-medium text-muted-foreground text-sm"
-                    variants={staggerItemVariants}
+                    initial={shouldAnimate ? "hidden" : false}
+                    variants={itemVariants}
                   >
                     {(() => {
                       if (post.lastEdited) {
@@ -93,7 +107,6 @@ const PostCardHeader: React.FC<PostCardHeaderProps> = ({ post, index }) => {
                     })()}
                   </motion.p>
                 )}
-              {/* Add tags component */}
               {post.tags && post.tags.length > 0 && (
                 <PostTags postId={post.id} tags={post.tags} />
               )}
@@ -103,11 +116,15 @@ const PostCardHeader: React.FC<PostCardHeaderProps> = ({ post, index }) => {
 
         <motion.div
           className="ml-4 flex shrink-0 items-center gap-1"
-          variants={staggerContainerVariants}
+          initial={shouldAnimate ? "hidden" : false}
+          variants={containerVariants}
         >
           <Tooltip>
             <TooltipTrigger asChild>
-              <motion.div variants={staggerItemVariants}>
+              <motion.div
+                initial={shouldAnimate ? "hidden" : false}
+                variants={itemVariants}
+              >
                 <Button
                   aria-label="Copy permalink to this post"
                   asChild
@@ -130,7 +147,10 @@ const PostCardHeader: React.FC<PostCardHeaderProps> = ({ post, index }) => {
             <TooltipContent>Copy permalink</TooltipContent>
           </Tooltip>
 
-          <motion.div variants={staggerItemVariants}>
+          <motion.div
+            initial={shouldAnimate ? "hidden" : false}
+            variants={itemVariants}
+          >
             <Button
               aria-label={`Dismiss post ${post.title}`}
               asChild

@@ -67,7 +67,7 @@ export type ProviderResult = z.infer<typeof ProviderResultSchema>;
  * Content provider interface — every source adapter implements this.
  */
 export interface ContentProvider {
+  getPosts(): Promise<NormalizedPost[]> | NormalizedPost[];
   readonly id: string;
   readonly sourceType: SourceType;
-  getPosts(): Promise<NormalizedPost[]> | NormalizedPost[];
 }

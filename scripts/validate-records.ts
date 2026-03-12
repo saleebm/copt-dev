@@ -7,17 +7,17 @@
  */
 
 import { z } from "zod";
+import { MdxProvider } from "@/lib/content-sources/mdx-provider";
+import { PostTypeSchema } from "@/lib/content-sources/schema";
+import { getAllPosts } from "@/lib/mdx-parser";
 import {
   getPostTypeRegistry,
-  getTemplateRegistry,
   getProviderRegistry,
+  getTemplateRegistry,
   PostTypeRecordSchema,
-  TemplateRecordSchema,
   ProviderRecordSchema,
+  TemplateRecordSchema,
 } from "@/lib/records/loaders";
-import { PostTypeSchema } from "@/lib/content-sources/schema";
-import { MdxProvider } from "@/lib/content-sources/mdx-provider";
-import { getAllPosts } from "@/lib/mdx-parser";
 
 let errors = 0;
 let warnings = 0;

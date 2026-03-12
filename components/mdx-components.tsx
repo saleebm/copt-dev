@@ -320,12 +320,20 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
     ),
 
     // Custom components
-    AsciiArtRenderer: ({ asciiArt, src, className, height, ...props }) => (
+    AsciiArtRenderer: ({
+      asciiArt,
+      src,
+      className,
+      height,
+      hero,
+      ...props
+    }) => (
       <div className="my-6">
         <AsciiArtWrapper
           asciiArt={asciiArt}
           className={className}
           height={height}
+          hero={hero}
           src={src}
           {...props}
         />

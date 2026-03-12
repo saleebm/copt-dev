@@ -7,11 +7,7 @@
  */
 
 import { getAllPosts, type ParsedPost } from "@/lib/mdx-parser";
-import type {
-  ContentProvider,
-  NormalizedPost,
-  SourceType,
-} from "./schema";
+import type { ContentProvider, NormalizedPost, SourceType } from "./schema";
 
 const PROVIDER_ID = "filesystem";
 const SOURCE_TYPE: SourceType = "mdx";

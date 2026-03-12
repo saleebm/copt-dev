@@ -15,6 +15,7 @@ interface AsciiArtRendererProps {
     tablet: number;
     desktop: number;
   };
+  hero?: boolean;
   lineCount: number;
   maxLineLength: number;
   src?: string;
@@ -32,13 +33,16 @@ const AsciiArtRenderer = ({
   asciiCategory: asciiCategoryProp,
   fontSizeEstimates,
   estimatedHeight,
+  hero = false,
 }: AsciiArtRendererProps) => {
   const [fetchedArt, setFetchedArt] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const lastCalculatedWidthRef = useRef<number | null>(null);
-  const [fontSize, setFontSize] = useState(() => fontSizeEstimates.mobile);
+  const [fontSize, setFontSize] = useState(() =>
+    hero ? Math.max(fontSizeEstimates.mobile, 0.25) : fontSizeEstimates.mobile
+  );
 
   const asciiArt = asciiArtProp || fetchedArt || "";
 
@@ -47,13 +51,18 @@ const AsciiArtRenderer = ({
   const maxLineLength = asciiArt
     ? Math.max(...lines.map((l) => l.length))
     : maxLineLengthProp;
-  const asciiCategory = asciiArt
-    ? maxLineLength > 120 || lines.length > 40
-      ? "extremely-large"
-      : maxLineLength > 60 || lines.length > 20
-        ? "large"
-        : "normal"
-    : asciiCategoryProp;
+  const asciiCategory = (() => {
+    if (!asciiArt) {
+      return asciiCategoryProp;
+    }
+    if (maxLineLength > 120 || lines.length > 40) {
+      return "extremely-large";
+    }
+    if (maxLineLength > 60 || lines.length > 20) {
+      return "large";
+    }
+    return "normal";
+  })();
 
   // Fetch ASCII art from src if asciiArt prop is empty
   useEffect(() => {
@@ -64,6 +73,8 @@ const AsciiArtRenderer = ({
       .then((res) => res.text())
       .then(setFetchedArt);
   }, [asciiArtProp, src]);
+
+  const actualLineCount = lines.length;
 
   // Calculate font size based on actual container width
   const calculateFontSize = useCallback(
@@ -116,6 +127,16 @@ const AsciiArtRenderer = ({
         Math.min(maxSize, calculatedFontSize)
       );
 
+      // Hero mode: on narrow screens, size by viewport height instead of width
+      // so the art fills a meaningful portion of the card. Horizontal overflow
+      // is clipped by the parent's overflow-hidden.
+      if (hero && containerWidth < 768) {
+        const vh = typeof window !== "undefined" ? window.innerHeight : 844;
+        const targetHeight = vh * 0.5;
+        const heightBasedSize = targetHeight / (actualLineCount * 1.1) / 16;
+        return Math.max(boundedCalculated, Math.min(heightBasedSize, 0.35));
+      }
+
       let targetSize: number;
       if (containerWidth < 420) {
         targetSize = targetMobile;
@@ -130,7 +151,7 @@ const AsciiArtRenderer = ({
       }
       return boundedCalculated * 0.7 + targetSize * 0.3;
     },
-    [maxLineLength, asciiCategory]
+    [maxLineLength, asciiCategory, hero, actualLineCount]
   );
 
   useEffect(() => {
@@ -210,8 +231,9 @@ const AsciiArtRenderer = ({
     );
   }
 
-  const containerClasses =
-    "w-full flex items-center justify-center p-1 overflow-hidden";
+  const containerClasses = hero
+    ? "w-full flex items-center justify-center overflow-hidden"
+    : "w-full flex items-center justify-center p-1 overflow-hidden";
   const preClasses =
     `whitespace-pre text-foreground select-none ${className}`.trim();
 
@@ -221,9 +243,11 @@ const AsciiArtRenderer = ({
       className={containerClasses}
       initial={{ opacity: 0 }}
       ref={containerRef}
-      style={{
-        minHeight: `${estimatedHeight}px`,
-      }}
+      style={
+        hero
+          ? { height: "100%", minHeight: 0 }
+          : { minHeight: `${estimatedHeight}px` }
+      }
       transition={{ duration: 0.3 }}
     >
       <pre

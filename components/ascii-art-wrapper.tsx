@@ -5,6 +5,7 @@ interface AsciiArtWrapperProps {
   asciiArt?: string;
   className?: string;
   height?: string | number;
+  hero?: boolean;
   src?: string;
 }
 
@@ -17,6 +18,7 @@ export function AsciiArtWrapper({
   src,
   className = "",
   height,
+  hero = false,
 }: AsciiArtWrapperProps) {
   if (!(asciiArt || src)) {
     return null;
@@ -24,10 +26,14 @@ export function AsciiArtWrapper({
 
   // When src is provided without asciiArt, render with src and let the client fetch it
   if (!asciiArt && src) {
+    const heroContainerStyle = hero
+      ? { height: "auto" as const, minHeight: "45vh" }
+      : { height: "auto" as const, minHeight: "200px" };
+
     return (
       <div
         className="flex w-full items-center justify-center overflow-hidden"
-        style={{ height: "auto", minHeight: "200px" }}
+        style={heroContainerStyle}
       >
         <Suspense
           fallback={
@@ -45,6 +51,7 @@ export function AsciiArtWrapper({
             className={className}
             estimatedHeight={400}
             fontSizeEstimates={{ mobile: 0.06, tablet: 0.12, desktop: 0.2 }}
+            hero={hero}
             lineCount={77}
             maxLineLength={170}
             src={src}
@@ -180,13 +187,16 @@ export function AsciiArtWrapper({
 
   const estimatedHeight = getEstimatedHeight();
 
-  // If height is provided, use it; otherwise use estimated height initially
-  const heightStyle = height
-    ? { height: typeof height === "number" ? `${height}px` : height }
-    : {
-        height: "auto",
-        minHeight: `${estimatedHeight}px`, // Prevent initial jumping
-      };
+  const getHeightStyle = () => {
+    if (hero) {
+      return { height: "55vh", minHeight: "300px" };
+    }
+    if (height) {
+      return { height: typeof height === "number" ? `${height}px` : height };
+    }
+    return { height: "auto" as const, minHeight: `${estimatedHeight}px` };
+  };
+  const heightStyle = getHeightStyle();
 
   return (
     <div
@@ -206,10 +216,10 @@ export function AsciiArtWrapper({
         <AsciiArtRenderer
           asciiArt={resolvedAsciiArt}
           asciiCategory={asciiCategory}
-          // Pass pre-calculated metadata to reduce client-side work
           className={className}
           estimatedHeight={estimatedHeight}
           fontSizeEstimates={fontSizeEstimates}
+          hero={hero}
           lineCount={lineCount}
           maxLineLength={maxLineLength}
         />
