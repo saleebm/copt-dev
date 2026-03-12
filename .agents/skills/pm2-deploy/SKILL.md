@@ -5,177 +5,91 @@ description: PM2 process management and deployment for copt.dev production serve
 
 # PM2 Deploy — copt.dev
 
-Manage deployment and PM2 process control for the shared production server that currently hosts `copt.dev`.
+App-specific deployment and PM2 operations for `copt.dev`. For shared server conventions, SSH access, directory layout, Caddy patterns, deploy flow shape, rollback procedures, and onboarding new apps, see the global skill: `~/.agents/skills/copt-shared-server/SKILL.md`.
 
-## Server Access
-
-### Connection
-
-```bash
-# Full SSH command (always works, including from Claude Code / non-interactive shells)
-ssh -i ~/.ssh/id_copt_dev_v1 deploy@172.239.45.200
-
-# Shell aliases (only available in interactive terminal sessions)
-copt                    # deploy user
-copt_root               # root user (system-level changes only)
-```
-
-Always use the explicit `ssh -i` form when running commands programmatically or from Claude Code — the shell aliases are not available in non-interactive sessions.
-
-### Non-Interactive SSH and PATH
-
-The server's `~/.bashrc` loads nvm and bun **before** the interactivity guard, so `pm2`, `node`, and `bun` are all available in non-interactive SSH sessions. No special prefix needed:
-
-```bash
-ssh -i ~/.ssh/id_copt_dev_v1 deploy@172.239.45.200 "pm2 status"
-```
-
-### Server Details
+## App Details
 
 | Property | Value |
 |---|---|
-| Host | `172.239.45.200` |
-| User | `deploy` |
-| SSH Key | `~/.ssh/id_copt_dev_v1` |
-| App Dir | `/home/deploy/apps/copt-dev` |
-| Logs Dir | `/home/deploy/logs/` |
-| Stack | Ubuntu 25.10, Node 22 (nvm), Bun 1.3.x, PostgreSQL 17, Caddy 2.x, PM2 |
+| App name | `copt-dev` |
+| Domain | `copt.dev` |
+| Port | `3000` |
+| App dir | `/home/deploy/apps/copt-dev` |
+| Logs | `/home/deploy/logs/copt-dev-{out,error}.log` |
+| PM2 instances | `2` (cluster mode) |
+| Database | PostgreSQL 17 (local) |
 
 ## Deploy
-
-From the local machine:
 
 ```bash
 bun run deploy
 ```
 
-This runs `scripts/deploy-remote.sh`, which pushes to main, SSHes in, runs `deploy.sh`, and verifies HTTP 200.
+Runs `scripts/deploy-remote.sh` which pushes to main, SSHes in, runs `deploy.sh`, and verifies HTTP 200.
 
-`deploy.sh` performs these steps in order:
+Remote `deploy.sh` steps:
 
 1. `git pull --ff-only origin main`
 2. `bun install`
 3. `bun run db:migrate:deploy` (Prisma migrations)
 4. `bun run db:sync-posts` (sync MDX posts to DB)
 5. Build to `.next-builds/<timestamp>/`, symlink `.next-builds/current`
-6. `pm2 reload` (zero-downtime, rolls cluster instances one-by-one)
+6. `pm2 reload` (zero-downtime cluster reload)
 7. Prune old builds, keeping last 3
 
-The reusable pattern for onboarding another app to the same server is documented in:
-
-`docs/deployment/shared-server-app.md`
-
-Use that guide when you need to:
-
-1. Add a new app directory under `/home/deploy/apps/`
-2. Add a new Caddy site block
-3. Choose a new localhost port
-4. Externalize mutable runtime data under `/home/deploy/data/<app-name>`
-5. Copy the `deploy-remote.sh` / `deploy.sh` / `ecosystem.config.cjs` shape to another repo
-
-## PM2 Operations
-
-All PM2 commands run on the server. They work directly in non-interactive SSH sessions — no special setup needed.
-
-### Status & Monitoring
+## PM2 Quick Ref
 
 ```bash
-pm2 status                      # Process list with CPU/mem
-pm2 describe copt-dev           # Full process details
-pm2 monit                       # Live terminal dashboard
-```
-
-### Logs
-
-```bash
-pm2 logs copt-dev               # Stream live logs
-pm2 logs copt-dev --lines 200   # Last 200 lines
-pm2 flush                       # Clear all log files
-```
-
-Log files on disk:
-- `/home/deploy/logs/copt-dev-out.log`
-- `/home/deploy/logs/copt-dev-error.log`
-
-### Restart / Reload
-
-```bash
-pm2 reload copt-dev             # Zero-downtime reload (preferred)
-pm2 restart copt-dev            # Hard restart (brief downtime)
-pm2 reload ecosystem.config.cjs --update-env  # Reload with env changes
-```
-
-### Stop / Delete
-
-```bash
-pm2 stop copt-dev               # Stop without removing
-pm2 delete copt-dev             # Remove from PM2 list
-```
-
-### Scaling
-
-`copt-dev` runs in cluster mode with 2 instances (per `ecosystem.config.cjs`).
-
-```bash
-pm2 scale copt-dev +1           # Add a worker
-pm2 scale copt-dev 2            # Set to exactly 2
-```
-
-For other apps on this server, do not assume `instances: 2`. Apps with filesystem-backed mutations, SQLite, or runtime `revalidatePath` may need `instances: 1` until they have a shared cache/storage strategy.
-
-### Persistence
-
-```bash
-pm2 save                        # Persist current processes across reboot
-pm2 startup                     # Generate system boot script
+pm2 status
+pm2 describe copt-dev
+pm2 logs copt-dev --lines 200
+pm2 reload copt-dev                     # zero-downtime
+pm2 restart copt-dev                    # hard restart
+pm2 reload ecosystem.config.cjs --update-env
+pm2 scale copt-dev 2
+pm2 save
 ```
 
 ## Ecosystem Config
 
-The PM2 config lives at `ecosystem.config.cjs` in the repo root. Key settings:
+Key settings in `ecosystem.config.cjs`:
 
-- `instances: 2` — cluster mode with 2 workers
-- `exec_mode: "cluster"` — enables zero-downtime reload
+- `instances: 2` — cluster mode, zero-downtime reload
+- `exec_mode: "cluster"`
 - `max_memory_restart: "512M"`
-- `BUILD_DIR: ".next-builds/current"` — symlink to active build
-- Logs to `/home/deploy/logs/`
+- `BUILD_DIR: ".next-builds/current"`
 
 ## Rollback
 
-To revert to a previous build:
+Build rollback:
 
 ```bash
-# On the server:
 cd ~/apps/copt-dev/.next-builds
-ls -lt                          # List builds by date
+ls -lt
 ln -sfn <previous-timestamp> current
 pm2 reload copt-dev
 ```
 
-To revert code changes:
+Code rollback:
 
 ```bash
 cd ~/apps/copt-dev
-git log --oneline -5            # Find target commit
+git log --oneline -5
 git checkout <commit> -- .
 pm2 reload copt-dev
 ```
-
-If you are rolling back another app on the same server, use the same sequence but swap in that app's directory, process name, and build symlink.
 
 ## Troubleshooting
 
 ### App not responding
 
 ```bash
-pm2 status                      # Check if process is online/errored
-pm2 logs copt-dev --lines 50    # Check recent errors
-pm2 restart copt-dev            # Hard restart
+pm2 status
+pm2 logs copt-dev --lines 50
+pm2 restart copt-dev
 ```
 
 ### Fork-to-cluster migration
-
-If PM2 was previously running in fork mode, delete and recreate:
 
 ```bash
 pm2 delete copt-dev
@@ -185,20 +99,17 @@ pm2 save
 
 ### Env var changes
 
-When **modifying** env vars in `ecosystem.config.cjs`, use `--update-env`:
+Adding/changing: `pm2 reload ecosystem.config.cjs --update-env`
 
-```bash
-pm2 reload ecosystem.config.cjs --update-env
-```
+Removing: delete and recreate (see global skill `server-conventions.md` for details).
 
-When **removing** env vars from `ecosystem.config.cjs`, `--update-env` does NOT clear cached values from PM2's process dump. You must delete and recreate:
+## Canonical Docs
 
-```bash
-pm2 delete copt-dev
-pm2 start ecosystem.config.cjs
-pm2 save
-```
+1. `docs/deployment/shared-server-app.md`
+2. `deploy.sh`
+3. `ecosystem.config.cjs`
+4. `scripts/deploy-remote.sh`
 
 ## Resources
 
-For detailed PM2 command reference, see `references/api_reference.md`.
+For PM2 command reference, see `references/api_reference.md`.

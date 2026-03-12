@@ -15,7 +15,7 @@ echo "==> Pushing $APP_NAME to origin/$BRANCH"
 git push origin "$BRANCH"
 
 echo "==> Running remote deploy.sh for $APP_NAME"
-ssh -i "$SSH_KEY" "$SERVER" "cd ~/$APP_DIR && ./deploy.sh"
+ssh -i "$SSH_KEY" "$SERVER" "cd ~/$APP_DIR && git pull --ff-only origin $BRANCH && bash ./deploy.sh"
 
 echo "==> Verifying $VERIFY_URL"
 STATUS_CODE="$(curl -fsS -o /dev/null -w "%{http_code}" "$VERIFY_URL" || true)"
