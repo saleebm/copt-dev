@@ -251,7 +251,7 @@ const AsciiArtRenderer = ({
       transition={{ duration: 0.3 }}
     >
       <pre
-        className={`${preClasses} max-w-full`}
+        className={`${preClasses} max-w-full meow`}
         style={{
           fontSize: `${fontSize}rem`,
           lineHeight: 1.1,
