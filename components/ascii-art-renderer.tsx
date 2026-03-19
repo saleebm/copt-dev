@@ -232,8 +232,8 @@ const AsciiArtRenderer = ({
   }
 
   const containerClasses = hero
-    ? "w-full flex items-center justify-center overflow-hidden"
-    : "w-full flex items-center justify-center p-1 overflow-hidden";
+    ? "w-full min-w-0 flex items-center justify-center overflow-hidden"
+    : "w-full min-w-0 flex items-center justify-center p-1 overflow-hidden";
   const preClasses =
     `whitespace-pre text-foreground select-none ${className}`.trim();
 
@@ -251,7 +251,7 @@ const AsciiArtRenderer = ({
       transition={{ duration: 0.3 }}
     >
       <pre
-        className={preClasses}
+        className={`${preClasses} max-w-full`}
         style={{
           fontSize: `${fontSize}rem`,
           lineHeight: 1.1,

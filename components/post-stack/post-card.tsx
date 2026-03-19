@@ -203,7 +203,7 @@ const PostCard: React.FC<PostCardProps> = ({
               return 1;
             })(),
           }}
-          className="flex-1 overflow-y-auto p-6 text-foreground"
+          className="min-w-0 flex-1 overflow-y-auto p-6 text-foreground"
           initial={isClientPost ? { opacity: 0 } : { opacity: 1 }}
           style={{
             willChange: isClientPost ? "opacity" : "auto",
@@ -214,7 +214,7 @@ const PostCard: React.FC<PostCardProps> = ({
             delay: 0.1,
           }}
         >
-          <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl prose-invert max-w-none">
+          <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl prose-invert min-w-0 max-w-none">
             {post.renderedContent}
           </div>
         </motion.div>

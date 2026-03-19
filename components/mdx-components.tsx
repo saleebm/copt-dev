@@ -328,7 +328,7 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
       hero,
       ...props
     }) => (
-      <div className="my-6">
+      <div className="my-6 min-w-0 overflow-hidden">
         <AsciiArtWrapper
           asciiArt={asciiArt}
           className={className}

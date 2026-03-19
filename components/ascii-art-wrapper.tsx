@@ -32,7 +32,7 @@ export function AsciiArtWrapper({
 
     return (
       <div
-        className="flex w-full items-center justify-center overflow-hidden"
+        className="flex min-w-0 w-full items-center justify-center overflow-hidden"
         style={heroContainerStyle}
       >
         <Suspense
@@ -200,7 +200,7 @@ export function AsciiArtWrapper({
 
   return (
     <div
-      className="flex w-full items-center justify-center overflow-hidden"
+      className="flex min-w-0 w-full items-center justify-center overflow-hidden"
       style={heightStyle}
     >
       <Suspense
