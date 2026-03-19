@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "target": "esnext",
     "skipLibCheck": true,
@@ -24,9 +20,7 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [
@@ -39,9 +33,5 @@
     ".next/dev/types/**/*.ts",
     ".next-builds/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "TRASH",
-    "scripts/archive"
-  ]
+  "exclude": ["node_modules", "TRASH", "scripts/archive"]
 }

@@ -37,12 +37,21 @@ const AsciiArtRenderer = ({
 }: AsciiArtRendererProps) => {
   const [fetchedArt, setFetchedArt] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const preRef = useRef<HTMLPreElement>(null);
+  const isInitializedRef = useRef(false);
   const [showContent, setShowContent] = useState(false);
   const lastCalculatedWidthRef = useRef<number | null>(null);
-  const [fontSize, setFontSize] = useState(() =>
-    hero ? Math.max(fontSizeEstimates.mobile, 0.25) : fontSizeEstimates.mobile
-  );
+  const initialFontSize = hero
+    ? Math.max(fontSizeEstimates.mobile, 0.25)
+    : fontSizeEstimates.mobile;
+  const fontSizeRef = useRef(initialFontSize);
+
+  const applyFontSize = useCallback((size: number) => {
+    fontSizeRef.current = size;
+    if (preRef.current) {
+      preRef.current.style.fontSize = size + "rem";
+    }
+  }, []);
 
   const asciiArt = asciiArtProp || fetchedArt || "";
 
@@ -171,10 +180,10 @@ const AsciiArtRenderer = ({
 
       const newFontSize = calculateFontSize(containerWidth);
 
-      if (!isInitialized) {
-        setFontSize(newFontSize);
+      if (!isInitializedRef.current) {
+        applyFontSize(newFontSize);
         lastCalculatedWidthRef.current = containerWidth;
-        setIsInitialized(true);
+        isInitializedRef.current = true;
         setTimeout(() => setShowContent(true), 50);
         return;
       }
@@ -188,8 +197,8 @@ const AsciiArtRenderer = ({
         }
       }
 
-      if (Math.abs(newFontSize - fontSize) > 0.02) {
-        setFontSize(newFontSize);
+      if (Math.abs(newFontSize - fontSizeRef.current) > 0.02) {
+        applyFontSize(newFontSize);
       }
 
       lastCalculatedWidthRef.current = containerWidth;
@@ -200,7 +209,7 @@ const AsciiArtRenderer = ({
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        if (entry.target === container && isInitialized) {
+        if (entry.target === container && isInitializedRef.current) {
           clearTimeout(timeoutId);
           if (resizeTimeoutId) {
             clearTimeout(resizeTimeoutId);
@@ -220,7 +229,7 @@ const AsciiArtRenderer = ({
       }
       resizeObserver.disconnect();
     };
-  }, [calculateFontSize, fontSize, isInitialized, asciiArt]);
+  }, [calculateFontSize, asciiArt, applyFontSize]);
 
   if (!asciiArt) {
     return (
@@ -252,8 +261,9 @@ const AsciiArtRenderer = ({
     >
       <pre
         className={preClasses}
+        ref={preRef}
         style={{
-          fontSize: `${fontSize}rem`,
+          fontSize: `${initialFontSize}rem`,
           lineHeight: 1.1,
           margin: 0,
           padding: 0,
