@@ -37,12 +37,13 @@ const AsciiArtRenderer = ({
 }: AsciiArtRendererProps) => {
   const [fetchedArt, setFetchedArt] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const isInitializedRef = useRef(false);
   const [showContent, setShowContent] = useState(false);
   const lastCalculatedWidthRef = useRef<number | null>(null);
   const [fontSize, setFontSize] = useState(() =>
     hero ? Math.max(fontSizeEstimates.mobile, 0.25) : fontSizeEstimates.mobile
   );
+  const fontSizeRef = useRef(fontSize);
 
   const asciiArt = asciiArtProp || fetchedArt || "";
 
@@ -171,10 +172,11 @@ const AsciiArtRenderer = ({
 
       const newFontSize = calculateFontSize(containerWidth);
 
-      if (!isInitialized) {
+      if (!isInitializedRef.current) {
+        fontSizeRef.current = newFontSize;
         setFontSize(newFontSize);
         lastCalculatedWidthRef.current = containerWidth;
-        setIsInitialized(true);
+        isInitializedRef.current = true;
         setTimeout(() => setShowContent(true), 50);
         return;
       }
@@ -188,7 +190,8 @@ const AsciiArtRenderer = ({
         }
       }
 
-      if (Math.abs(newFontSize - fontSize) > 0.02) {
+      if (Math.abs(newFontSize - fontSizeRef.current) > 0.02) {
+        fontSizeRef.current = newFontSize;
         setFontSize(newFontSize);
       }
 
@@ -200,8 +203,7 @@ const AsciiArtRenderer = ({
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        if (entry.target === container && isInitialized) {
-          clearTimeout(timeoutId);
+        if (entry.target === container && isInitializedRef.current) {
           if (resizeTimeoutId) {
             clearTimeout(resizeTimeoutId);
           }
@@ -220,7 +222,7 @@ const AsciiArtRenderer = ({
       }
       resizeObserver.disconnect();
     };
-  }, [calculateFontSize, fontSize, isInitialized, asciiArt]);
+  }, [calculateFontSize, asciiArt]);
 
   if (!asciiArt) {
     return (
@@ -251,7 +253,7 @@ const AsciiArtRenderer = ({
       transition={{ duration: 0.3 }}
     >
       <pre
-        className={`${preClasses} max-w-full meow`}
+        className={`${preClasses} max-w-full`}
         style={{
           fontSize: `${fontSize}rem`,
           lineHeight: 1.1,
