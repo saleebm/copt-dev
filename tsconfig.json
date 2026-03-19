@@ -37,11 +37,11 @@
     ".next/types/**/*.ts",
     "next.config.mts",
     ".next/dev/types/**/*.ts",
+    ".next-builds/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "TRASH",
-    ".next-builds",
     "scripts/archive"
   ]
 }
