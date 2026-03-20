@@ -92,7 +92,12 @@ const AsciiArtRenderer = ({
   );
 
   // Update ref on every render with current closure values
-  calculateFontSizeRef.current = (containerWidth: number) => {
+  calculateFontSizeRef.current = (rawContainerWidth: number) => {
+    // Never trust a container wider than the viewport — layout bugs can inflate it
+    const viewportWidth =
+      typeof window !== "undefined" ? window.innerWidth : rawContainerWidth;
+    const containerWidth = Math.min(rawContainerWidth, viewportWidth);
+
     const targetMobile = 0.08;
     const targetTablet = 0.15;
     const targetDesktop = 0.3;
@@ -140,14 +145,13 @@ const AsciiArtRenderer = ({
       Math.min(maxSize, calculatedFontSize)
     );
 
-    // Hero mode: on narrow screens, size by viewport height instead of width
-    // so the art fills a meaningful portion of the card. Horizontal overflow
-    // is clipped by the parent's overflow-hidden.
+    // Hero mode: on narrow screens, try to size by viewport height so the art
+    // fills more of the card — but NEVER exceed the width-fitted size.
     if (hero && containerWidth < 768) {
       const vh = typeof window !== "undefined" ? window.innerHeight : 844;
       const targetHeight = vh * 0.5;
       const heightBasedSize = targetHeight / (actualLineCount * 1.1) / 16;
-      return Math.max(boundedCalculated, Math.min(heightBasedSize, 0.35));
+      return Math.min(boundedCalculated, Math.min(heightBasedSize, 0.35));
     }
 
     let targetSize: number;
