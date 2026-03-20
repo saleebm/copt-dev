@@ -264,7 +264,8 @@ const AsciiArtRenderer = ({
         className={preClasses}
         ref={preRef}
         style={{
-          fontSize: `${initialFontSize}rem`,
+          // biome-ignore lint/style/useTemplate: <explanation>
+          fontSize: initialFontSize + "rem",
           lineHeight: 1.1,
           margin: 0,
           padding: 0,
