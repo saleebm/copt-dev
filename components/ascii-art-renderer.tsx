@@ -49,6 +49,7 @@ const AsciiArtRenderer = ({
   const applyFontSize = useCallback((size: number) => {
     fontSizeRef.current = size;
     if (preRef.current) {
+      // biome-ignore lint/style/useTemplate: <explanation>
       preRef.current.style.fontSize = size + "rem";
     }
   }, []);
