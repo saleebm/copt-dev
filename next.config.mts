@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   experimental: {
     mdxRs: true,
-    inlineCss: true,
+    // inlineCss: true,
     // Forward browser logs to the terminal for easier debugging
     browserDebugInfoInTerminal: true,
     serverComponentsHmrCache: false, // disable HMR for server components for local development (HMR = hot module replacement)
