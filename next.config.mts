@@ -16,8 +16,14 @@ const nextConfig: NextConfig = {
     mdxRs: true,
     inlineCss: true,
     // Forward browser logs to the terminal for easier debugging
-    browserDebugInfoInTerminal: true,
     serverComponentsHmrCache: false, // disable HMR for server components for local development (HMR = hot module replacement)
+  },
+  logging: {
+    browserToTerminal: true,
+    // 'error' — errors only (default)
+    // 'warn'  — warnings and errors
+    // true    — all console output
+    // false   — disabled
   },
   turbopack: {
     // no workspaces
