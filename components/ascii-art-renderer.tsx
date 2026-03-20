@@ -86,83 +86,84 @@ const AsciiArtRenderer = ({
 
   const actualLineCount = lines.length;
 
-  // Calculate font size based on actual container width
-  const calculateFontSize = useCallback(
-    (containerWidth: number) => {
-      const targetMobile = 0.08;
-      const targetTablet = 0.15;
-      const targetDesktop = 0.3;
-
-      const availableWidth = containerWidth * 0.92;
-      const charWidthRatio = maxLineLength > 120 ? 0.52 : 0.62;
-
-      let calculatedFontSize =
-        availableWidth / (maxLineLength * charWidthRatio);
-      calculatedFontSize /= 16;
-
-      let minSize: number;
-      let maxSize: number;
-
-      if (asciiCategory === "extremely-large") {
-        minSize = 0.02;
-        if (containerWidth < 420) {
-          maxSize = 0.12;
-        } else if (containerWidth < 768) {
-          maxSize = 0.2;
-        } else {
-          maxSize = 0.3;
-        }
-      } else if (asciiCategory === "large") {
-        minSize = 0.03;
-        if (containerWidth < 420) {
-          maxSize = 0.15;
-        } else if (containerWidth < 768) {
-          maxSize = 0.25;
-        } else {
-          maxSize = 0.4;
-        }
-      } else {
-        minSize = 0.05;
-        if (containerWidth < 420) {
-          maxSize = 0.2;
-        } else if (containerWidth < 768) {
-          maxSize = 0.3;
-        } else {
-          maxSize = 0.42;
-        }
-      }
-
-      const boundedCalculated = Math.max(
-        minSize,
-        Math.min(maxSize, calculatedFontSize)
-      );
-
-      // Hero mode: on narrow screens, size by viewport height instead of width
-      // so the art fills a meaningful portion of the card. Horizontal overflow
-      // is clipped by the parent's overflow-hidden.
-      if (hero && containerWidth < 768) {
-        const vh = typeof window !== "undefined" ? window.innerHeight : 844;
-        const targetHeight = vh * 0.5;
-        const heightBasedSize = targetHeight / (actualLineCount * 1.1) / 16;
-        return Math.max(boundedCalculated, Math.min(heightBasedSize, 0.35));
-      }
-
-      let targetSize: number;
-      if (containerWidth < 420) {
-        targetSize = targetMobile;
-      } else if (containerWidth < 768) {
-        targetSize = targetTablet;
-      } else {
-        targetSize = targetDesktop;
-      }
-
-      if (Math.abs(boundedCalculated - targetSize) < targetSize * 0.3) {
-        return boundedCalculated;
-      }
-      return boundedCalculated * 0.7 + targetSize * 0.3;
-    },
-    [maxLineLength, asciiCategory, hero, actualLineCount]
+  // Ref always holds the latest calculation function — bypasses React Compiler memoization
+  const calculateFontSizeRef = useRef<(containerWidth: number) => number>(
+    () => initialFontSize
   );
+
+  // Update ref on every render with current closure values
+  calculateFontSizeRef.current = (containerWidth: number) => {
+    const targetMobile = 0.08;
+    const targetTablet = 0.15;
+    const targetDesktop = 0.3;
+
+    const availableWidth = containerWidth * 0.92;
+    const charWidthRatio = maxLineLength > 120 ? 0.52 : 0.62;
+
+    let calculatedFontSize = availableWidth / (maxLineLength * charWidthRatio);
+    calculatedFontSize /= 16;
+
+    let minSize: number;
+    let maxSize: number;
+
+    if (asciiCategory === "extremely-large") {
+      minSize = 0.02;
+      if (containerWidth < 420) {
+        maxSize = 0.12;
+      } else if (containerWidth < 768) {
+        maxSize = 0.2;
+      } else {
+        maxSize = 0.3;
+      }
+    } else if (asciiCategory === "large") {
+      minSize = 0.03;
+      if (containerWidth < 420) {
+        maxSize = 0.15;
+      } else if (containerWidth < 768) {
+        maxSize = 0.25;
+      } else {
+        maxSize = 0.4;
+      }
+    } else {
+      minSize = 0.05;
+      if (containerWidth < 420) {
+        maxSize = 0.2;
+      } else if (containerWidth < 768) {
+        maxSize = 0.3;
+      } else {
+        maxSize = 0.42;
+      }
+    }
+
+    const boundedCalculated = Math.max(
+      minSize,
+      Math.min(maxSize, calculatedFontSize)
+    );
+
+    // Hero mode: on narrow screens, size by viewport height instead of width
+    // so the art fills a meaningful portion of the card. Horizontal overflow
+    // is clipped by the parent's overflow-hidden.
+    if (hero && containerWidth < 768) {
+      const vh = typeof window !== "undefined" ? window.innerHeight : 844;
+      const targetHeight = vh * 0.5;
+      const heightBasedSize = targetHeight / (actualLineCount * 1.1) / 16;
+      return Math.max(boundedCalculated, Math.min(heightBasedSize, 0.35));
+    }
+
+    let targetSize: number;
+    if (containerWidth < 420) {
+      targetSize = targetMobile;
+    } else if (containerWidth < 768) {
+      targetSize = targetTablet;
+    } else {
+      targetSize = targetDesktop;
+    }
+
+    if (Math.abs(boundedCalculated - targetSize) < targetSize * 0.3) {
+      return boundedCalculated;
+    }
+    return boundedCalculated * 0.7 + targetSize * 0.3;
+  };
 
   useEffect(() => {
     if (!(containerRef.current && asciiArt)) {
@@ -179,7 +180,7 @@ const AsciiArtRenderer = ({
         return;
       }
 
-      const newFontSize = calculateFontSize(containerWidth);
+      const newFontSize = calculateFontSizeRef.current(containerWidth);
 
       if (!isInitializedRef.current) {
         applyFontSize(newFontSize);
@@ -230,7 +231,7 @@ const AsciiArtRenderer = ({
       }
       resizeObserver.disconnect();
     };
-  }, [calculateFontSize, asciiArt, applyFontSize]);
+  }, [asciiArt, applyFontSize]);
 
   if (!asciiArt) {
     return (
