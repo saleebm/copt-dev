@@ -1,0 +1,20 @@
+---
+title: Skipping the scrape with Gemini's URL Context tool
+type: FINDING
+status: DRAFT
+published: false
+date: '2026-05-12'
+tags:
+  - gemini-api
+  - web-scraping
+  - llms
+categories:
+  - development
+  - notes
+slug: skipping-the-scrape-with-geminis-url-context-tool
+---
+I spent some time this morning looking at the new URL Context tool for the Gemini API. Instead of writing my own scraping logic to pull down a webpage, strip the HTML, and feed it into the context window, I can just hand the URL to the API.
+
+FINDING: The documentation details the `url_context` tool for Gemini 3 and 2.5 models. It lets you pass "up to 20 URLs per request" directly into the model's context. It uses a "two-step retrieval process", hitting an internal index cache first and falling back to a live fetch if the page is new. It supports text, images, and PDFs up to 34MB per URL, though it skips paywalled content and localhost addresses. What surprised me most is how it combines with Google Search grounding: the model can run a broad search, grab the resulting links, and then use URL context to deeply analyze those specific pages.
+
+This fundamentally shifts how I build small automation scripts. The retrieved content simply counts toward standard input tokens. I haven't tested it on heavily JavaScript-rendered pages yet, but skipping the manual BeautifulSoup step for basic summarization tasks is a massive time saver. I'll be wiring this up to my daily reading feed tonight to see how it handles messy DOM structures.
