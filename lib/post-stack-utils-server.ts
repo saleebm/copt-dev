@@ -26,7 +26,7 @@ export async function createRenderedPost(
   if (postData.isMdx) {
     try {
       content = await renderMdxContent(postData.rawContent);
-    } catch (_error) {
+    } catch {
       // Import createElement and Text to create error element
       const { createElement } = await import("react");
       const { Text } = await import("@/components/shared/text");
@@ -109,7 +109,7 @@ export async function getConcretePostIds(): Promise<string[]> {
   try {
     // Use the centralized function that handles caching and proper query logic
     return await getAllConcretePostIds();
-  } catch (_error) {
+  } catch {
     return [];
   }
 }

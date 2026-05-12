@@ -214,16 +214,16 @@ export function useArticleRefs(
                       setArticleRef(index, postElement);
                     }
                   }
-                } catch (_error) {
+                } catch {
                   // Continue with other posts instead of crashing
                 }
               });
-            } catch (_error) {
+            } catch {
               // Silently handle errors during ref registration retry
             }
           }, 50);
         }
-      } catch (_error) {
+      } catch {
         // Don't re-throw - let the application continue
       }
     });

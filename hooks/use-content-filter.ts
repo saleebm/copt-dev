@@ -28,7 +28,7 @@ export function useContentFilter(): UseContentFilterReturn {
         const parsed = JSON.parse(stored) as PostType[];
         setSelectedTypesState(new Set(parsed));
       }
-    } catch (_error) {
+    } catch {
       // Silently handle localStorage errors
     }
   }, []);
@@ -38,7 +38,7 @@ export function useContentFilter(): UseContentFilterReturn {
     setSelectedTypesState(types);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(types)));
-    } catch (_error) {
+    } catch {
       // Silently handle localStorage errors
     }
   }, []);

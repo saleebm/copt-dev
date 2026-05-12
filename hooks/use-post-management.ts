@@ -183,7 +183,7 @@ export function usePostManagement({
           });
           console.error(`Error: Could not load post "${originalPostIdToAdd}".`);
         }
-      } catch (_error) {
+      } catch {
         actor.send({
           type: "POST_LOAD_ERROR",
           error: "An error occurred while loading the post",

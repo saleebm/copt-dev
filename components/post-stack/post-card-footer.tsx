@@ -81,7 +81,7 @@ const PostCardFooter: React.FC<{ currentPostId: string }> = ({
     async (postId: string): Promise<void> => {
       try {
         await addPost(postId);
-      } catch (_error) {
+      } catch {
         // Silently handle post addition errors
       }
     },

@@ -226,7 +226,7 @@ export function TimelineTab({ onNavigate }: TimelineTabProps) {
 
                 {/* Posts in Month */}
                 <div className="space-y-1">
-                  {entry.posts.map((post, index) => {
+                  {entry.posts.map((post, _index) => {
                     const postForNavigation: PostForNavigation = {
                       id: post.originalId,
                       slug: post.originalId,

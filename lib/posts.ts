@@ -193,7 +193,7 @@ export const getPostBySlug = cache(async (slug: string) => {
 
     postCache.set(cacheKey, post);
     return post;
-  } catch (_error) {
+  } catch {
     return null;
   }
 });
@@ -256,7 +256,7 @@ export const getPosts = cache(
 
       postCache.set(cacheKey, result);
       return result;
-    } catch (_error) {
+    } catch {
       throw new Error("Failed to fetch posts");
     }
   }
@@ -328,7 +328,7 @@ export const getPostsByTagName = cache(async (tagName: string) => {
     const posts = tag?.posts || [];
     postCache.set(cacheKey, posts);
     return posts;
-  } catch (_error) {
+  } catch {
     return [];
   }
 });
@@ -448,7 +448,7 @@ export const searchPosts = cache(
           hasPrev: skip > 0,
         },
       } as { posts: PostWithIncludes[]; pagination: PaginationResult };
-    } catch (_error) {
+    } catch {
       throw new Error("Failed to search posts");
     }
   }
@@ -481,7 +481,7 @@ export const getPostCountByStatus = cache(async () => {
       },
       {} as Record<PostStatus, number>
     );
-  } catch (_error) {
+  } catch {
     return {} as Record<PostStatus, number>;
   }
 });
@@ -531,7 +531,7 @@ export const getAllConcretePostIds = cache(async (): Promise<string[]> => {
     const slugs = concretePosts.map((post) => post.slug);
     postCache.set(cacheKey, slugs);
     return slugs;
-  } catch (_error) {
+  } catch {
     return []; // Return empty array on error to prevent UI crashes
   }
 });
@@ -582,10 +582,11 @@ export const getAllBlogPostsWithCategories = cache(
           uncategorizedPosts.push(postForNav);
         } else {
           post.categories.forEach((category) => {
-            if (!categoryMap.has(category.name)) {
-              categoryMap.set(category.name, { posts: [], count: 0 });
+            let categoryData = categoryMap.get(category.name);
+            if (!categoryData) {
+              categoryData = { posts: [], count: 0 };
+              categoryMap.set(category.name, categoryData);
             }
-            const categoryData = categoryMap.get(category.name)!;
             categoryData.posts.push(postForNav);
             categoryData.count++;
           });
@@ -616,7 +617,7 @@ export const getAllBlogPostsWithCategories = cache(
 
       postCache.set(cacheKey, result);
       return result;
-    } catch (_error) {
+    } catch {
       return [];
     }
   }
@@ -661,7 +662,7 @@ export const getAllTags = cache(async (): Promise<TagForNav[]> => {
 
     postCache.set(cacheKey, result);
     return result;
-  } catch (_error) {
+  } catch {
     return [];
   }
 });
@@ -757,7 +758,7 @@ export const getAllPostsByLastEdited = cache(
 
       postCache.set(cacheKey, result);
       return result;
-    } catch (_error) {
+    } catch {
       return [];
     }
   }

@@ -37,7 +37,10 @@ export class CategoryTreeBuilder {
 
     // Second pass: Build hierarchy
     for (const [path, node] of this.nodeCache) {
-      const embedding = this.embeddings.get(path)!;
+      const embedding = this.embeddings.get(path);
+      if (!embedding) {
+        continue;
+      }
 
       if (embedding.parentPath) {
         // Find parent
@@ -75,8 +78,9 @@ export class CategoryTreeBuilder {
    * Creates a single CategoryNode from CategoryEmbedding
    */
   private createNode(path: string, embedding: CategoryEmbedding): CategoryNode {
-    if (this.nodeCache.has(path)) {
-      return this.nodeCache.get(path)!;
+    const cached = this.nodeCache.get(path);
+    if (cached) {
+      return cached;
     }
 
     // Match using the kebab-case name (embedding.name matches category.name)
@@ -231,7 +235,10 @@ export class CategoryTreeBuilder {
     const queue = [...node.children];
 
     while (queue.length > 0) {
-      const current = queue.shift()!;
+      const current = queue.shift();
+      if (!current) {
+        break;
+      }
       descendants.push(current);
       queue.push(...current.children);
     }
@@ -312,7 +319,10 @@ export function flattenCategoryTree(nodes: CategoryNode[]): CategoryNode[] {
   const queue = [...nodes];
 
   while (queue.length > 0) {
-    const current = queue.shift()!;
+    const current = queue.shift();
+    if (!current) {
+      break;
+    }
     flat.push(current);
     queue.push(...current.children);
   }

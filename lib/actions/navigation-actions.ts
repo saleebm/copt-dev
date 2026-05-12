@@ -38,7 +38,7 @@ interface FindingsByDate {
 export async function getBlogPostsWithCategoriesAction() {
   try {
     return await getAllBlogPostsWithCategories();
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -49,7 +49,7 @@ export async function getBlogPostsWithCategoriesAction() {
 export async function getAllTagsAction() {
   try {
     return await getAllTags();
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -60,7 +60,7 @@ export async function getAllTagsAction() {
 export async function getAllPostsByLastEditedAction() {
   try {
     return await getAllPostsByLastEdited();
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -89,7 +89,7 @@ export async function getPostsByTagNameAction(
     }
 
     return posts;
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -138,7 +138,7 @@ export async function getAllFindingsByDateAction(): Promise<FindingsByDate[]> {
         slug: post.slug,
       };
     });
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -149,7 +149,7 @@ export async function getAllFindingsByDateAction(): Promise<FindingsByDate[]> {
 export async function getAllCategoriesAction() {
   try {
     return await getAllCategories();
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -198,7 +198,7 @@ export async function getAllSightsByDateAction(): Promise<FindingsByDate[]> {
         slug: post.slug,
       };
     });
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -228,11 +228,12 @@ export async function getChroniclePostsAction() {
       slug: p.slug,
       title: p.title,
       type: p.type,
+      // biome-ignore lint/style/noNonNullAssertion: query filters NOT: { originalDate: null }
       originalDate: p.originalDate!,
       tags: p.tags?.map((t) => ({ name: t.name })) ?? [],
       categories: p.categories?.map((c) => ({ name: c.name })) ?? [],
     }));
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -270,7 +271,7 @@ export async function getAllPostsForNavigationAction() {
           [],
       })
     );
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -343,7 +344,7 @@ export async function getNestedCategoriesWithCounts(): Promise<CategoryNode[]> {
     // NOTE: No pruning here - client will filter based on selected post types
     const builder = new CategoryTreeBuilder(embeddings, categoryData);
     return builder.buildTree();
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -375,7 +376,7 @@ export async function getPostsByType(type: PostType) {
     });
 
     return posts;
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -402,7 +403,7 @@ export async function getPostTypeCounts(): Promise<PostTypeCount[]> {
       count: item._count.type,
       percentage: total > 0 ? (item._count.type / total) * 100 : 0,
     }));
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -480,7 +481,7 @@ export async function getTagsWithMetadata(): Promise<TagWithMetadata[]> {
         cluster: undefined,
       } as TagWithMetadata;
     });
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -520,7 +521,7 @@ export async function getPostsByCategoryName(categoryName: string) {
     });
 
     return category?.posts || [];
-  } catch (_error) {
+  } catch {
     return [];
   }
 }
@@ -619,7 +620,7 @@ export async function getCategoryPosts(
     });
 
     return posts;
-  } catch (_error) {
+  } catch {
     return [];
   }
 }

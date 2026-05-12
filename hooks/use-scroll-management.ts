@@ -79,7 +79,7 @@ export function useScrollManagement({
         let postElement: HTMLElement;
         try {
           postElement = await waitForPostElement(postId, postIndex);
-        } catch (_error) {
+        } catch {
           // Try to use the ref if available as fallback
           const refElement = articleRefs.current[postIndex];
           if (refElement && document.contains(refElement)) {

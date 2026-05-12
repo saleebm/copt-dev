@@ -15,15 +15,15 @@ export type IngestStatus =
 
 const UNIQUE_VIOLATION = "P2002";
 
-export type CreateSubmissionInput = {
+export interface CreateSubmissionInput {
+  batchId?: string | null;
+  contentHash: string;
+  imageIndex?: number | null;
   kind: IngestKind;
   payload: Prisma.InputJsonValue;
-  contentHash: string;
-  batchId?: string | null;
-  imageIndex?: number | null;
-  totalCount?: number | null;
   stagedFilePath?: string | null;
-};
+  totalCount?: number | null;
+}
 
 export type CreateSubmissionResult =
   | { status: "created"; submission: IngestSubmission }
@@ -135,11 +135,11 @@ export async function claimReadyImageBatch(): Promise<IngestSubmission[]> {
   });
 }
 
-export type CompletionPatch = {
+export interface CompletionPatch {
+  resultBranch?: string | null;
   resultPostSlug?: string | null;
   resultPrUrl?: string | null;
-  resultBranch?: string | null;
-};
+}
 
 export async function markCompleted(
   ids: string[],

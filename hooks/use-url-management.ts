@@ -72,7 +72,7 @@ export function useUrlManagement({
           // Avoid Next.js rerender to preserve scroll and DOM stability
           // Store stackIds in history state for accurate forward/back navigation
           window.history.pushState({ stackIds }, "", newUrl);
-        } catch (_e) {
+        } catch {
           router.push(newUrl, { scroll: false });
         }
         lastPushedRef.current = urlKey;

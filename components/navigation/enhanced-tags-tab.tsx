@@ -165,7 +165,7 @@ export function EnhancedTagsTab({ onNavigate }: EnhancedTagsTabProps) {
 
         // Store posts (already filtered by type on server)
         setTagPosts(filteredPosts);
-      } catch (_err) {
+      } catch {
         setTagPosts([]);
       } finally {
         setLoadingPosts(false);

@@ -23,7 +23,7 @@ export function useNavClick(_onNavigate?: () => void) {
       try {
         lastClickedIdRef.current = id;
         await addPost(id);
-      } catch (_error) {
+      } catch {
         // Silently handle errors during post addition
       }
     },

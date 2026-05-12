@@ -2,7 +2,13 @@
 import { parseArgs } from "node:util";
 import { resolveApiKey } from "../lib/ai-config";
 import { rollTopic } from "./lib/pool";
-import { readBlock, readChoice, readLine } from "./lib/readline";
+import {
+  closeInput,
+  readBlock,
+  readChoice,
+  readLine,
+  withInputSuppressed,
+} from "./lib/readline";
 import { streamReshape } from "./lib/reshape";
 import { saveRoll } from "./lib/save";
 import { streamSparks } from "./lib/sparks";
@@ -100,8 +106,11 @@ async function rollPhase(forceLane?: Lane): Promise<RolledTopic | null> {
 }
 
 async function sparksPhase(topic: RolledTopic): Promise<string[]> {
-  console.log("\n  ✨ gemini is striking sparks…\n");
-  const { sparks } = await streamSparks(topic);
+  console.log(
+    "\n  ✨ gemini is striking sparks — please don't type until it's done.\n"
+  );
+  const { sparks } = await withInputSuppressed(() => streamSparks(topic));
+  console.log("\n  ✅ sparks ready. you can type now.");
   if (sparks.length === 0) {
     console.log(
       "  ⚠️  no sparks parsed from response — using one fallback prompt"
@@ -146,8 +155,11 @@ async function reshapeLoop(
 ): Promise<string | null> {
   let draft = "";
   while (true) {
-    console.log("\n  🪡 gemini is reshaping…\n");
-    draft = await streamReshape(topic, answers);
+    console.log(
+      "\n  🪡 gemini is reshaping — please don't type until it's done.\n"
+    );
+    draft = await withInputSuppressed(() => streamReshape(topic, answers));
+    console.log("\n  ✅ draft ready.");
     const choice = await readChoice(
       "\n  [s]ave / [e]dit again / [d]iscard ? →",
       ["s", "e", "d"]
@@ -206,9 +218,13 @@ async function main(): Promise<void> {
 }
 
 if (import.meta.main) {
-  main().catch((err) => {
-    console.error("\n❌ roll failed");
-    console.error(err);
-    process.exit(1);
-  });
+  main()
+    .catch((err) => {
+      console.error("\n❌ roll failed");
+      console.error(err);
+      process.exit(1);
+    })
+    .finally(() => {
+      closeInput();
+    });
 }

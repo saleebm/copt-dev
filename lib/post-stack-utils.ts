@@ -118,7 +118,7 @@ export async function createRenderedPost(
   if (postData.isMdx) {
     try {
       content = await renderMdxContent(postData.rawContent);
-    } catch (_error) {
+    } catch {
       content = createTextElement({
         content: "Error rendering MDX.",
         variant: "error",
@@ -205,7 +205,7 @@ export async function getConcretePostIds(): Promise<string[]> {
   try {
     // Use the centralized function that handles caching and proper query logic
     return await getAllConcretePostIds();
-  } catch (_error) {
+  } catch {
     return [];
   }
 }

@@ -133,7 +133,7 @@ export function parsePostFile(filePath: string, type: PostType): ParsedPost {
       const fileDate =
         stats.birthtime < stats.mtime ? stats.birthtime : stats.mtime;
       parsedDate = fileDate.toISOString();
-    } catch (_error) {
+    } catch {
       // Silently handle file stat errors
     }
   }
@@ -268,7 +268,7 @@ export function getPostsOfType(type: PostType): ParsedPost[] {
           posts.push(parsePostFile(fullPath, type));
         }
       }
-    } catch (_error) {
+    } catch {
       // Silently handle directory read errors
     }
 
@@ -301,7 +301,7 @@ function getPostsRecursively(directory: string, type: PostType): ParsedPost[] {
         posts.push(parsePostFile(fullPath, type));
       }
     }
-  } catch (_error) {
+  } catch {
     // Silently handle directory read errors
   }
 
@@ -480,7 +480,7 @@ function copyImageToPublic(
           // Remove the copied file to replace with symlink
           fs.unlinkSync(publicPath);
         }
-      } catch (_e) {
+      } catch {
         // Error reading link, remove and recreate
         fs.unlinkSync(publicPath);
       }
@@ -491,12 +491,12 @@ function copyImageToPublic(
 
     // Return the path that Next.js can serve (without /public prefix)
     return originalPath;
-  } catch (_error) {
+  } catch {
     // Fallback to copying if symlink fails (e.g., on Windows without permissions)
     try {
       fs.copyFileSync(sourceImagePath, publicPath);
       return originalPath;
-    } catch (_copyError) {
+    } catch {
       return originalPath; // Return original path on error
     }
   }
@@ -598,7 +598,7 @@ function getSightPostsRecursively(directory: string): ParsedPost[] {
         }
       }
     }
-  } catch (_error) {
+  } catch {
     // Silently handle directory read errors
   }
 

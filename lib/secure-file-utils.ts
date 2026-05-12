@@ -228,13 +228,13 @@ export async function safeReadFile(
  * Creates a safe logger that doesn't expose sensitive paths
  */
 export function createSafeLogger() {
-  const sanitizePathForLog = (path: string): string => {
+  const sanitizePathForLog = (filePath: string): string => {
     // Hash the path for tracking while hiding actual path
     const hash = crypto
       .createHash("sha256")
-      .update(path)
+      .update(filePath)
       .digest("hex")
-      .substring(0, 8);
+      .slice(0, 8);
     return `[file:${hash}]`;
   };
 

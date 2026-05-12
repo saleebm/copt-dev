@@ -156,7 +156,7 @@ export function parsePostDate(
         0
       )
     );
-  } catch (_error) {
+  } catch {
     return null;
   }
 }

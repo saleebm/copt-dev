@@ -169,7 +169,7 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
 
         // Store posts (already filtered by type on server)
         setCategoryPosts(filteredPosts);
-      } catch (_err) {
+      } catch {
         setCategoryPosts([]);
       } finally {
         setLoadingPosts(false);

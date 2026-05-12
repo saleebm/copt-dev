@@ -72,7 +72,7 @@ export function useMobileNavigationState() {
           lastClosedAt: parsed.lastClosedAt || 0,
         });
       }
-    } catch (_error) {
+    } catch {
       // Silently handle localStorage errors
     } finally {
       setIsRestored(true);
@@ -87,7 +87,7 @@ export function useMobileNavigationState() {
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (_error) {
+    } catch {
       // Silently handle localStorage errors
     }
   }, [state, isRestored]);

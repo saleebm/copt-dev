@@ -599,7 +599,7 @@ export async function waitForPostElement(
   }
   try {
     return await waitForPostElementWithObserver(postId, postIndex);
-  } catch (_error) {
+  } catch {
     // Don't throw - instead return a fallback or handle gracefully
     // This prevents crashes during navigation
     throw new Error(

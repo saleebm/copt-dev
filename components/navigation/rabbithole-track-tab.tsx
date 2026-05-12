@@ -103,7 +103,7 @@ export function RabbitholeTrackTab({ onNavigate }: RabbitholeTrackTabProps) {
         // Scroll to post without margin for existing posts
         await scrollToPost(postId, false);
         onNavigate?.();
-      } catch (_error) {
+      } catch {
         // Silently handle scroll errors
       }
     },

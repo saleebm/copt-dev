@@ -50,7 +50,7 @@ export function usePermalink({ posts }: UsePermalinkProps) {
           description: "You can now share or bookmark this post.",
           duration: 5000, // Auto dismiss after 5 seconds
         });
-      } catch (_err) {
+      } catch {
         toast({
           title: "Failed to copy",
           description: "Could not copy permalink to clipboard.",

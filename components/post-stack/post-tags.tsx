@@ -58,7 +58,7 @@ export function PostTags({ tags, postId }: PostTagsProps) {
             })
           );
         setRelatedPosts(filteredPosts);
-      } catch (_error) {
+      } catch {
         setRelatedPosts([]);
       }
     });
