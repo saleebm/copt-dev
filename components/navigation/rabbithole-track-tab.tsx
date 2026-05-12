@@ -135,7 +135,7 @@ export function RabbitholeTrackTab({ onNavigate }: RabbitholeTrackTabProps) {
             <Layers className="h-3 w-3" />
             <span>
               {stackPostsForNav.length} post
-              {stackPostsForNav.length !== 1 ? "s" : ""} in stack
+              {stackPostsForNav.length === 1 ? "" : "s"} in stack
             </span>
           </div>
         )}

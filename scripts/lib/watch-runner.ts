@@ -2,11 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 
 export interface WatchRunnerOptions {
-  paths: string[];
+  debounceMs?: number;
   extensions?: string[];
   ignore?: RegExp;
-  debounceMs?: number;
   label?: string;
+  paths: string[];
   run: () => Promise<void> | void;
   runOnStart?: boolean;
 }

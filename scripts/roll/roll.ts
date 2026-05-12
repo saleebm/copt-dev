@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 import { parseArgs } from "node:util";
 import { resolveApiKey } from "../lib/ai-config";
-import { readBlock, readChoice, readLine } from "./lib/readline";
 import { rollTopic } from "./lib/pool";
+import { readBlock, readChoice, readLine } from "./lib/readline";
 import { streamReshape } from "./lib/reshape";
 import { saveRoll } from "./lib/save";
 import { streamSparks } from "./lib/sparks";

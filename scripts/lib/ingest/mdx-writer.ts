@@ -2,7 +2,7 @@
 // filename conventions as scripts/lib/services/file-service.ts (BLOG/FINDING
 // get an MMddyyyy prefix, SIGHT does not). For image batches, copies staged
 // files to posts/sight/<batch>/<n>.<ext> and rewrites IMAGE_N placeholders.
-import { existsSync, mkdirSync, copyFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import matter from "gray-matter";
 import { getPostDirectory } from "../post-type-meta";

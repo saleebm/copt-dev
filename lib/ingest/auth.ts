@@ -16,7 +16,7 @@ export function verifyBearer(request: Request): AuthResult {
     return { ok: false, reason: "INGEST_TOKEN not configured" };
   }
   const header = request.headers.get("authorization");
-  if (!header || !header.startsWith(BEARER_PREFIX)) {
+  if (!(header && header.startsWith(BEARER_PREFIX))) {
     return { ok: false, reason: "missing bearer token" };
   }
   const provided = header.slice(BEARER_PREFIX.length).trim();

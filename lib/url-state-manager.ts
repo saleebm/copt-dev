@@ -219,7 +219,7 @@ export class UrlStateManager {
       current: this._currentState,
       previous: this._previousState,
       isUpdating: this._isUpdating,
-      currentUrl: typeof window !== "undefined" ? window.location.href : "SSR",
+      currentUrl: typeof window === "undefined" ? "SSR" : window.location.href,
     };
   }
 }

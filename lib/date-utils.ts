@@ -79,7 +79,7 @@ export function formatDateSmart(
   return formatDateWithoutTimezone(date, {
     month: "short",
     day: "numeric",
-    year: dateYear !== currentYear ? "numeric" : undefined,
+    year: dateYear === currentYear ? undefined : "numeric",
   });
 }
 

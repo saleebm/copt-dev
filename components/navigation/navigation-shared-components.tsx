@@ -270,8 +270,8 @@ export const ItemCountDisplay: React.FC<ItemCountDisplayProps> = ({
 }) => {
   const displayText =
     searchTerm && filteredCount !== undefined
-      ? `${filteredCount} of ${count} ${itemType}${count !== 1 ? "s" : ""}`
-      : `${count} ${itemType}${count !== 1 ? "s" : ""}`;
+      ? `${filteredCount} of ${count} ${itemType}${count === 1 ? "" : "s"}`
+      : `${count} ${itemType}${count === 1 ? "" : "s"}`;
 
   return (
     <div className="flex items-center gap-2 font-mono text-muted-foreground text-xs">

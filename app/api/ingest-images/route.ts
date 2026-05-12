@@ -8,11 +8,19 @@ import {
 } from "@/lib/ingest/schema";
 import { stageBytes } from "@/lib/ingest/staging";
 
-function jsonError(status: number, error: string, extra?: Record<string, unknown>) {
+function jsonError(
+  status: number,
+  error: string,
+  extra?: Record<string, unknown>
+) {
   return Response.json({ error, ...extra }, { status });
 }
 
-function logRequestShape(request: Request, reason: string, extra?: Record<string, unknown>) {
+function logRequestShape(
+  request: Request,
+  reason: string,
+  extra?: Record<string, unknown>
+) {
   const headerKeys: string[] = [];
   request.headers.forEach((_value, key) => headerKeys.push(key));
   const url = new URL(request.url);
@@ -46,7 +54,9 @@ type ParsedImagePayload = {
   };
 };
 
-async function parseMultipart(request: Request): Promise<ParsedImagePayload | { error: string }> {
+async function parseMultipart(
+  request: Request
+): Promise<ParsedImagePayload | { error: string }> {
   const form = await request.formData();
   const image = form.get("image");
   if (!(image instanceof File)) {
@@ -69,10 +79,14 @@ async function parseMultipart(request: Request): Promise<ParsedImagePayload | { 
   };
 }
 
-async function parseRawBody(request: Request): Promise<ParsedImagePayload | { error: string }> {
+async function parseRawBody(
+  request: Request
+): Promise<ParsedImagePayload | { error: string }> {
   const url = new URL(request.url);
   const get = (key: string) =>
-    request.headers.get(`x-${key.toLowerCase()}`) ?? url.searchParams.get(key) ?? "";
+    request.headers.get(`x-${key.toLowerCase()}`) ??
+    url.searchParams.get(key) ??
+    "";
   const metaParsed = imageMetadataSchema.safeParse({
     batchId: get("batchId"),
     imageIndex: get("imageIndex"),
@@ -88,7 +102,8 @@ async function parseRawBody(request: Request): Promise<ParsedImagePayload | { er
   }
   return {
     bytes: new Uint8Array(buf),
-    contentType: request.headers.get("content-type") ?? "application/octet-stream",
+    contentType:
+      request.headers.get("content-type") ?? "application/octet-stream",
     metadata: metaParsed.data,
   };
 }

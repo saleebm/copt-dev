@@ -95,7 +95,7 @@ const AsciiArtRenderer = ({
   calculateFontSizeRef.current = (rawContainerWidth: number) => {
     // Never trust a container wider than the viewport — layout bugs can inflate it
     const viewportWidth =
-      typeof window !== "undefined" ? window.innerWidth : rawContainerWidth;
+      typeof window === "undefined" ? rawContainerWidth : window.innerWidth;
     const containerWidth = Math.min(rawContainerWidth, viewportWidth);
 
     const targetMobile = 0.08;
@@ -148,7 +148,7 @@ const AsciiArtRenderer = ({
     // Hero mode: on narrow screens, try to size by viewport height so the art
     // fills more of the card — but NEVER exceed the width-fitted size.
     if (hero && containerWidth < 768) {
-      const vh = typeof window !== "undefined" ? window.innerHeight : 844;
+      const vh = typeof window === "undefined" ? 844 : window.innerHeight;
       const targetHeight = vh * 0.5;
       const heightBasedSize = targetHeight / (actualLineCount * 1.1) / 16;
       return Math.min(boundedCalculated, Math.min(heightBasedSize, 0.35));

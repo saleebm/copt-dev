@@ -133,12 +133,12 @@ function buildWhereClause(filters: PostFilters = {}): Prisma.PostWhereInput {
     } else {
       where.status = filters.status;
     }
-  } else if (filters.published !== undefined) {
-    // Fallback to published boolean if no status specified
-    where.published = filters.published;
-  } else {
+  } else if (filters.published === undefined) {
     // Default to published posts only
     where.status = { in: [PostStatus.PUBLISHED] };
+  } else {
+    // Fallback to published boolean if no status specified
+    where.published = filters.published;
   }
 
   if (filters.type) {

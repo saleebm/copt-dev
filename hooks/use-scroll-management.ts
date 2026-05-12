@@ -127,12 +127,12 @@ export function useScrollManagement({
         // Clear any stale ref first
         if (refElement && document.contains(refElement)) {
           const refPostId = refElement.getAttribute("data-post-id");
-          if (refPostId !== postId) {
-            // Ref is stale - clear it immediately
-            setArticleRef(postIndex, null);
-          } else {
+          if (refPostId === postId) {
             // Ref is valid and matches our target post
             targetElement = refElement;
+          } else {
+            // Ref is stale - clear it immediately
+            setArticleRef(postIndex, null);
           }
         }
 

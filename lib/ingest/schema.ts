@@ -7,15 +7,7 @@ const urlList = z
   .union([z.array(z.string()), z.string()])
   .transform((value) => (Array.isArray(value) ? value : value.split(/\r?\n/)))
   .pipe(
-    z
-      .array(
-        z
-          .string()
-          .trim()
-          .min(1)
-          .url("each url must be a valid URL")
-      )
-      .min(0)
+    z.array(z.string().trim().min(1).url("each url must be a valid URL")).min(0)
   );
 
 const flexibleBoolean = z

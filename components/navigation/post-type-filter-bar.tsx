@@ -213,4 +213,4 @@ const PostTypeFilterBar: React.FC<PostTypeFilterBarProps> = ({
   );
 };
 
-export { PostTypeFilterBar, type PostTypeFilterBarProps, type PostTypeCount };
+export { type PostTypeCount, PostTypeFilterBar, type PostTypeFilterBarProps };

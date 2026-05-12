@@ -3,7 +3,11 @@ import { createSubmission } from "@/lib/ingest/db";
 import { contentHashForUrls } from "@/lib/ingest/hash";
 import { urlIngestSchema } from "@/lib/ingest/schema";
 
-function jsonError(status: number, error: string, extra?: Record<string, unknown>) {
+function jsonError(
+  status: number,
+  error: string,
+  extra?: Record<string, unknown>
+) {
   return Response.json({ error, ...extra }, { status });
 }
 
@@ -43,5 +47,7 @@ export async function POST(request: Request) {
     kind,
     deduped: result.status === "deduped",
   };
-  return Response.json(body, { status: result.status === "created" ? 202 : 200 });
+  return Response.json(body, {
+    status: result.status === "created" ? 202 : 200,
+  });
 }

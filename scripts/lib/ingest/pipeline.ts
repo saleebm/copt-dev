@@ -1,6 +1,8 @@
 // Composes the ingest stages into one function the worker calls per claim.
 // Pure orchestration — every step lives in its own module so each is testable
 // in isolation and the order of operations is visible at a glance.
+
+import { runGemini } from "./gemini-runner";
 import {
   createBranch,
   pushBranch,
@@ -8,9 +10,8 @@ import {
   stageAndCommit,
   syncMain,
 } from "./git-ops";
-import { runGemini } from "./gemini-runner";
-import { openPullRequest } from "./pr-creator";
 import { writePost } from "./mdx-writer";
+import { openPullRequest } from "./pr-creator";
 import type { PipelineInput, PipelineResult } from "./types";
 
 function branchName(input: PipelineInput): string {

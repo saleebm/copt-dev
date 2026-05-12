@@ -42,4 +42,4 @@ export function getAIConfig(apiKeyOverride?: string): AIConfig {
   };
 }
 
-export { DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_EMBEDDING_MODEL };
+export { DEFAULT_EMBEDDING_MODEL, DEFAULT_MODEL, DEFAULT_TEMPERATURE };
