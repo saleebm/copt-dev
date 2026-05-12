@@ -367,9 +367,7 @@ export function restoreAnchorForPost(
   if (anchor.anchorId === TOP_ANCHOR) {
     const top = Math.max(
       0,
-      postEl.getBoundingClientRect().top +
-        window.scrollY +
-        anchor.fineOffsetPx
+      postEl.getBoundingClientRect().top + window.scrollY + anchor.fineOffsetPx
     );
     window.scrollTo({ top, behavior: "instant" as ScrollBehavior });
     return true;

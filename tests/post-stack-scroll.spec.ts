@@ -115,14 +115,33 @@ test.describe("post-stack scroll", () => {
       .locator('section[data-post-id="about"]')
       .waitFor({ state: "visible" });
 
-    // Click the in-content PostLink to "principles". This dispatches addPost
-    // which pushes principles onto the stack via the XState machine.
-    const principlesLink = page.locator('a[href="/principles"]').first();
+    // Click the in-content PostLink to "principles" scoped to the about
+    // section. Page has multiple href="/principles" anchors (sidebar nav,
+    // related-links footer, etc.); we want the one in the post body so
+    // the click goes through PostLinkClient's onClick handler.
+    const principlesLink = page
+      .locator('section[data-post-id="about"] a[href="/principles"]')
+      .first();
+    await expect(principlesLink).toBeVisible();
     await principlesLink.click();
 
-    await page
-      .locator('section[data-post-id="principles"]')
-      .waitFor({ state: "visible" });
+    // Diagnostic: dump all data-post-id values present after click to
+    // surface mismatches between expected slug and rendered id.
+    await page.waitForFunction(() => {
+      const ids = Array.from(document.querySelectorAll("[data-post-id]"))
+        .map((el) => el.getAttribute("data-post-id"))
+        .join(",");
+      return ids.includes("principles");
+    }, { timeout: 15_000 }).catch(async () => {
+      const debug = await page.evaluate(() => ({
+        url: window.location.href,
+        ids: Array.from(document.querySelectorAll("[data-post-id]"))
+          .map((el) => el.getAttribute("data-post-id")),
+      }));
+      throw new Error(
+        `Principles section never rendered. URL=${debug.url} ids=${JSON.stringify(debug.ids)}`
+      );
+    });
     await page
       .locator(`section[data-post-id="principles"] #${PRINCIPLES_TARGET_HEADING_ID}`)
       .waitFor({ state: "attached" });
@@ -143,9 +162,12 @@ test.describe("post-stack scroll", () => {
     const scrollYBeforeBack = await page.evaluate(() => window.scrollY);
     expect(scrollYBeforeBack).toBeGreaterThan(0);
 
-    // Capture should have landed.
+    // Capture should have landed. Diagnose key shape if not.
     const memoryBeforeBack = await readScrollMemory(page);
-    expect(memoryBeforeBack).toMatchObject({
+    expect(
+      memoryBeforeBack,
+      `Expected scrollByPostId to contain principles. Got=${JSON.stringify(memoryBeforeBack)}`
+    ).toMatchObject({
       principles: { anchorId: PRINCIPLES_TARGET_HEADING_ID },
     });
 
@@ -189,7 +211,10 @@ test.describe("post-stack scroll", () => {
     await waitForScrollIdle(page);
 
     // First-load scroll should land near top-of-post (within ~one screen).
-    const initialScroll = await page.evaluate(() => window.scrollY);
-    expect(initialScroll).toBeLessThan(window.innerHeight ?? 1080);
+    const { scrollY, innerHeight } = await page.evaluate(() => ({
+      scrollY: window.scrollY,
+      innerHeight: window.innerHeight,
+    }));
+    expect(scrollY).toBeLessThan(innerHeight);
   });
 });

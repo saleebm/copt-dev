@@ -5,8 +5,6 @@ import { useCallback, useEffect, useRef } from "react";
 import type { ActorRefFrom } from "xstate";
 import type { PostStackMachine } from "@/lib/post-stack-machine";
 import {
-  captureAnchorForPost,
-  persistAnchorForPost,
   readScrollMemory,
   type ScrollMemory,
 } from "@/lib/post-stack-utils-client";
@@ -22,12 +20,6 @@ interface UseUrlManagementProps {
   // Gate URL updates during programmatic scroll to prevent top-jump
   scrollState?: "idle" | "programmaticScroll" | "userInteraction" | "settling";
   urlStateManager: UrlStateManager;
-}
-
-const SCROLL_POLYFILL_QUIESCE_MS = 100;
-
-function supportsScrollEnd(): boolean {
-  return typeof window !== "undefined" && "onscrollend" in window;
 }
 
 export function useUrlManagement({
@@ -74,11 +66,7 @@ export function useUrlManagement({
           const prev = (window.history.state ?? {}) as Record<string, unknown>;
           const scrollByPostId =
             (prev.scrollByPostId as ScrollMemory | undefined) ?? {};
-          window.history.pushState(
-            { stackIds, scrollByPostId },
-            "",
-            newUrl
-          );
+          window.history.pushState({ stackIds, scrollByPostId }, "", newUrl);
         } catch {
           router.push(newUrl, { scroll: false });
         }
@@ -152,58 +140,6 @@ export function useUrlManagement({
       window.removeEventListener("popstate", handleBrowserNavigation);
     };
   }, [handleBrowserNavigation, urlStateManager]);
-
-  /**
-   * Capture the user's reading position on scrollend.
-   *
-   * Fires only when the machine is idle and the scroll wasn't programmatic —
-   * those are the moments that represent genuine "where the user paused
-   * reading." Programmatic scrolls (navigation, anchor restore) set
-   * isProgrammaticScroll=true and are filtered out.
-   */
-  useEffect(() => {
-    const captureNow = () => {
-      const snap = actor.getSnapshot();
-      const ctx = snap.context;
-      if (ctx.scrollState !== "idle" || ctx.isProgrammaticScroll) {
-        return;
-      }
-      const activePostId = ctx.activePostId;
-      if (!activePostId) {
-        return;
-      }
-      const anchor = captureAnchorForPost(activePostId);
-      if (anchor) {
-        persistAnchorForPost(activePostId, anchor);
-      }
-    };
-
-    if (supportsScrollEnd()) {
-      window.addEventListener("scrollend", captureNow, { passive: true });
-      return () => {
-        window.removeEventListener("scrollend", captureNow);
-      };
-    }
-
-    // Polyfill: capture after scroll quiesces for 100ms.
-    let quiesceTimer: ReturnType<typeof setTimeout> | null = null;
-    const handleScroll = () => {
-      if (quiesceTimer) {
-        clearTimeout(quiesceTimer);
-      }
-      quiesceTimer = setTimeout(() => {
-        quiesceTimer = null;
-        captureNow();
-      }, SCROLL_POLYFILL_QUIESCE_MS);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (quiesceTimer) {
-        clearTimeout(quiesceTimer);
-      }
-    };
-  }, [actor]);
 
   /**
    * Sync state changes with URL

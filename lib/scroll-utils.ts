@@ -168,7 +168,9 @@ export function waitForPostStable(
         resolve(fallback);
       } else {
         reject(
-          new Error(`Element not stable within ${POST_STABLE_CAP_MS}ms: ${selector}`)
+          new Error(
+            `Element not stable within ${POST_STABLE_CAP_MS}ms: ${selector}`
+          )
         );
       }
     }, POST_STABLE_CAP_MS);
@@ -274,10 +276,9 @@ export async function scrollToElement(
 
   // Wait for layout to be stable on the target post before reading its position.
   // The post may have just mounted and still be expanding (image/code-block load).
-  const targetSelector =
-    element.getAttribute("data-post-id")
-      ? `[data-post-id="${element.getAttribute("data-post-id")}"]`
-      : null;
+  const targetSelector = element.getAttribute("data-post-id")
+    ? `[data-post-id="${element.getAttribute("data-post-id")}"]`
+    : null;
   let target: HTMLElement = element;
   if (targetSelector) {
     try {

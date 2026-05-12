@@ -2,6 +2,7 @@
 
 import { serialize } from "next-mdx-remote/serialize";
 import { useCallback, useEffect, useRef } from "react";
+import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import type { ActorRefFrom } from "xstate";
 import { getPostDetailsAction } from "@/app/actions";
@@ -137,6 +138,10 @@ export function usePostManagement({
             serialize(postDetails.rawContent, {
               mdxOptions: {
                 remarkPlugins: [remarkGfm],
+                // Keep rehypePlugins aligned with the server-side
+                // renderMdxContent path so heading anchors exist whether the
+                // post was server-rendered or loaded dynamically via addPost.
+                rehypePlugins: [rehypeSlug],
               },
             })
               .then((mdxSource) => {

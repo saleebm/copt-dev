@@ -5,6 +5,10 @@ import {
   usePostStackActions,
   usePostStackState,
 } from "@/components/post-stack/post-stack-provider-xstate";
+import {
+  captureAnchorForPost,
+  persistAnchorForPost,
+} from "@/lib/post-stack-utils-client";
 import { getMostVisiblePostIndex } from "@/lib/scroll-utils";
 
 interface PostStackObserverProps {
@@ -32,13 +36,8 @@ const SCROLL_POLYFILL_QUIESCE_MS = 100;
  */
 export const PostStackObserver: React.FC<PostStackObserverProps> = memo(
   ({ isHydrated }) => {
-    const {
-      posts,
-      isInitialLoad,
-      activePostId,
-      scrollState,
-      isProgrammaticScroll,
-    } = usePostStackState();
+    const { posts, activePostId, scrollState, isProgrammaticScroll } =
+      usePostStackState();
     const { setActivePost, getArticleRefs } = usePostStackActions();
 
     const lastActivePostRef = useRef<string | null>(null);
@@ -57,7 +56,6 @@ export const PostStackObserver: React.FC<PostStackObserverProps> = memo(
     const updateActiveFromViewport = useCallback(() => {
       if (
         !isHydrated ||
-        isInitialLoad ||
         scrollStateRef.current !== "idle" ||
         isProgrammaticScrollRef.current
       ) {
@@ -88,14 +86,21 @@ export const PostStackObserver: React.FC<PostStackObserverProps> = memo(
       const mostVisibleIndex = getMostVisiblePostIndex(resolvedRefs);
       if (mostVisibleIndex !== null && mostVisibleIndex < posts.length) {
         const mostVisiblePost = posts[mostVisibleIndex];
-        if (
-          mostVisiblePost &&
-          mostVisiblePost.id !== lastActivePostRef.current
-        ) {
-          setActivePost(mostVisiblePost.id);
+        if (mostVisiblePost) {
+          // Capture scroll memory for the most-visible post. This must
+          // happen here (not in a separate scrollend listener) so the
+          // capture key matches what the user is actually reading, not the
+          // lagging machine.activePostId during nav transitions.
+          const anchor = captureAnchorForPost(mostVisiblePost.id);
+          if (anchor) {
+            persistAnchorForPost(mostVisiblePost.id, anchor);
+          }
+          if (mostVisiblePost.id !== lastActivePostRef.current) {
+            setActivePost(mostVisiblePost.id);
+          }
         }
       }
-    }, [posts, isHydrated, isInitialLoad, getArticleRefs, setActivePost]);
+    }, [posts, isHydrated, getArticleRefs, setActivePost]);
 
     useEffect(() => {
       if (!isHydrated) {

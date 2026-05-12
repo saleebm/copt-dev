@@ -55,7 +55,10 @@ export function useScrollManagement({
           if (refElement && document.contains(refElement)) {
             targetElement = refElement;
           } else {
-            actor.send({ type: "SCROLL_COMPLETE", operationId: scrollOperationId });
+            actor.send({
+              type: "SCROLL_COMPLETE",
+              operationId: scrollOperationId,
+            });
             return;
           }
         }

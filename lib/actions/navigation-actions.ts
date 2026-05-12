@@ -95,6 +95,58 @@ export async function getPostsByTagNameAction(
 }
 
 /**
+ * Server action to get the number of related posts per tag, excluding a given post slug.
+ * Used by post-tag UI to disable tags that have no other posts behind them.
+ */
+export async function getRelatedPostCountsByTagsAction(
+  tagNames: string[],
+  excludePostSlug: string
+): Promise<Record<string, number>> {
+  const validNames = Array.from(
+    new Set(
+      tagNames.filter(
+        (name): name is string =>
+          typeof name === "string" && name.trim().length > 0
+      )
+    )
+  );
+
+  if (validNames.length === 0) {
+    return {};
+  }
+
+  try {
+    const tags = await prisma.tag.findMany({
+      where: { name: { in: validNames } },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            posts: {
+              where: {
+                status: PostStatus.PUBLISHED,
+                slug: { not: excludePostSlug },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const result: Record<string, number> = {};
+    for (const name of validNames) {
+      result[name] = 0;
+    }
+    for (const tag of tags) {
+      result[tag.name] = tag._count.posts;
+    }
+    return result;
+  } catch {
+    return {};
+  }
+}
+
+/**
  * Server action to get all findings grouped by date
  */
 export async function getAllFindingsByDateAction(): Promise<FindingsByDate[]> {

@@ -144,7 +144,8 @@ export const postStackMachine = setup({
         SCROLL_COMPLETE: {
           target: "idle",
           guard: ({ context, event }) =>
-            !event.operationId || event.operationId === context.scrollOperationId,
+            !event.operationId ||
+            event.operationId === context.scrollOperationId,
           actions: assign({
             scrollState: "idle",
             isProgrammaticScroll: false,
@@ -155,7 +156,8 @@ export const postStackMachine = setup({
         SCROLL_ERROR: {
           target: "idle",
           guard: ({ context, event }) =>
-            !event.operationId || event.operationId === context.scrollOperationId,
+            !event.operationId ||
+            event.operationId === context.scrollOperationId,
           actions: assign({
             scrollState: "idle",
             isProgrammaticScroll: false,
@@ -533,7 +535,8 @@ export const postStackMachine = setup({
         SCROLL_COMPLETE: {
           target: "idle",
           guard: ({ context, event }) =>
-            !event.operationId || event.operationId === context.scrollOperationId,
+            !event.operationId ||
+            event.operationId === context.scrollOperationId,
           actions: assign({
             scrollState: "idle",
             isProgrammaticScroll: false,
