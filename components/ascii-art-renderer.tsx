@@ -49,8 +49,7 @@ const AsciiArtRenderer = ({
   const applyFontSize = useCallback((size: number) => {
     fontSizeRef.current = size;
     if (preRef.current) {
-      // biome-ignore lint/style/useTemplate: <explanation>
-      preRef.current.style.fontSize = size + "rem";
+      preRef.current.style.fontSize = `${size}rem`;
     }
   }, []);
 
@@ -269,8 +268,7 @@ const AsciiArtRenderer = ({
         className={preClasses}
         ref={preRef}
         style={{
-          // biome-ignore lint/style/useTemplate: <explanation>
-          fontSize: initialFontSize + "rem",
+          fontSize: `${initialFontSize}rem`,
           lineHeight: 1.1,
           margin: 0,
           padding: 0,

@@ -651,7 +651,7 @@ export const postStackMachine = setup({
     },
 
     existingPost: {
-      entry: assign(({ context }) => {
+      entry: assign(() => {
         return {
           scrollState: "programmaticScroll" as const,
           isProgrammaticScroll: true, // Lock observer during programmatic scroll to existing post
@@ -866,7 +866,7 @@ export const postStackMachine = setup({
         // Transition to idle but keep observer blocked until user interaction
         300: {
           target: "idle",
-          actions: assign(({ context }) => {
+          actions: assign(() => {
             return {
               scrollState: "idle" as const,
               programmaticScrollTarget: null,

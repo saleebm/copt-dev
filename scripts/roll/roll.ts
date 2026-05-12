@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { parseArgs } from "node:util";
 import { resolveApiKey } from "../lib/ai-config";
+import { bannerOrFallback, totalsCard } from "./lib/glamour";
 import { rollTopic } from "./lib/pool";
 import {
   closeInput,
@@ -11,7 +12,9 @@ import {
 } from "./lib/readline";
 import { streamReshape } from "./lib/reshape";
 import { saveRoll } from "./lib/save";
+import { startSpinner } from "./lib/spinner";
 import { streamSparks } from "./lib/sparks";
+import { formatMs, Stopwatch } from "./lib/timer";
 import type { Lane, RolledTopic, SparkAnswer } from "./lib/types";
 
 const VALID_LANES: Lane[] = ["hlexicon", "concept", "quote", "wild"];
@@ -65,14 +68,6 @@ ENV:
 `);
 }
 
-function printBanner(): void {
-  console.log(String.raw`
-   ╭──────────────────────────────────╮
-   │   🎲  roll                       │
-   │      one die. one topic. write.  │
-   ╰──────────────────────────────────╯`);
-}
-
 function printTopic(t: RolledTopic): void {
   const lane = t.lane.toUpperCase().padEnd(8);
   console.log(`\n  [${lane}]  ${t.title}`);
@@ -105,28 +100,40 @@ async function rollPhase(forceLane?: Lane): Promise<RolledTopic | null> {
   }
 }
 
-async function sparksPhase(topic: RolledTopic): Promise<string[]> {
+async function sparksPhase(
+  topic: RolledTopic
+): Promise<{ sparks: string[]; ms: number }> {
   console.log(
-    "\n  ✨ gemini is striking sparks — please don't type until it's done.\n"
+    "\n  ✨ striking sparks — please don't type until it's done."
   );
-  const { sparks } = await withInputSuppressed(() => streamSparks(topic));
-  console.log("\n  ✅ sparks ready. you can type now.");
+  const sw = new Stopwatch();
+  const sp = startSpinner("waiting for gemini");
+  const { sparks } = await withInputSuppressed(() =>
+    streamSparks(topic, () => sp.stop())
+  );
+  sp.stop();
+  const ms = sw.elapsedMs();
+  console.log(`\n  ✅ sparks ready in ${formatMs(ms)}. you can type now.`);
   if (sparks.length === 0) {
     console.log(
       "  ⚠️  no sparks parsed from response — using one fallback prompt"
     );
-    return [`What does "${topic.title}" pull out of you right now?`];
+    return {
+      sparks: [`What does "${topic.title}" pull out of you right now?`],
+      ms,
+    };
   }
-  return sparks;
+  return { sparks, ms };
 }
 
-async function freewritePhase(sparks: string[]): Promise<SparkAnswer[]> {
-  console.log(
-    "\n  📝 free-write — type your answer to each spark."
-  );
+async function freewritePhase(
+  sparks: string[]
+): Promise<{ answers: SparkAnswer[]; ms: number }> {
+  console.log("\n  📝 free-write — type your answer to each spark.");
   console.log(
     '     end each answer with "." on its own line. type "skip" to skip a spark.\n'
   );
+  const sw = new Stopwatch();
   const answers: SparkAnswer[] = [];
   for (let i = 0; i < sparks.length; i++) {
     console.log(`  (${i + 1}/${sparks.length})  ${sparks[i]}`);
@@ -146,26 +153,34 @@ async function freewritePhase(sparks: string[]): Promise<SparkAnswer[]> {
     answers.push({ spark: sparks[i], answer });
     console.log("");
   }
-  return answers;
+  const ms = sw.elapsedMs();
+  console.log(`  📝 wrote in ${formatMs(ms)}.`);
+  return { answers, ms };
 }
 
 async function reshapeLoop(
   topic: RolledTopic,
   answers: SparkAnswer[]
-): Promise<string | null> {
+): Promise<{ draft: string | null; ms: number }> {
   let draft = "";
+  let totalMs = 0;
   while (true) {
-    console.log(
-      "\n  🪡 gemini is reshaping — please don't type until it's done.\n"
+    console.log("\n  🪡 reshaping — please don't type until it's done.");
+    const sw = new Stopwatch();
+    const sp = startSpinner("waiting for gemini");
+    draft = await withInputSuppressed(() =>
+      streamReshape(topic, answers, () => sp.stop())
     );
-    draft = await withInputSuppressed(() => streamReshape(topic, answers));
-    console.log("\n  ✅ draft ready.");
+    sp.stop();
+    const ms = sw.elapsedMs();
+    totalMs += ms;
+    console.log(`\n  ✅ draft ready in ${formatMs(ms)}.`);
     const choice = await readChoice(
       "\n  [s]ave / [e]dit again / [d]iscard ? →",
       ["s", "e", "d"]
     );
-    if (choice === "s") return draft;
-    if (choice === "d") return null;
+    if (choice === "s") return { draft, ms: totalMs };
+    if (choice === "d") return { draft: null, ms: totalMs };
   }
 }
 
@@ -176,7 +191,8 @@ async function main(): Promise<void> {
     return;
   }
 
-  printBanner();
+  bannerOrFallback();
+  const session = new Stopwatch();
 
   if (!args.dryRun && !resolveApiKey()) {
     console.error(
@@ -197,8 +213,8 @@ async function main(): Promise<void> {
     return;
   }
 
-  const sparks = await sparksPhase(topic);
-  const answers = await freewritePhase(sparks);
+  const { sparks, ms: sparksMs } = await sparksPhase(topic);
+  const { answers, ms: writeMs } = await freewritePhase(sparks);
 
   const nonEmpty = answers.filter((a) => a.answer.trim().length > 0).length;
   if (nonEmpty === 0) {
@@ -206,14 +222,20 @@ async function main(): Promise<void> {
     return;
   }
 
-  const draft = await reshapeLoop(topic, answers);
+  const { draft, ms: reshapeMs } = await reshapeLoop(topic, answers);
   if (!draft) {
     console.log("\n  🗑  discarded.\n");
     return;
   }
 
   const filePath = saveRoll(topic, draft);
-  console.log(`\n  ✅ saved → ${filePath}`);
+  totalsCard([
+    { label: "✨  sparks", value: formatMs(sparksMs) },
+    { label: "📝  write", value: formatMs(writeMs) },
+    { label: "🪡  reshape", value: formatMs(reshapeMs) },
+    { label: "🎲  total", value: formatMs(session.elapsedMs()) },
+  ]);
+  console.log(`  ✅ saved → ${filePath}`);
   console.log(`     next: \`bun run db:sync-posts\` when you're ready.\n`);
 }
 

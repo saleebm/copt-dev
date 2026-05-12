@@ -27,12 +27,12 @@ interface UseCentralizedStateSyncProps {
  * All functionality has been moved to use-url-management.ts
  */
 export function useCentralizedStateSync({
-  actor,
+  actor: _actor,
   urlStateManager,
-  posts,
-  currentStackIds,
-  isLoadingNewPost,
-  isRootPage,
+  posts: _posts,
+  currentStackIds: _currentStackIds,
+  isLoadingNewPost: _isLoadingNewPost,
+  isRootPage: _isRootPage,
 }: UseCentralizedStateSyncProps) {
   /**
    * No-op functions to maintain API compatibility

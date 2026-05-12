@@ -33,8 +33,8 @@ export function usePostManagement({
   goHome,
   updateUrl,
   currentStackIds,
-  activePostId,
-  setActivePost,
+  activePostId: _activePostId,
+  setActivePost: _setActivePost,
 }: UsePostManagementProps) {
   // Add refs to store timeout IDs
   const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -144,34 +144,36 @@ export function usePostManagement({
                 const components = getMDXComponents({});
 
                 // Use factory to create MDX content to avoid JSX in this file
-                const { renderedContent } = createPostContent({
-                  isMdx: true,
-                  mdxSource,
-                  components: components as Record<
-                    string,
-                    React.ComponentType<Record<string, unknown>>
-                  >,
-                });
+                const { renderedContent: mdxRenderedContent } =
+                  createPostContent({
+                    isMdx: true,
+                    mdxSource,
+                    components: components as Record<
+                      string,
+                      React.ComponentType<Record<string, unknown>>
+                    >,
+                  });
 
                 // Send an update to the state machine with content ready flag
                 actor.send({
                   type: "UPDATE_POST_CONTENT",
                   postId: newInstanceId,
-                  renderedContent,
+                  renderedContent: mdxRenderedContent,
                   isContentReady: true, // Mark content as ready when MDX rendering completes
                 });
               })
               .catch((_error) => {
                 // Create error content using factory
-                const { renderedContent } = createPostContent({
-                  isError: true,
-                  errorMessage: "Error rendering MDX content.",
-                });
+                const { renderedContent: errorRenderedContent } =
+                  createPostContent({
+                    isError: true,
+                    errorMessage: "Error rendering MDX content.",
+                  });
 
                 actor.send({
                   type: "UPDATE_POST_CONTENT",
                   postId: newInstanceId,
-                  renderedContent,
+                  renderedContent: errorRenderedContent,
                   isContentReady: true, // Mark as ready even for errors to prevent stuck loading state
                 });
               });

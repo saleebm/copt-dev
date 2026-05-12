@@ -239,7 +239,7 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
     a: ({ className, href, children, ...props }) => {
       // If href starts with '/' and looks like a post ID, use PostLinkClient for client-side navigation
       if (href?.startsWith("/") && !href.startsWith("//") && href.length > 1) {
-        const postId = href.substring(1); // Remove leading slash
+        const postId = href.slice(1); // Remove leading slash
         return (
           <PostLink
             className={`text-primary underline underline-offset-2 transition-all duration-200 hover:text-primary/80 hover:underline-offset-4 ${className || ""}`}

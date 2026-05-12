@@ -24,6 +24,12 @@ AI_TEMPERATURE=0.7              # optional, default shown
 
 All env handling goes through `scripts/lib/ai-config.ts` — same shared config the rest of the AI scripts use.
 
+Optional: install [`gum`](https://github.com/charmbracelet/gum) for prettier banner + totals card. Without it, the script falls back to hand-drawn boxes — same info, just less glamorous.
+
+```bash
+brew install gum   # optional
+```
+
 ## Usage
 
 ```bash
@@ -118,6 +124,17 @@ Then the reshape body.
 
 `status: "DRAFT"` keeps it out of any published view. Promote by moving the file (e.g. to `posts/blog/daily/`) and flipping `status` to `"PUBLISHED"`.
 
+## Timer
+
+Each phase is timed and reported at the end:
+
+- **sparks**: time from prompt-sent to last token (a Braille spinner runs on stderr until the first token arrives so you know it isn't hung)
+- **write**: total time you spent in the free-write phase
+- **reshape**: time for round-2 streaming (sums across re-edits if you press `[e]`)
+- **total**: roll start to save
+
+The spinner is TTY-only — piped/scripted invocations skip it. If `gum` is on `PATH`, the banner and totals card render as gum-styled boxes; otherwise the script draws plain ASCII boxes that say the exact same thing.
+
 ## Where files live
 
 ```
@@ -126,11 +143,14 @@ scripts/roll/
   lib/
     dice.ts           # crypto.randomInt-backed picks
     pool.ts           # loads records/tiddlers/*.json into 4 lanes; finds related hlexicons
-    readline.ts       # Bun async-iterable readline + readBlock + readChoice
+    readline.ts       # Bun async-iterable readline + readBlock + readChoice + withInputSuppressed
     voice.ts          # principles.mdx + about.mdx as system prompt
-    sparks.ts         # streamText round 1 (questions)
-    reshape.ts        # streamText round 2 (draft)
+    sparks.ts         # streamText round 1 (questions, with onFirstChunk callback)
+    reshape.ts        # streamText round 2 (draft, with onFirstChunk callback)
     save.ts           # frontmatter + filename + file write
+    timer.ts          # Stopwatch + formatMs
+    spinner.ts        # Braille spinner with live elapsed on stderr
+    glamour.ts        # gum-or-ASCII banner + totals card
     types.ts
   README.md           # this file
 ```

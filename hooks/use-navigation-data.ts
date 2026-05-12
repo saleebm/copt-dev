@@ -40,7 +40,7 @@ interface UseNavigationDataProps {
 export function useNavigationData({
   posts,
   allAvailablePostIds,
-  concretePostIds,
+  concretePostIds: _concretePostIds,
 }: UseNavigationDataProps): NavigationData {
   return useMemo(() => {
     // Group posts by actual categories from post.categories array
@@ -79,10 +79,11 @@ export function useNavigationData({
       const postTags = post.tags || [];
 
       postTags.forEach((tag: string) => {
-        if (!tagMap.has(tag)) {
-          tagMap.set(tag, { count: 0, posts: [] });
+        let tagData = tagMap.get(tag);
+        if (!tagData) {
+          tagData = { count: 0, posts: [] };
+          tagMap.set(tag, tagData);
         }
-        const tagData = tagMap.get(tag)!;
         tagData.count++;
         tagData.posts.push(post.originalId);
       });

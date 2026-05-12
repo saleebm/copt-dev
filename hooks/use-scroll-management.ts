@@ -25,7 +25,7 @@ export function useScrollManagement({
   actor,
   articleRefs,
   setArticleRef,
-  currentStackIds,
+  currentStackIds: _currentStackIds,
   scrollOperationId,
 }: UseScrollManagementProps) {
   const pendingScrollRef = useRef<string | null>(null);

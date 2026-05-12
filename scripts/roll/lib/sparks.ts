@@ -26,7 +26,8 @@ Rules:
 }
 
 export async function streamSparks(
-  topic: RolledTopic
+  topic: RolledTopic,
+  onFirstChunk?: () => void
 ): Promise<{ sparks: string[]; raw: string }> {
   const cfg = getAIConfig();
   const provider = createGoogleGenerativeAI({ apiKey: cfg.apiKey });
@@ -39,7 +40,12 @@ export async function streamSparks(
   });
 
   let raw = "";
+  let started = false;
   for await (const chunk of result.textStream) {
+    if (!started) {
+      onFirstChunk?.();
+      started = true;
+    }
     process.stdout.write(chunk);
     raw += chunk;
   }

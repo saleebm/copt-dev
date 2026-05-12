@@ -39,7 +39,8 @@ Output ONLY the MDX body (no frontmatter, no fences).`;
 
 export async function streamReshape(
   topic: RolledTopic,
-  answers: SparkAnswer[]
+  answers: SparkAnswer[],
+  onFirstChunk?: () => void
 ): Promise<string> {
   const cfg = getAIConfig();
   const provider = createGoogleGenerativeAI({ apiKey: cfg.apiKey });
@@ -52,7 +53,12 @@ export async function streamReshape(
   });
 
   let captured = "";
+  let started = false;
   for await (const chunk of result.textStream) {
+    if (!started) {
+      onFirstChunk?.();
+      started = true;
+    }
     process.stdout.write(chunk);
     captured += chunk;
   }

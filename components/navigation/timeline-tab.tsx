@@ -195,7 +195,7 @@ export function TimelineTab({ onNavigate }: TimelineTabProps) {
                 onClick={() => jumpToMonth(month.key)}
                 type="button"
               >
-                {month.label.substring(0, 3)} ({month.count})
+                {month.label.slice(0, 3)} ({month.count})
               </button>
             ))}
           </div>

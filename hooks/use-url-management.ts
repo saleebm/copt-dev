@@ -21,10 +21,10 @@ interface UseUrlManagementProps {
 export function useUrlManagement({
   actor,
   urlStateManager,
-  posts,
+  posts: _posts,
   currentStackIds,
   isLoadingNewPost,
-  isRootPage,
+  isRootPage: _isRootPage,
   scrollState,
 }: UseUrlManagementProps) {
   const router = useRouter();

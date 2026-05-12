@@ -45,7 +45,7 @@ export function bannerOrFallback(): void {
     return;
   }
 
-  console.log(String.raw`
+  console.log(`
    ╭──────────────────────────────────╮
    │   🎲  roll                       │
    │      one die. one topic. write.  │

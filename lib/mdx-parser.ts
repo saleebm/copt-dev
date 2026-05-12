@@ -450,11 +450,7 @@ function copyImageToPublic(
   originalPath: string
 ): string {
   // Create the target path in public directory (declare at function scope)
-  const publicPath = path.join(
-    process.cwd(),
-    "public",
-    originalPath.substring(1)
-  ); // Remove leading /
+  const publicPath = path.join(process.cwd(), "public", originalPath.slice(1)); // Remove leading /
   const publicDir = path.dirname(publicPath);
 
   try {
