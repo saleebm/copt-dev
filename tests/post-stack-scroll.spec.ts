@@ -52,6 +52,25 @@ async function readScrollMemory(page: Page) {
   });
 }
 
+async function waitForMachineIdle(page: Page): Promise<void> {
+  // Wait for the XState actor to reach a truly idle state with no programmatic
+  // scroll in flight. This avoids races with React's render commit when the
+  // observer's stale ref would otherwise cause scrollend captures to bail.
+  await page.waitForFunction(() => {
+    const actor = (window as unknown as { __postStackActor?: { getSnapshot: () => { value: unknown; context: { scrollState: string; isProgrammaticScroll: boolean } } } })
+      .__postStackActor;
+    if (!actor) {
+      return false;
+    }
+    const snap = actor.getSnapshot();
+    return (
+      snap.value === "idle" &&
+      snap.context.scrollState === "idle" &&
+      !snap.context.isProgrammaticScroll
+    );
+  });
+}
+
 test.describe("post-stack scroll", () => {
   test("rehype-slug produces heading ids inside rendered post", async ({
     page,
@@ -82,14 +101,21 @@ test.describe("post-stack scroll", () => {
     }, PRINCIPLES_TARGET_HEADING_ID);
 
     await waitForScrollIdle(page);
+    await waitForMachineIdle(page);
+    // Let React commit the idle render so observer's scrollStateRef reflects
+    // the post-navigation state before we dispatch scrollend.
+    await page.evaluate(
+      () =>
+        new Promise<void>((r) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => r()))
+        )
+    );
 
     // Synthesize a scrollend in case the browser didn't fire one for the
     // instant-scroll. captureNow re-runs idempotently.
     await page.evaluate(() => {
       window.dispatchEvent(new Event("scrollend"));
     });
-
-    // Capture happens in a passive listener; let microtasks flush.
     await page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
 
     const memory = await readScrollMemory(page);
@@ -146,11 +172,25 @@ test.describe("post-stack scroll", () => {
       .locator(`section[data-post-id="principles"] #${PRINCIPLES_TARGET_HEADING_ID}`)
       .waitFor({ state: "attached" });
 
+    // Wait for the post-click machine sequence to settle before scrolling.
+    await waitForMachineIdle(page);
+    await page.evaluate(
+      () =>
+        new Promise<void>((r) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => r()))
+        )
+    );
+
     // Scroll within principles to a specific heading.
     await page.evaluate((id) => {
-      const el = document.querySelector(`#${CSS.escape(id)}`) as HTMLElement | null;
+      const el = document.querySelector(
+        `#${CSS.escape(id)}`
+      ) as HTMLElement | null;
       if (el) {
-        el.scrollIntoView({ block: "start", behavior: "instant" as ScrollBehavior });
+        el.scrollIntoView({
+          block: "start",
+          behavior: "instant" as ScrollBehavior,
+        });
       }
     }, PRINCIPLES_TARGET_HEADING_ID);
     await waitForScrollIdle(page);

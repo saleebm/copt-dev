@@ -383,11 +383,9 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
     ),
 
     ButtonPostLink: ({ postId, className, children, ...props }) => (
-      <div className="transition-transform duration-200 hover:scale-105 active:scale-95">
-        <ButtonPostLink className={className} postId={postId} {...props}>
-          {children}
-        </ButtonPostLink>
-      </div>
+      <ButtonPostLink className={className} postId={postId} {...props}>
+        {children}
+      </ButtonPostLink>
     ),
 
     // Accordion components for findings posts
