@@ -17,25 +17,13 @@ interface PostStackInteractiveProps {
 const PostStackInteractive: React.FC<PostStackInteractiveProps> = ({
   serverPostOriginalIds,
 }) => {
-  const { activePostId, scrollState, isProgrammaticScroll } =
-    usePostStackState();
+  const { activePostId, scrollState } = usePostStackState();
   const [isHydrated, setIsHydrated] = useState(false);
 
   // Hydration guard - critical for preventing hydration mismatches
   useEffect(() => {
     setIsHydrated(true);
   }, []);
-
-  // Track state in DOM for fresh state access in delayed callbacks
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-scroll-state", scrollState);
-      document.documentElement.setAttribute(
-        "data-programmatic-scroll",
-        String(isProgrammaticScroll)
-      );
-    }
-  }, [scrollState, isProgrammaticScroll]);
 
   // Don't render anything before hydration
   if (!isHydrated) {

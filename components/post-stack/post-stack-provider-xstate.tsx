@@ -18,6 +18,11 @@ import { useScrollManagement } from "@/hooks/use-scroll-management";
 import { useUrlManagement } from "@/hooks/use-url-management";
 import { useUserScrollInterruption } from "@/hooks/use-user-scroll-interruption";
 import { postStackMachine } from "@/lib/post-stack-machine";
+import {
+  readScrollMemory,
+  restoreAnchorForPost,
+} from "@/lib/post-stack-utils-client";
+import { waitForPostStable } from "@/lib/scroll-utils";
 import { createUrlStateManager } from "@/lib/url-state-manager";
 import type {
   CategoryNode,
@@ -186,13 +191,6 @@ export function PostStackProvider({
         serverInitialStackIds,
         activePostId: resolvedActivePostId,
       },
-    });
-
-    // State machine subscription for observer guards
-    actorInstance.subscribe((_state) => {
-      // Track state change timing for observer guards
-      (window as unknown as Record<string, number>).__lastStateChangeTime =
-        Date.now();
     });
 
     return actorInstance;
@@ -381,105 +379,59 @@ export function PostStackProvider({
   /**
    * CENTRALIZED PROGRAMMATIC SCROLL HANDLER
    *
-   * Handles all programmatic scrolls triggered by state machine
-   * - Browser navigation scrolls (back/forward)
-   * - Add post scrolls
-   * - Dismiss post scrolls
-   *
    * Triggered by: programmaticScrollTarget state from XState
-   * Side effects: Sends SCROLL_SUCCESS or SCROLL_ERROR back to state machine
+   *
+   * Two paths, decided by whether scroll memory has an entry for the target:
+   *   - With anchor: wait for the target post element to be layout-stable,
+   *     then instantly restore the user to their captured heading + offset.
+   *   - Without anchor: smooth-scroll to the top of the post via scrollToPost.
+   *
+   * Both paths send SCROLL_COMPLETE (or SCROLL_ERROR) once finished. No
+   * timer-based DOM-readiness polling — waitForPostStable uses
+   * MutationObserver + ResizeObserver and resolves on real events.
    */
   useEffect(() => {
-    // Guard: Only run when we have a scroll target and are in programmatic scroll state
     if (!programmaticScrollTarget || scrollState !== "programmaticScroll") {
       return;
     }
 
-    // Programmatic scroll triggered
+    const target = programmaticScrollTarget;
+    const operationId = scrollOperationId;
 
     const performScroll = async () => {
       try {
-        // For browser navigation, we need to ensure DOM is ready
-        const expectedPostIds = isProgrammaticScroll
-          ? posts.map((p) => p.originalId)
-          : undefined;
+        const memory = readScrollMemory();
+        const storedAnchor = memory[target];
 
-        if (isProgrammaticScroll && expectedPostIds) {
-          // Wait for target post to be ready (DOM + ref)
-          // Other posts may still be rendering - that's fine
-
-          const waitForDOMReady = async () => {
-            for (let attempts = 0; attempts < 20; attempts++) {
-              // Find target post index
-              const targetPostIndex = posts.findIndex(
-                (p) => p.id === programmaticScrollTarget
-              );
-
-              // Check if target post is in DOM
-              const targetElement = document.querySelector(
-                `[data-post-id="${programmaticScrollTarget}"]`
-              );
-
-              // Check if target post's ref is set
-              const refs = articleRefs.current;
-              const targetRef =
-                targetPostIndex >= 0 ? refs[targetPostIndex] : null;
-
-              // Validate target ref matches target post (avoid stale refs)
-              const targetRefValid =
-                targetRef &&
-                targetRef.getAttribute("data-post-id") ===
-                  programmaticScrollTarget;
-
-              // Only require the target post to be ready (DOM + valid ref)
-              if (targetElement && targetRefValid) {
-                return true;
-              }
-
-              // Wait a bit and try again
-              await new Promise((resolve) => setTimeout(resolve, 50));
-            }
-            return false;
-          };
-
-          const isDOMReady = await waitForDOMReady();
-          if (!isDOMReady) {
-            actor.send({ type: "SCROLL_ERROR", error: "DOM not ready" });
-            return;
-          }
-
-          // Add a small delay to ensure layout is stable
-          await new Promise((resolve) => requestAnimationFrame(resolve));
+        if (storedAnchor) {
+          // Anchor restore path: layout-stabilize, then instant scroll. The
+          // anchor encodes (heading id + pixel offset) and is robust to
+          // document height shifts between visits.
+          await waitForPostStable(`section[data-post-id="${target}"]`);
+          restoreAnchorForPost(target, storedAnchor);
+          actor.send({ type: "SCROLL_COMPLETE", operationId });
+          return;
         }
 
-        // Perform the scroll
-        // skipStateUpdate=true because XState already manages the state
-        await scrollToPost(programmaticScrollTarget, true, expectedPostIds);
-
-        // Scroll completed successfully
-
-        // Browser navigation scrolls need explicit success notification
-        // Regular scrolls use SCROLL_COMPLETE from within scrollToPost
-        if (isProgrammaticScroll) {
-          actor.send({
-            type: "SCROLL_SUCCESS",
-            operationId: scrollOperationId,
-          });
-        }
+        // Top-of-post path: scrollToPost handles its own waitForPostStable
+        // and sends SCROLL_COMPLETE from inside use-scroll-management. The
+        // duplicate send below is a no-op for browser-nav cases where the
+        // machine has already transitioned to idle.
+        await scrollToPost(target, true);
+        actor.send({ type: "SCROLL_COMPLETE", operationId });
       } catch (error) {
-        // Notify state machine of scroll errors for browser navigation
-        if (isProgrammaticScroll) {
-          actor.send({
-            type: "SCROLL_ERROR",
-            error:
-              error instanceof Error ? error.message : "Unknown scroll error",
-            operationId: scrollOperationId,
-          });
-        }
+        actor.send({
+          type: "SCROLL_ERROR",
+          error:
+            error instanceof Error ? error.message : "Unknown scroll error",
+          operationId,
+        });
       }
     };
 
-    // Use requestAnimationFrame to ensure initial DOM paint
+    // Defer one frame so the React render that produced the target's DOM
+    // node commits before we query for it. waitForPostStable handles the
+    // case where the node still hasn't appeared.
     const rafId = requestAnimationFrame(() => {
       performScroll();
     });
@@ -487,13 +439,9 @@ export function PostStackProvider({
     return () => cancelAnimationFrame(rafId);
   }, [
     programmaticScrollTarget,
-    isProgrammaticScroll,
     scrollState,
     scrollToPost,
     actor,
-    articleRefs.current,
-    posts.findIndex,
-    posts.map,
     scrollOperationId,
   ]);
 
