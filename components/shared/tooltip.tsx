@@ -127,6 +127,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
   }
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: passive hover/focus wrapper for tooltip; the wrapped child is the interactive trigger
+    // biome-ignore lint/a11y/noNoninteractiveElementInteractions: passive hover/focus wrapper for tooltip; the wrapped child is the interactive trigger
     <div
       className="relative inline-block"
       onBlur={hideTooltip}

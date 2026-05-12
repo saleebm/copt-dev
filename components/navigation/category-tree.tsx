@@ -86,6 +86,17 @@ function CategoryNodeItem({
     onNavigate?.();
   }, [node, onNodeClick, onNavigate]);
 
+  const handleNodeKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onNodeClick(node);
+        onNavigate?.();
+      }
+    },
+    [node, onNodeClick, onNavigate]
+  );
+
   return (
     <>
       <div
@@ -97,6 +108,9 @@ function CategoryNodeItem({
           node.isActive && "terminal-active-item"
         )}
         onClick={handleNodeClick}
+        onKeyDown={handleNodeKeyDown}
+        role="treeitem"
+        tabIndex={0}
       >
         <div className="flex w-full items-center justify-between">
           <div className="flex min-w-0 flex-1 items-center">

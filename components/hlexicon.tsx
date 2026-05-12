@@ -14,7 +14,7 @@ interface HlexiconProps {
 export function Hlexicon({ term, definition, className = "" }: HlexiconProps) {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const termRef = useRef<HTMLSpanElement>(null);
+  const termRef = useRef<HTMLButtonElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   const tooltipPosition = useTooltipPosition({
@@ -73,21 +73,20 @@ export function Hlexicon({ term, definition, className = "" }: HlexiconProps) {
 
   return (
     <>
-      <span
+      <button
         aria-describedby={`hlexicon-tooltip-${term.replace(/\s+/g, "-")}`}
         aria-expanded={isTooltipVisible}
-        className={`hlexicon-term -mx-0.5 cursor-help rounded-sm px-0.5 font-medium text-primary/90 underline decoration-1 decoration-primary/40 decoration-dotted underline-offset-2 transition-all duration-200 hover:text-primary hover:decoration-2 hover:decoration-primary/70 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:ring-offset-1 ${className}
+        className={`hlexicon-term -mx-0.5 cursor-help rounded-sm bg-transparent p-0 px-0.5 font-medium text-primary/90 underline decoration-1 decoration-primary/40 decoration-dotted underline-offset-2 transition-all duration-200 hover:text-primary hover:decoration-2 hover:decoration-primary/70 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:ring-offset-1 ${className}
                 `}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         ref={termRef}
-        role="button"
-        tabIndex={0}
+        type="button"
       >
         {term}
-      </span>
+      </button>
 
       {/* Render tooltip via Portal to avoid HTML structure issues */}
       {mounted &&

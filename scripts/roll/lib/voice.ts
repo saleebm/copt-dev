@@ -1,3 +1,6 @@
+// The "voice anchors" — Mina's principles.mdx + about.mdx loaded as the AI
+// system prompt. These hand the model his exact voice (Captain Underpants TDD,
+// Melville/Twain, permission-giving authority) instead of generic blog prose.
 import fs from "node:fs";
 import path from "node:path";
 

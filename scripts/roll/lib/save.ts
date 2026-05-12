@@ -16,6 +16,8 @@ function slugify(s: string): string {
   );
 }
 
+// UTC so the filename is deterministic regardless of where you're rolling from
+// (a draft scrolled at 1AM EST shouldn't be filed under the previous day).
 function todayStamp(): string {
   const d = new Date();
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
@@ -35,6 +37,9 @@ export function saveRoll(topic: RolledTopic, body: string): string {
     slug = `${stamp}-${baseSlug}-${i++}`;
   }
   const filePath = path.join(ROLLS_DIR, `${slug}.mdx`);
+  // Traceability — keeps the link back to the rolled source tiddler so future-you
+  // can dig into `ranked.json` / `hlexicon.json` for context if needed.
+  // (`--` → em-dash because MDX comments don't tolerate `--` inside.)
   const trace = `<!-- rolled ${topic.lane} from "${topic.sourceTitle.replace(/--/g, "—")}" on ${stamp} -->`;
   const frontmatter = [
     "---",

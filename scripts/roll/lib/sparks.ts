@@ -43,6 +43,8 @@ export async function streamSparks(
   let started = false;
   for await (const chunk of result.textStream) {
     if (!started) {
+      // First chunk arrived — kill the spinner exactly here so it can't race
+      // with the streamed output. The orchestrator passes its spinner.stop().
       onFirstChunk?.();
       started = true;
     }

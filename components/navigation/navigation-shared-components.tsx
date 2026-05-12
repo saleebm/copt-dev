@@ -222,10 +222,9 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
   ariaLabel,
 }) => (
   <div className="h-full overflow-hidden">
-    <div
+    <section
       aria-label={ariaLabel || "Navigation with sliding panels"}
       className="flex h-full transition-transform duration-300 ease-out"
-      role="region"
       style={{
         transform: isSecondPanelActive ? "translateX(-50%)" : "translateX(0)",
         width: "200%",
@@ -237,7 +236,7 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
       <div className="w-1/2" role="tabpanel">
         {secondPanel}
       </div>
-    </div>
+    </section>
   </div>
 );
 

@@ -144,17 +144,13 @@ export function RabbitholeTrackTab({ onNavigate }: RabbitholeTrackTabProps) {
       {/* Posts List */}
       <div className="max-h-[calc(100vh-12rem)] overflow-y-auto">
         {stackPostsForNav.length > 0 ? (
-          <div
-            aria-label="Posts in current stack"
-            className="space-y-2"
-            role="list"
-          >
+          <ul aria-label="Posts in current stack" className="space-y-2">
             {stackPostsForNav.map((post) => (
-              <div key={post.id} role="listitem">
+              <li key={post.id}>
                 <PostItem onClick={handleStackPostClick} post={post} />
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-4 font-mono text-muted-foreground/50">

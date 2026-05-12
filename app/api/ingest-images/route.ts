@@ -22,10 +22,11 @@ function logRequestShape(
   extra?: Record<string, unknown>
 ) {
   const headerKeys: string[] = [];
-  request.headers.forEach((_value, key) => headerKeys.push(key));
+  request.headers.forEach((_value, key) => {
+    headerKeys.push(key);
+  });
   const url = new URL(request.url);
   const queryKeys = [...url.searchParams.keys()];
-  // biome-ignore lint/suspicious/noConsole: surface in dev-server logs
   console.log(
     "[ingest-images] 400",
     JSON.stringify({
@@ -43,7 +44,7 @@ function logRequestShape(
   );
 }
 
-type ParsedImagePayload = {
+interface ParsedImagePayload {
   bytes: Uint8Array;
   contentType: string;
   metadata: {
@@ -52,7 +53,7 @@ type ParsedImagePayload = {
     totalCount: number;
     notes: string;
   };
-};
+}
 
 async function parseMultipart(
   request: Request

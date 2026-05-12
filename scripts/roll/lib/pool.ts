@@ -42,6 +42,9 @@ function loadJson<T>(name: string): T {
   return JSON.parse(fs.readFileSync(p, "utf8")) as T;
 }
 
+// Pools are loaded lazily and cached for the life of the process.
+// `tiddlers.index.json` is ~3MB on disk and parses to >16k objects;
+// re-loading on every roll would punish re-rolls.
 let cached: {
   hlexicon: HlexiconEntry[];
   ranked: RankedEntry[];
@@ -102,6 +105,8 @@ function findRelatedHlexicons(
 
   if (ranked.length >= k) return ranked;
 
+  // Top up to k with random hlexicons so the AI always has 3 to work with —
+  // sparks lean on these names directly, so an empty list weakens the prompt.
   const filler: { term: string; definition: string }[] = [];
   while (ranked.length + filler.length < k) {
     const h = pick(pools.hlexicon);

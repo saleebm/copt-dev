@@ -1,6 +1,11 @@
+// Optional `gum` integration for static glamour (banner + totals card).
+// Detected once at startup; falls back to hand-drawn ASCII boxes when absent
+// or when stdout is piped. Per the tui-glamorous skill's "Graceful Degradation"
+// pre-flight item: detect at startup, hide what isn't available.
 import { spawnSync } from "node:child_process";
 import { stdout } from "node:process";
 
+// One-shot cache — spawnSync is expensive; we only ask once per process.
 let cachedHasGum: boolean | null = null;
 
 export function hasGum(): boolean {
@@ -13,8 +18,11 @@ export function hasGum(): boolean {
   return cachedHasGum;
 }
 
+// Returns true when gum rendered the body; false signals "fall back to ASCII".
+// Skipped on non-TTY because gum emits ANSI that becomes noise when piped/captured.
 function runGumStyle(args: string[], body: string): boolean {
   if (!stdout.isTTY) return false;
+  // Pipe the body through stdin — passing it as an argv member fights shell quoting.
   const result = spawnSync("gum", ["style", ...args], {
     input: body,
     stdio: ["pipe", "inherit", "inherit"],
@@ -45,6 +53,10 @@ export function bannerOrFallback(): void {
     return;
   }
 
+  // Plain template literal (not String.raw) — Bun has a bug where String.raw
+  // with characters above U+007F emits them as literal `\uXXXX` escape TEXT
+  // instead of the actual glyph. Verified: `bun -e 'console.log(String.raw\`╭\`)'`
+  // outputs `╭`, while `bun -e 'console.log(\`╭\`)'` outputs `╭`.
   console.log(`
    ╭──────────────────────────────────╮
    │   🎲  roll                       │
@@ -55,6 +67,8 @@ export function bannerOrFallback(): void {
 export function totalsCard(
   rows: readonly { label: string; value: string }[]
 ): void {
+  // Two-column alignment: pad each label out to widest label, each value out
+  // to widest value, so "✨  sparks  4.2s" and "🎲  total  1m 24s" line up.
   const widestLabel = rows.reduce((n, r) => Math.max(n, r.label.length), 0);
   const widestValue = rows.reduce((n, r) => Math.max(n, r.value.length), 0);
   const lines = rows.map((r) => {

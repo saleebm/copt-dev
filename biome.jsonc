@@ -6,7 +6,7 @@
     "ultracite/biome/react"
   ],
   "files": {
-    "includes": ["!scripts/archive", "!.agents"]
+    "includes": ["!scripts/archive", "!.agents", "!.claude"]
   },
   "linter": {
     "rules": {
@@ -53,6 +53,9 @@
         "enabled": false
       },
       "formatter": {
+        "enabled": false
+      },
+      "assist": {
         "enabled": false
       }
     }

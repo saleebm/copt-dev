@@ -74,6 +74,7 @@ const BreadcrumbPage = ({
 }: React.ComponentPropsWithoutRef<"span"> & {
   ref?: React.RefObject<HTMLSpanElement | null>;
 }) => (
+  // biome-ignore lint/a11y/useSemanticElements: shadcn parity — current page is non-navigable; uses span+role=link to keep span ref/prop typing
   <span
     aria-current="page"
     aria-disabled="true"

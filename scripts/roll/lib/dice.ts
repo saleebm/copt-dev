@@ -1,3 +1,6 @@
+// Cryptographically-random picks, not Math.random(). User said "fr fr".
+// node:crypto.randomInt is uniformly distributed and unseedable — two calls
+// in a row are independent, so consecutive `bun run roll` invocations diverge.
 import { randomInt } from "node:crypto";
 
 export function rollInt(maxExclusive: number): number {
