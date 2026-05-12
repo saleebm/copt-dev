@@ -1,0 +1,4 @@
+This directory contains skills managed by jsm.
+
+Edits to installed skills may be overwritten on the next `jsm sync` or `jsm install`.
+To customize a skill, copy it elsewhere or create your own skill.

@@ -46,11 +46,9 @@ Remote `deploy.sh` order:
 
 ## Shared-Server Pattern
 
-The canonical guide for deploying this app or onboarding another app to the same server lives at:
+Source of truth for onboarding another app to this server: `docs/deployment/shared-server-app.md`.
 
-`docs/deployment/shared-server-app.md`
-
-That guide is the source of truth for:
+Covers:
 
 1. App directory and log conventions
 2. Caddy site block shape

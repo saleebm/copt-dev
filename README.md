@@ -20,8 +20,3 @@ bun run deploy
 ```
 
 Pushes `main`, SSHes into the server, runs `deploy.sh` (pull, deps, migrations, sync posts, blue-green build, PM2 reload), and verifies HTTP 200. See [DEPLOY.md](DEPLOY.md) for server setup details.
-
-## Learn More
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Prisma Documentation](https://www.prisma.io/docs)

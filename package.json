@@ -39,9 +39,13 @@
     "extract:tiddlers": "bun run scripts/tiddler-extraction/extract.ts",
     "extract:tiddlers:dry": "bun run scripts/tiddler-extraction/extract.ts --dry-run --verbose",
     "extract:tiddlers:scaffold": "bun run scripts/tiddler-extraction/extract.ts --scaffold",
+    "ingest:setup": "bun run scripts/setup-ingest.ts",
+    "worker": "bun run scripts/ingest-worker.ts",
+    "worker:dev": "bun --watch scripts/ingest-worker.ts",
     "deploy": "bash scripts/deploy-remote.sh"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.72",
     "@anthropic-ai/claude-agent-sdk": "^0.2.139",
     "@anthropic-ai/sdk": "^0.95.2",
     "@google/genai": "^2.1.0",
@@ -81,6 +85,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/glob": "^9.0.0",
     "@xstate/react": "^6.1.0",
+    "ai": "^6.0.177",
     "autoprefixer": "^10.5.0",
     "bun": "latest",
     "class-variance-authority": "^0.7.1",

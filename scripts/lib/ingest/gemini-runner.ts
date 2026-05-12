@@ -1,0 +1,194 @@
+// Calls Gemini via Vercel AI SDK (`ai` + `@ai-sdk/google`). Uses generateText
+// with Output.object(zodSchema) so the returned `output` is guaranteed to
+// match the Zod schema — no manual JSON parsing, no hand-rolled JSON Schema.
+// For URL ingests we also wire google.tools.urlContext so Gemini fetches the
+// URLs itself (https://ai.google.dev/gemini-api/docs/url-context). For images
+// we attach inline image parts. The worker forces the post type after the
+// model returns so a model regression can't drift it.
+
+import { readFileSync } from "node:fs";
+import { extname } from "node:path";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { generateText, Output, stepCountIs } from "ai";
+import { z } from "zod";
+import type { PostType } from "@/lib/generated/prisma";
+import { getAIConfig } from "../ai-config";
+import type { GeminiOutput, PipelineInput, StagedImage } from "./types";
+
+const PostDraftSchema = z.object({
+  title: z
+    .string()
+    .min(1)
+    .describe("Short, plainspoken title; no clickbait, no marketing copy"),
+  slug: z
+    .string()
+    .optional()
+    .describe(
+      "Lowercase kebab-case slug derived from the title; the worker will normalize"
+    ),
+  tags: z
+    .array(z.string())
+    .min(1)
+    .max(5)
+    .describe("1-5 lowercase kebab-case tags"),
+  categories: z
+    .array(z.string())
+    .min(1)
+    .max(3)
+    .describe("1-3 lowercase kebab-case categories"),
+  body: z
+    .string()
+    .min(1)
+    .describe(
+      "MDX body content. First-person, observational, 80-300 words. No frontmatter, no wrapping code fences. For image posts, reference the images in order with literal markdown ![alt](IMAGE_1), ![alt](IMAGE_2), … — the worker rewrites IMAGE_N to final paths."
+    ),
+});
+
+type PostDraft = z.infer<typeof PostDraftSchema>;
+
+const MIME_BY_EXT: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  heic: "image/heic",
+  heif: "image/heif",
+  gif: "image/gif",
+};
+
+function mimeForImage(staged: StagedImage): string {
+  const ext = (staged.extension || extname(staged.stagedFilePath).slice(1)).toLowerCase();
+  return MIME_BY_EXT[ext] ?? "image/jpeg";
+}
+
+function slugify(input: string): string {
+  return (
+    input
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || `untitled-${Date.now()}`
+  );
+}
+
+function expectedType(input: PipelineInput): PostType {
+  if (input.kind === "url") return "FINDING";
+  if (input.kind === "image") return "SIGHT";
+  return "BLOG";
+}
+
+function buildPrompt(input: PipelineInput): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const lines = [
+    "You are drafting a single post for the copt-dev personal blog.",
+    `Today's date: ${today}.`,
+    "Voice: first-person, observational, concrete. 80-300 words.",
+    "No marketing copy. No 'Here is' preambles. No code fences in the body.",
+    "",
+  ];
+
+  if (input.kind === "url") {
+    lines.push(
+      "Use the url_context tool to fetch every URL below before drafting. Summarize what you found as a short FINDING — what's on the page, why it's worth noting, anything specific that surprised you. Cite any quoted phrases inline naturally.",
+      "",
+      "URLs:"
+    );
+    for (const url of input.urls) {
+      lines.push(`  - ${url}`);
+    }
+    if (input.notes.trim()) {
+      lines.push("", `Author's notes (verbatim): ${input.notes.trim()}`);
+    }
+  } else if (input.kind === "image") {
+    lines.push(
+      `${input.images.length} image(s) are attached, in order. Write a SIGHT post — describe what's visually present, the mood, anything notable.`,
+      "Reference each image in the body using IMAGE_1, IMAGE_2, … in order. Example: ![alt text](IMAGE_1). The worker rewrites those placeholders to committed file paths."
+    );
+    if (input.notes.trim()) {
+      lines.push("", `Author's notes (verbatim): ${input.notes.trim()}`);
+    }
+  } else {
+    lines.push(
+      "Compose a short BLOG entry from the author's notes:",
+      "",
+      input.notes.trim()
+    );
+  }
+  return lines.join("\n");
+}
+
+function loadImagePart(staged: StagedImage) {
+  return {
+    type: "image" as const,
+    image: readFileSync(staged.stagedFilePath),
+    mediaType: mimeForImage(staged),
+  };
+}
+
+function toGeminiOutput(draft: PostDraft, forcedType: PostType): GeminiOutput {
+  const title = draft.title.trim() || "Untitled Ingest";
+  const slug = slugify(draft.slug?.trim() || title);
+  const frontmatter: Record<string, unknown> = {
+    title,
+    type: forcedType,
+    status: "DRAFT",
+    published: false,
+    date: new Date().toISOString().slice(0, 10),
+    tags: draft.tags,
+    categories: draft.categories,
+    slug,
+  };
+  const body = draft.body.trim() + "\n";
+  return {
+    slug,
+    title,
+    type: forcedType,
+    body,
+    frontmatter,
+    rawMdx: body,
+  };
+}
+
+export async function runGemini(input: PipelineInput): Promise<GeminiOutput> {
+  const config = getAIConfig();
+  const google = createGoogleGenerativeAI({ apiKey: config.apiKey });
+  const model = google(config.model);
+  const prompt = buildPrompt(input);
+
+  if (input.kind === "url") {
+    const { output } = await generateText({
+      model,
+      tools: { url_context: google.tools.urlContext({}) },
+      stopWhen: stepCountIs(4),
+      temperature: config.temperature,
+      prompt,
+      output: Output.object({ schema: PostDraftSchema }),
+    });
+    return toGeminiOutput(output, "FINDING");
+  }
+
+  if (input.kind === "image") {
+    const imageParts = input.images.map(loadImagePart);
+    const { output } = await generateText({
+      model,
+      temperature: config.temperature,
+      messages: [
+        {
+          role: "user",
+          content: [{ type: "text", text: prompt }, ...imageParts],
+        },
+      ],
+      output: Output.object({ schema: PostDraftSchema }),
+    });
+    return toGeminiOutput(output, "SIGHT");
+  }
+
+  const { output } = await generateText({
+    model,
+    temperature: config.temperature,
+    prompt,
+    output: Output.object({ schema: PostDraftSchema }),
+  });
+  return toGeminiOutput(output, "BLOG");
+}

@@ -117,6 +117,31 @@ model CategoryEmbedding {
   @@index([embeddingHash])
 }
 
+model IngestSubmission {
+  id             String    @id @default(cuid())
+  kind           String    // "url" | "image" | "note"
+  payload        Json      // raw normalized request payload
+  contentHash    String    @unique // dedup key; force=true salts the hash
+  batchId        String?   // groups image rows that should become one SIGHT post
+  imageIndex     Int?
+  totalCount     Int?
+  stagedFilePath String?   // absolute path to staged binary on the host
+  status         String    @default("pending") // "pending" | "processing" | "completed" | "failed" | "skipped"
+  attempts       Int       @default(0)
+  errorMessage   String?
+  resultPostSlug String?
+  resultPrUrl    String?
+  resultBranch   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  startedAt      DateTime?
+  completedAt   DateTime?
+
+  @@index([status])
+  @@index([batchId])
+  @@index([kind])
+}
+
 model TagEmbedding {
   id             String   @id @default(cuid())
   name           String   @unique // Tag name (e.g., "open-source")

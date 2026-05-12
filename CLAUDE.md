@@ -1,6 +1,6 @@
 # copt-dev
 
-Personal website/blog built with Next.js 16, App Router and latest best practices/features of React and Next.js, MDX, Prisma + PostgreSQL.
+Personal website/blog built with Next.js 16, App Router, MDX, Prisma + PostgreSQL.
 
 <!-- BEGIN:nextjs-agent-rules -->
  
@@ -12,7 +12,7 @@ Before any Next.js work, find and read the relevant doc in `node_modules/next/di
 
 ## Agent Constitution
 
-This file is the top-level authority for all AI agents operating in this repo. Follow it strictly.
+This file is the top-level authority for all AI agents operating in this repo.
 
 - Don't ship features just because you can
 - leave the code better than you found it
@@ -50,7 +50,7 @@ When sources conflict, higher-numbered sources lose. Verify against code before 
 
 ### Skill & Doc Precedence
 
-Domain-specific agent skills extend this file — they do not override it:
+Domain-specific agent skills extend this file but do not override it:
 - React/Next.js performance: `.agents/skills/vercel-react-best-practices/AGENTS.md`
 - Next.js conventions: `.agents/skills/next-best-practices/SKILL.md`
 - Next.js 16 caching: `.agents/skills/next-cache-components/SKILL.md`
@@ -159,7 +159,7 @@ Run `bun run records:validate` to check JSON registry integrity and MdxProvider 
 
 ## Post Stack System
 
-The core UI paradigm. Posts stack on top of each other as the user navigates — clicking a PostLink pushes a new post onto the stack. Managed by an XState state machine (`lib/post-stack-machine.ts`) with:
+The core UI paradigm. Posts stack as the user navigates; clicking a PostLink pushes a new post onto the stack. Managed by an XState state machine (`lib/post-stack-machine.ts`) with:
 - URL state via `?stack=slug1,slug2` query param
 - Scroll position tracking per post
 - Browser back/forward integration

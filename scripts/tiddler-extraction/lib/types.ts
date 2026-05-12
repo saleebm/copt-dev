@@ -51,4 +51,5 @@ export type ConcreteProposal = {
   concept: string;
   mentionCount: number;
   sampleContexts: string[];
+  hasOwnTiddler: boolean;
 };

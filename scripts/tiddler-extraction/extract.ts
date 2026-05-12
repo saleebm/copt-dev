@@ -95,6 +95,86 @@ function writeJson(outPath: string, data: unknown, dryRun: boolean): void {
   fs.writeFileSync(outPath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
 
+function isProseTarget(target: string): boolean {
+  if (target.length < 2 || target.length > 80) return false;
+  if (target.startsWith("$:/")) return false;
+  if (target.startsWith("@:") || target.startsWith("@ ")) return false;
+  if (target.startsWith("@")) return false;
+  if (/^https?:\/\//i.test(target)) return false;
+  if (/^\d{4}[.\-/]\d{2}/.test(target)) return false;
+  const latinChars = (target.match(/[A-Za-z]/g) ?? []).length;
+  if (latinChars / target.length < 0.5) return false;
+  return true;
+}
+
+function isEssayShapedSource(t: {
+  title: string;
+  tags?: string[];
+}): boolean {
+  if (t.title.startsWith("@:") || t.title.startsWith("@ ")) return false;
+  if (t.title.startsWith("$:/")) return false;
+  if (/^\d{4}[.\-/]\d{2}/.test(t.title)) return false;
+  const lowerTags = (t.tags ?? []).map((tag) => tag.toLowerCase());
+  if (lowerTags.includes("chatlog")) return false;
+  if (lowerTags.includes("@")) return false;
+  return true;
+}
+
+function buildConcreteProposals(
+  scored: { title: string; tags: string[]; signals: { links: { external: boolean; target: string }[]; quotes: { text: string }[]; blockquotes: string[] }; body: string }[],
+  tiddlerTitles: Set<string>
+): ConcreteProposal[] {
+  const sourcesByTarget = new Map<string, Set<string>>();
+  const firstSnippetBySource = new Map<string, Map<string, string>>();
+
+  for (const t of scored) {
+    if (!isEssayShapedSource(t)) continue;
+    const seenInThisTiddler = new Set<string>();
+    for (const link of t.signals.links) {
+      if (link.external) continue;
+      const target = link.target;
+      if (!isProseTarget(target)) continue;
+      if (seenInThisTiddler.has(target)) continue;
+      seenInThisTiddler.add(target);
+
+      const sources = sourcesByTarget.get(target) ?? new Set<string>();
+      sources.add(t.title);
+      sourcesByTarget.set(target, sources);
+
+      const snippetsForTarget =
+        firstSnippetBySource.get(target) ?? new Map<string, string>();
+      if (!snippetsForTarget.has(t.title) && snippetsForTarget.size < 3) {
+        const snippet =
+          t.signals.quotes[0]?.text ??
+          t.signals.blockquotes[0] ??
+          t.body.slice(0, 200);
+        snippetsForTarget.set(t.title, `${t.title}: ${snippet.slice(0, 200)}`);
+        firstSnippetBySource.set(target, snippetsForTarget);
+      }
+    }
+  }
+
+  const entries: ConcreteProposal[] = [];
+  for (const [concept, sources] of sourcesByTarget) {
+    if (sources.size < 3) continue;
+    const hasOwnTiddler = tiddlerTitles.has(concept);
+    entries.push({
+      concept,
+      mentionCount: sources.size,
+      sampleContexts: [...(firstSnippetBySource.get(concept)?.values() ?? [])],
+      hasOwnTiddler,
+    } as ConcreteProposal);
+  }
+
+  return entries
+    .sort((a, b) => {
+      if (b.mentionCount !== a.mentionCount)
+        return b.mentionCount - a.mentionCount;
+      return a.concept.localeCompare(b.concept);
+    })
+    .slice(0, 30);
+}
+
 function deriveLocalSlugs(): Set<string> {
   const slugs = new Set<string>();
   const postsDir = path.join(PROJECT_ROOT, "posts");
@@ -145,7 +225,7 @@ async function main(): Promise<void> {
   }[] = [];
   const blockquotesAll: { text: string; sourceTitle: string }[] = [];
   const metaLabelsAll: { raw: string; sourceTitle: string }[] = [];
-  const linkGraph: Record<string, string[]> = {};
+  const tiddlerTitles = new Set<string>();
   const titleIndex: { title: string; tags: string[]; modified: string }[] = [];
 
   let count = 0;
@@ -167,6 +247,7 @@ async function main(): Promise<void> {
       tags: tiddler.tags,
       modified: tiddler.modified,
     });
+    tiddlerTitles.add(tiddler.title);
 
     for (const q of signals.quotes) {
       quotesAll.push({
@@ -180,13 +261,6 @@ async function main(): Promise<void> {
     }
     for (const ml of signals.metaLabels) {
       metaLabelsAll.push({ raw: ml.raw, sourceTitle: tiddler.title });
-    }
-
-    const internalLinks = signals.links
-      .filter((l) => !l.external)
-      .map((l) => l.target);
-    if (internalLinks.length > 0) {
-      linkGraph[tiddler.title] = internalLinks;
     }
 
     scored.push({
@@ -208,32 +282,7 @@ async function main(): Promise<void> {
 
   const ranked = rankTiddlers(scored, args.top);
 
-  const targetMentions = new Map<string, number>();
-  const targetContexts = new Map<string, string[]>();
-  for (const t of ranked) {
-    for (const link of t.signals.links) {
-      if (link.external) continue;
-      targetMentions.set(link.target, (targetMentions.get(link.target) ?? 0) + 1);
-      const ctx = targetContexts.get(link.target) ?? [];
-      if (ctx.length < 3) {
-        const snippet =
-          t.signals.quotes[0]?.text ??
-          t.signals.blockquotes[0] ??
-          t.body.slice(0, 200);
-        ctx.push(`${t.title}: ${snippet.slice(0, 200)}`);
-        targetContexts.set(link.target, ctx);
-      }
-    }
-  }
-  const concreteProposals: ConcreteProposal[] = [...targetMentions.entries()]
-    .filter(([, n]) => n >= 3)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 20)
-    .map(([concept, mentionCount]) => ({
-      concept,
-      mentionCount,
-      sampleContexts: targetContexts.get(concept) ?? [],
-    }));
+  const concreteProposals = buildConcreteProposals(scored, tiddlerTitles);
 
   console.log("");
   console.log(`✅ parsed ${count} tiddlers in ${(elapsedMs / 1000).toFixed(1)}s`);
@@ -281,7 +330,6 @@ async function main(): Promise<void> {
     metaLabelsAll.slice(0, 5000),
     args.dryRun
   );
-  writeJson(path.join(OUT_DIR, "links.json"), linkGraph, args.dryRun);
   writeJson(
     path.join(OUT_DIR, "ranked.json"),
     ranked.map((r) => ({
@@ -303,7 +351,7 @@ async function main(): Promise<void> {
   );
 
   if (!args.dryRun) {
-    console.log(`📝 wrote 8 JSON files to ${path.relative(PROJECT_ROOT, OUT_DIR)}/`);
+    console.log(`📝 wrote 7 JSON files to ${path.relative(PROJECT_ROOT, OUT_DIR)}/`);
   } else {
     console.log("📝 dry-run — nothing written");
   }

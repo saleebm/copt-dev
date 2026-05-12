@@ -32,8 +32,7 @@ scripts/tiddler-extraction/
 - `quotes.json` — em-dash quotes with attribution
 - `blockquotes.json` — `<<<…<<<` regions
 - `meta-labels.json` — `{{ datestamp - author: description }}` style references
-- `links.json` — internal link graph `source → [targets]`
-- `ranked.json` — top N tiddlers with full body + signals
-- `concrete-proposals.json` — link targets mentioned ≥3× in ranked tiddlers (candidates for new CONCRETE posts; not auto-written)
+- `ranked.json` — top N tiddlers with full body + signals (this carries the raw link signal — no separate links.json)
+- `concrete-proposals.json` — concepts linked from ≥3 essay-shaped (non-chatlog) tiddlers, deduped by source. `hasOwnTiddler: true` means h0p3 has a tiddler for that concept you can read for context. Candidates for new CONCRETE posts; not auto-written.
 
 Scaffold mode writes DRAFT MDX into `posts/blog/dummy/inspirations/` so they're isolated from the live tree until promoted.
