@@ -65,3 +65,7 @@ playwright-report/
 
 # server secrets
 .cursor/plans/server-secrets.md
+
+# tiddler-extraction artifacts (raw source + JSON outputs; code is committed)
+scripts/tiddler-extraction/data/*.html
+records/tiddlers/*.json

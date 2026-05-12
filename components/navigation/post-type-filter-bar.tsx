@@ -13,6 +13,7 @@ interface PostTypeCount {
 
 interface PostTypeFilterBarProps {
   className?: string;
+  excludedTypes?: PostType[];
   onTypeToggle?: (type: PostType) => void;
   postTypeCounts?: PostTypeCount[];
   selectedTypes?: PostType[];
@@ -69,8 +70,16 @@ const PostTypeFilterBar: React.FC<PostTypeFilterBarProps> = ({
   },
   postTypeCounts = [],
   className,
+  excludedTypes,
 }) => {
-  const allTypes = getAllPostTypes();
+  const allTypes = React.useMemo(() => {
+    const types = getAllPostTypes();
+    if (!excludedTypes?.length) {
+      return types;
+    }
+    const excluded = new Set(excludedTypes);
+    return types.filter((t) => !excluded.has(t));
+  }, [excludedTypes]);
 
   const handleToggle = React.useCallback(
     (type: PostType) => {

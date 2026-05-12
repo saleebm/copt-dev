@@ -1,15 +1,51 @@
 ---
 title: "Axioms"
-tags: "principles"
+tags: "principles,tdd,llm,manifestation"
 status: "PUBLISHED"
 ---
 
 # Principles
 
-## Breaking predictability.
+Practices I've stolen, tested, and kept. Take whatever works. Ignore the rest. If one of these is wrong for your situation, it's wrong for your situation — don't argue with the page, argue with your own next commit.
 
-Repeat yourself and gain insight into patterns of your behavior. "Why are you like this?" is the age-old sarcastic aggression.
+## Captain Underpants TDD
 
-## Value system
+> "Tra-la-laaaa!"
 
-What kind of life would I lead were I to be in alignment with my true values? What kind of peace will I have?
+When the codebase is in trouble, you don't reach for the cleverest abstraction. You reach for a failing test. Watch it go red. Snap your fingers — *Tra-la-laaaa!* — write the smallest thing that turns it green. Refactor. Repeat.
+
+The mechanism: a hero only shows up when somebody snaps. Tests only catch regressions if somebody writes them. Be the one who snaps.
+
+**Takeaway:** red → green → refactor. If you're stuck, write the test first. The test is the snap.
+
+## Own your weights
+
+Run models on your own metal whenever the task is small enough to fit. Local LLMs are not always smarter — they are yours. There is a difference between *renting* intelligence by the token and *housing* it on a disk next to your dev machine. Have both, but never give up the second.
+
+Frontier models for the hard problems. Local models for the loop — the boring, repeated, all-day work that adds up to a practice you don't have to apologize for.
+
+**Takeaway:** if a task you do daily can be done by a 7B model on your laptop, move it there. The token bill is not a feature.
+
+## Manifestation as scope-setting
+
+Manifestation isn't woo. It's the discipline of *naming the thing precisely enough that you'd recognize it if it walked in the room.* If you can't write the acceptance criteria, you can't manifest the feature. If you can't write the acceptance criteria for the life, you can't manifest the life. Same engine.
+
+**Takeaway:** write the outcome down in a single sentence. Read it back tomorrow. If you don't recognize it, sharpen it.
+
+## Fixing beats new features
+
+A bug fix is a love letter to the next person who reads the file. A new feature is a debt you may or may not service. When the choice is "fix something already shipped" or "ship something new", fix.
+
+**Takeaway:** before you start a new feature, look at your open issues. Close one. Then decide.
+
+## Leave the file better than you found it
+
+If you touch a file, leave it cleaner than you found it, or revert. No half-finished refactors. No `// TODO: come back to this` graveyards. Either commit to the change or commit to the existing shape.
+
+**Takeaway:** every PR is two PRs: the change you came for, and the cleanup you found on the way. Both ship or neither.
+
+## Don't ship just because you can
+
+The hardest one, and the one I break most. Some days the right move is: close the laptop, eat real food, read a book, come back tomorrow. The code keeps.
+
+**Takeaway:** if you can't say *why* you're shipping it right now, you're shipping for the wrong reason.

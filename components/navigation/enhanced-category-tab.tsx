@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { usePostStackState } from "@/components/post-stack/post-stack-provider-xstate";
 import { useNavClick } from "@/hooks/use-nav-click";
 import { getCategoryPosts } from "@/lib/actions/navigation-actions";
-import type { PostType } from "@/lib/generated/prisma";
+import { PostType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 import navStyles from "@/styles/navigation.module.css";
 import type { CategoryNode } from "@/types/navigation";
@@ -23,6 +23,10 @@ interface EnhancedCategoryTabProps {
   onNavigate?: () => void;
 }
 
+// CONCRETE posts intentionally have no categories (see scripts/sync-posts.ts).
+// Allowing the filter here would prune the entire tree.
+const CATEGORY_EXCLUDED_TYPES: PostType[] = [PostType.CONCRETE];
+
 export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
   const { scrollState } = usePostStackState();
   const { handleClickPostObj } = useNavClick(onNavigate);
@@ -34,6 +38,13 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
     loading,
     error,
   } = useNavigationContext();
+
+  const effectiveSelectedTypes = React.useMemo(() => {
+    const filtered = selectedPostTypes.filter(
+      (t) => !CATEGORY_EXCLUDED_TYPES.includes(t)
+    );
+    return filtered.length > 0 ? filtered : [PostType.BLOG];
+  }, [selectedPostTypes]);
   const shouldCloseOnSettleRef = useRef(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryNode | null>(
@@ -51,7 +62,7 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
     // Recursive filter function to prune categories with no posts for selected types
     const filterByPostType = (node: CategoryNode): CategoryNode | null => {
       // Calculate post count for selected types
-      const selectedTypeCount = selectedPostTypes.reduce(
+      const selectedTypeCount = effectiveSelectedTypes.reduce(
         (sum, type) => sum + (node.postTypes?.[type] || 0),
         0
       );
@@ -84,7 +95,7 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
     return categories
       .map((cat) => filterByPostType(cat))
       .filter((cat) => cat !== null) as CategoryNode[];
-  }, [categories, selectedPostTypes]);
+  }, [categories, effectiveSelectedTypes]);
 
   // Filter categories based on search query
   const filteredCategories = React.useMemo(() => {
@@ -143,7 +154,7 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
         // Fetch posts for this category filtered by selected types
         const posts = (await getCategoryPosts(
           categoryPath,
-          selectedPostTypes
+          effectiveSelectedTypes
         )) as RawPost[];
 
         const filteredPosts = posts.map((post: RawPost) => ({
@@ -164,7 +175,7 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
         setLoadingPosts(false);
       }
     },
-    [selectedPostTypes]
+    [effectiveSelectedTypes]
   );
 
   const handlePostClick = useCallback(
@@ -234,9 +245,10 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
         {/* Post Type Filter - Always visible */}
         <PostTypeFilterBar
           className="mb-2"
+          excludedTypes={CATEGORY_EXCLUDED_TYPES}
           onTypeToggle={handleTypeToggle}
           postTypeCounts={postTypeCounts}
-          selectedTypes={selectedPostTypes}
+          selectedTypes={effectiveSelectedTypes}
         />
 
         {/* Breadcrumb Navigation */}
@@ -260,7 +272,7 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
                 <ChildCategoriesPopout
                   category={selectedCategory}
                   onCategoryClick={handleCategoryClick}
-                  selectedPostTypes={selectedPostTypes}
+                  selectedPostTypes={effectiveSelectedTypes}
                 />
               )}
           </div>
@@ -317,9 +329,10 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
       {/* Post Type Filter - Always visible */}
       <PostTypeFilterBar
         className="mb-2"
+        excludedTypes={CATEGORY_EXCLUDED_TYPES}
         onTypeToggle={handleTypeToggle}
         postTypeCounts={postTypeCounts}
-        selectedTypes={selectedPostTypes}
+        selectedTypes={effectiveSelectedTypes}
       />
 
       {/* Search Bar */}
