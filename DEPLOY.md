@@ -4,7 +4,8 @@
 
 ```text
 Internet -> Caddy (80/443) -> 127.0.0.1:3000 -> PM2 cluster -> Next.js
-                                              -> PostgreSQL 17 on localhost
+                                             -> PostgreSQL 17 on localhost
+                              PM2 fork (copt-dev-ingest) -> ingest worker -> Gemini, git, gh
 ```
 
 ## Current Server Stack
@@ -41,8 +42,9 @@ Remote `deploy.sh` order:
 4. `bun run db:sync-posts`
 5. Build into `.next-builds/<deploy-id>`
 6. Point `.next-builds/current` at the new build
-7. `pm2 reload ecosystem.config.cjs --update-env`
-8. Prune old builds, keep the latest 3
+7. `pm2 startOrReload ecosystem.config.cjs --update-env` (web + ingest worker)
+8. `pm2 save` so processes survive reboots
+9. Prune old builds, keep the latest 3
 
 ## Shared-Server Pattern
 

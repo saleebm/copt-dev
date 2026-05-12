@@ -2,6 +2,7 @@
 // quickly and the worker can move them into posts/sight/<batch>/ at commit time.
 // Lives at INGEST_STAGING_DIR (default /tmp/copt-ingest).
 import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const DEFAULT_DIR = "/tmp/copt-ingest";
@@ -25,7 +26,10 @@ export async function stageBytes(
 ): Promise<string> {
   const dir = ensureStagingDir();
   const filePath = join(dir, `${submissionId}.${extension}`);
-  await Bun.write(filePath, bytes);
+  const buffer = Buffer.isBuffer(bytes)
+    ? bytes
+    : Buffer.from(bytes as ArrayBuffer);
+  await writeFile(filePath, buffer);
   return filePath;
 }
 

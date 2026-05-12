@@ -12,7 +12,7 @@ Canonical pattern for deploying another Next.js app to the existing shared serve
 | OS | Ubuntu 25.10 |
 | Runtime | Node 22 via `nvm`, Bun 1.3.x, PM2 |
 | Reverse proxy | Caddy 2.x |
-| Existing app | `copt.dev` on `127.0.0.1:3000` |
+| Existing app via portless | `copt.dev` on `copt.localhost` |
 
 ## Server Conventions
 
@@ -74,9 +74,10 @@ Required flow:
 4. `mkdir -p .next-builds`
 5. `BUILD_DIR=".next-builds/$DEPLOY_ID" bun run build`
 6. `ln -sfn "$DEPLOY_ID" .next-builds/current`
-7. `pm2 reload ecosystem.config.cjs --update-env` or `pm2 start ecosystem.config.cjs`
-8. Prune old builds, keeping the latest 3
-9. Print `pm2 status`
+7. `pm2 startOrReload ecosystem.config.cjs --update-env` (handles multi-process configs cleanly)
+8. `pm2 save` so processes survive server reboots
+9. Prune old builds, keeping the latest 3
+10. Print `pm2 status`
 
 Recommended shell settings:
 
@@ -137,6 +138,17 @@ module.exports = {
 App-specific note:
 
 - If the app uses runtime `revalidatePath` / `revalidateTag` plus filesystem-backed state or SQLite, prefer `instances: 1` until a shared cache strategy exists. Multiple instances can serve inconsistent content.
+
+### Worker Processes
+
+For background workers (queue consumers, pollers, cron-like daemons), add a second app entry in the same `ecosystem.config.cjs`:
+
+- `exec_mode: "fork"` and `instances: 1` (multiple workers compete on the same queue)
+- `script: "scripts/<worker>.ts"` with `interpreter: "bun"`
+- Same `cwd` as the web app so the worker reads the same `.env` and repo state
+- Process name: `<app-name>-<role>` (e.g. `copt-dev-ingest`)
+- Logs at `/home/deploy/logs/<process-name>-{out,error}.log`
+- Memory cap sized to the workload, not the web app default
 
 ## Caddy Site Block
 

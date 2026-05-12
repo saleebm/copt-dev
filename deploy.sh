@@ -33,11 +33,8 @@ echo "==> Switching build"
 ln -sfn "$DEPLOY_ID" .next-builds/current
 
 echo "==> Reloading PM2"
-if pm2 describe copt-dev > /dev/null 2>&1; then
-  pm2 reload ecosystem.config.cjs --update-env
-else
-  pm2 start ecosystem.config.cjs
-fi
+pm2 startOrReload ecosystem.config.cjs --update-env
+pm2 save
 
 echo "==> Cleaning old builds (keeping last 3)"
 cd .next-builds

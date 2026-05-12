@@ -21,5 +21,21 @@ module.exports = {
       out_file: "/home/deploy/logs/copt-dev-out.log",
       merge_logs: true,
     },
+    {
+      name: "copt-dev-ingest",
+      script: "scripts/ingest-worker.ts",
+      interpreter: "bun",
+      cwd: "/home/deploy/apps/copt-dev",
+      env: {
+        NODE_ENV: "production",
+      },
+      instances: 1,
+      exec_mode: "fork",
+      max_memory_restart: "1024M",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      error_file: "/home/deploy/logs/copt-dev-ingest-error.log",
+      out_file: "/home/deploy/logs/copt-dev-ingest-out.log",
+      merge_logs: true,
+    },
   ],
 };
