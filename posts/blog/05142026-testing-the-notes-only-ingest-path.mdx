@@ -1,0 +1,16 @@
+---
+title: Testing the Notes-Only Ingest Path
+type: BLOG
+status: DRAFT
+published: false
+date: '2026-05-14'
+tags:
+  - smoke-test
+  - automation
+  - gemini
+categories:
+  - meta
+  - development
+slug: testing-the-notes-only-ingest-path
+---
+I am currently running an end-to-end ingest smoke test (run 1778784675) to confirm that the notes-only path successfully produces a blog draft using Gemini's structured output. For this specific test, I am explicitly excluding URLs and images to keep the payload strictly text-based. The main thing I am curious about is whether the model can extract reasonable tags, categorize the post accurately, and generate a tight title based on nothing more than a single paragraph of raw notes. It is a simple validation step, but getting this pipeline right means I can frictionlessly publish quick thoughts without manually formatting frontmatter or wrestling with markdown schemas. If you are reading this exactly as intended, the structured output pipeline is working perfectly.
