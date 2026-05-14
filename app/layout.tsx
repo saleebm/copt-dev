@@ -1,24 +1,60 @@
 import type { Metadata, Viewport } from "next";
 import type React from "react";
 import { ibmPlexMono, spaceGrotesk } from "@/lib/fonts";
+import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-// TODO: Set up SEO metadata
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.copt.dev"),
-  title: "copt.dev",
-  description: "My personal website and blog.",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.title,
+    template: `%s — ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
+  authors: [{ name: siteConfig.author, url: siteConfig.url }],
+  creator: siteConfig.author,
+  publisher: siteConfig.author,
+  keywords: ["mina saleeb", "copt.dev", "blog", "engineering", "writing"],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "copt.dev",
-    description: "My personal website and blog.",
-    url: "https://www.copt.dev",
-    siteName: "copt.dev",
+    type: "website",
+    locale: siteConfig.locale,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: siteConfig.title,
+    description: siteConfig.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  formatDetection: {
+    email: false,
+    telephone: false,
+    address: false,
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: siteConfig.themeColor,
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
