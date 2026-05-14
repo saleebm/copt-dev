@@ -4,6 +4,7 @@ export const siteConfig = {
   description: "Personal website and blog of Mina Saleeb.",
   url: "https://www.copt.dev",
   author: "Mina Saleeb",
+  twitter: "@metapog",
   locale: "en_US",
   ogImageAlt: "copt.dev — the red light eye",
   themeColor: "#000000",

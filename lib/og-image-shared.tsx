@@ -18,22 +18,27 @@ function getLogoBuffer(): Promise<Buffer> {
 
 let fontPromise: Promise<ArrayBuffer> | null = null;
 async function loadFont(): Promise<ArrayBuffer> {
+  // Older WebKit UA → Google Fonts returns WOFF (Satori supports TTF/OTF/WOFF, not WOFF2).
   const cssRes = await fetch(
     "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap",
     {
       headers: {
-        // Default UA gets woff2; we need the ttf URL Satori can decode.
         "User-Agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
       },
     }
   );
   const css = await cssRes.text();
-  const urlMatch = css.match(/src:\s*url\((https:\/\/[^)]+\.ttf)\)/);
-  if (!urlMatch) {
-    throw new Error("Could not parse Space Grotesk TTF URL from Google Fonts");
+  const matches = Array.from(
+    css.matchAll(/src:\s*url\((https:\/\/[^)]+)\)\s*format\('(woff2?|truetype|opentype)'\)/g)
+  );
+  // Prefer non-WOFF2 since Satori can't decode WOFF2. Fall back to the last match.
+  const decodable = matches.filter((m) => m[2] !== "woff2");
+  const chosen = decodable[decodable.length - 1] ?? matches[matches.length - 1];
+  if (!chosen) {
+    throw new Error("Could not parse a font URL from Google Fonts CSS");
   }
-  const fontRes = await fetch(urlMatch[1]);
+  const fontRes = await fetch(chosen[1]);
   return fontRes.arrayBuffer();
 }
 
