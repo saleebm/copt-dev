@@ -31,16 +31,21 @@ function useThrottledCallback<T extends (...args: never[]) => void>(
 }
 
 export function StackShortcuts() {
-  const { posts, currentStackIds, activePostId } = usePostStackState();
+  const { posts, currentStackIds, activePostId, isProgrammaticScroll } =
+    usePostStackState();
   const { scrollToPost, dismissPost, goHome } = usePostStackActions();
   const { announce, register } = useKeyboardContext();
 
   const postsRef = useRef(posts);
   const activeIdRef = useRef(activePostId);
+  const isProgrammaticScrollRef = useRef(isProgrammaticScroll);
   useEffect(() => {
     postsRef.current = posts;
     activeIdRef.current = activePostId;
   }, [posts, activePostId]);
+  useEffect(() => {
+    isProgrammaticScrollRef.current = isProgrammaticScroll;
+  }, [isProgrammaticScroll]);
 
   const activeIndex = useMemo(
     () => posts.findIndex((p) => p.id === activePostId),
@@ -50,6 +55,9 @@ export function StackShortcuts() {
   const stackHasPosts = currentStackIds.length > 0;
 
   const goNext = useThrottledCallback(() => {
+    if (isProgrammaticScrollRef.current) {
+      return;
+    }
     cancelCurrentScroll();
     const next = posts[Math.min(activeIndex + 1, posts.length - 1)];
     if (next && next.id !== activePostId) {
@@ -59,6 +67,9 @@ export function StackShortcuts() {
   }, THROTTLE_MS);
 
   const goPrev = useThrottledCallback(() => {
+    if (isProgrammaticScrollRef.current) {
+      return;
+    }
     cancelCurrentScroll();
     const prev = posts[Math.max(activeIndex - 1, 0)];
     if (prev && prev.id !== activePostId) {
@@ -68,6 +79,9 @@ export function StackShortcuts() {
   }, THROTTLE_MS);
 
   const goTop = useCallback(() => {
+    if (isProgrammaticScrollRef.current) {
+      return;
+    }
     cancelCurrentScroll();
     const first = posts[0];
     if (first) {
@@ -77,6 +91,9 @@ export function StackShortcuts() {
   }, [posts, scrollToPost, announce]);
 
   const goBottom = useCallback(() => {
+    if (isProgrammaticScrollRef.current) {
+      return;
+    }
     cancelCurrentScroll();
     const last = posts.at(-1);
     if (last) {
@@ -195,6 +212,9 @@ export function StackShortcuts() {
           description: num === 1 ? "Jump to post N (1–9)" : "",
           when: () => postsRef.current.length >= num,
           handler: () => {
+            if (isProgrammaticScrollRef.current) {
+              return;
+            }
             const target = postsRef.current[num - 1];
             if (!target) {
               return;

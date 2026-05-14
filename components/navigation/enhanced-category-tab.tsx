@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { usePostStackState } from "@/components/post-stack/post-stack-provider-xstate";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavClick } from "@/hooks/use-nav-click";
 import { getCategoryPosts } from "@/lib/actions/navigation-actions";
 import { PostType } from "@/lib/generated/prisma";
@@ -28,7 +27,6 @@ interface EnhancedCategoryTabProps {
 const CATEGORY_EXCLUDED_TYPES: PostType[] = [PostType.CONCRETE];
 
 export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
-  const { scrollState } = usePostStackState();
   const { handleClickPostObj } = useNavClick(onNavigate);
   const {
     selectedPostTypes,
@@ -45,8 +43,6 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
     );
     return filtered.length > 0 ? filtered : [PostType.BLOG];
   }, [selectedPostTypes]);
-  const shouldCloseOnSettleRef = useRef(false);
-  const wasScrollingRef = useRef(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryNode | null>(
     null
@@ -181,34 +177,12 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
 
   const handlePostClick = useCallback(
     (post: PostForNavigation) => {
-      // Mark that we want to close after scroll settles
-      shouldCloseOnSettleRef.current = true;
-      // Delegate to unified nav click flow (handles add + settle alignment)
       handleClickPostObj({ id: post.id as PostId }).catch(() => {
-        // Silently handle navigation errors
+        // navigation errors are non-fatal
       });
-      // DO NOT call onNavigate() here - that causes the race!
     },
     [handleClickPostObj]
   );
-
-  // Defer panel close until scroll completes to avoid race condition.
-  // Gate fires on "idle" after "programmaticScroll" — "settling" is never set by the machine.
-  useEffect(() => {
-    if (scrollState === "programmaticScroll") {
-      wasScrollingRef.current = true;
-      return;
-    }
-    if (
-      scrollState === "idle" &&
-      wasScrollingRef.current &&
-      shouldCloseOnSettleRef.current
-    ) {
-      onNavigate?.();
-      shouldCloseOnSettleRef.current = false;
-      wasScrollingRef.current = false;
-    }
-  }, [scrollState, onNavigate]);
 
   // Refetch posts when filter changes while viewing a category
   useEffect(() => {

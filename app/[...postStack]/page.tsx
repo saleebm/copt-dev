@@ -28,8 +28,7 @@ export async function generateMetadata({
     ...stackParam.filter((s) => !pathSlugs.includes(s)),
   ];
   // Explicit initialActivePostId wins; otherwise the last slug is the active post
-  const slug =
-    resolvedSearch?.initialActivePostId ?? allSlugs.at(-1);
+  const slug = resolvedSearch?.initialActivePostId ?? allSlugs.at(-1);
   if (!slug) {
     return { title: siteConfig.title };
   }

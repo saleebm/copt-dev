@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { usePostStackState } from "@/components/post-stack/post-stack-provider-xstate";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavClick } from "@/hooks/use-nav-click";
 import { getPostsByTagNameAction } from "@/lib/actions/navigation-actions";
 import type { PostType } from "@/lib/generated/prisma";
@@ -27,7 +26,6 @@ interface EnhancedTagsTabProps {
 }
 
 export function EnhancedTagsTab({ onNavigate }: EnhancedTagsTabProps) {
-  const { scrollState } = usePostStackState();
   const { handleClickId } = useNavClick(onNavigate);
   const {
     selectedPostTypes,
@@ -37,8 +35,6 @@ export function EnhancedTagsTab({ onNavigate }: EnhancedTagsTabProps) {
     loading,
     error,
   } = useNavigationContext();
-  const shouldCloseOnSettleRef = useRef(false);
-  const wasScrollingRef = useRef(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [density, setDensity] = useState<"compact" | "normal" | "expanded">(
@@ -177,34 +173,12 @@ export function EnhancedTagsTab({ onNavigate }: EnhancedTagsTabProps) {
 
   const handlePostClick = useCallback(
     (post: { id: PostId; title: string; type: PostType; slug: PostId }) => {
-      // Mark that we want to close after scroll settles
-      shouldCloseOnSettleRef.current = true;
-      // Delegate to unified nav click flow
       handleClickId(post.id).catch(() => {
-        // Silently handle navigation errors
+        // navigation errors are non-fatal
       });
-      // DO NOT call onNavigate() here - that causes the race!
     },
     [handleClickId]
   );
-
-  // Defer panel close until scroll completes to avoid race condition.
-  // Gate fires on "idle" after "programmaticScroll" — "settling" is never set by the machine.
-  useEffect(() => {
-    if (scrollState === "programmaticScroll") {
-      wasScrollingRef.current = true;
-      return;
-    }
-    if (
-      scrollState === "idle" &&
-      wasScrollingRef.current &&
-      shouldCloseOnSettleRef.current
-    ) {
-      onNavigate?.();
-      shouldCloseOnSettleRef.current = false;
-      wasScrollingRef.current = false;
-    }
-  }, [scrollState, onNavigate]);
 
   // Refetch posts when filter changes while viewing a tag
   useEffect(() => {

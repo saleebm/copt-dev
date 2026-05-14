@@ -5,16 +5,27 @@ const SYMBOL_MAP: Record<string, string> = {
   Mod: "⌘",
   Cmd: "⌘",
   Meta: "⌘",
-  Ctrl: "Ctrl",
-  Alt: "Alt",
+  Ctrl: "⌃",
+  Alt: "⌥",
+  Option: "⌥",
   Shift: "⇧",
   Enter: "↵",
+  Return: "↵",
+  Tab: "⇥",
+  Backspace: "⌫",
+  Delete: "⌦",
+  Escape: "Esc",
+  Esc: "Esc",
+  Space: "␣",
   ArrowUp: "↑",
   ArrowDown: "↓",
   ArrowLeft: "←",
   ArrowRight: "→",
-  Escape: "Esc",
-  Space: "Space",
+  Home: "↖",
+  End: "↘",
+  PageUp: "⇞",
+  PageDown: "⇟",
+  CapsLock: "⇪",
 };
 
 function renderToken(token: string): string {
@@ -34,10 +45,7 @@ export function Kbd({ combo, className, ...props }: KbdProps) {
       {segments.map((segment, i) => {
         const parts = segment.split("+");
         return (
-          <span
-            className="inline-flex items-center gap-0.5"
-            key={`seg:${i}`}
-          >
+          <span className="inline-flex items-center gap-0.5" key={`seg:${i}`}>
             {parts.map((part, j) => (
               <kbd
                 className={cn(
