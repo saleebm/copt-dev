@@ -16,6 +16,15 @@ function jsonError(
   return Response.json({ error, ...extra }, { status });
 }
 
+function log(
+  level: "info" | "warn" | "error",
+  msg: string,
+  extra?: Record<string, unknown>
+) {
+  const payload = extra ? ` ${JSON.stringify(extra)}` : "";
+  console.log(`[ingest-images] [${level}] ${msg}${payload}`);
+}
+
 function logRequestShape(
   request: Request,
   reason: string,
@@ -112,6 +121,7 @@ async function parseRawBody(
 export async function POST(request: Request) {
   const auth = verifyBearer(request);
   if (!auth.ok) {
+    log("warn", "unauthorized", { reason: auth.reason });
     return jsonError(401, "unauthorized", { reason: auth.reason });
   }
 
@@ -130,6 +140,14 @@ export async function POST(request: Request) {
   const stagedFilePath = await stageBytes(submissionId, parsed.bytes, ext);
   const contentHash = contentHashForBytes(parsed.bytes);
 
+  log("info", "received", {
+    batchId: parsed.metadata.batchId,
+    imageIndex: parsed.metadata.imageIndex,
+    totalCount: parsed.metadata.totalCount,
+    contentType: parsed.contentType,
+    bytes: parsed.bytes.byteLength,
+  });
+
   const result = await createSubmission({
     kind: "image",
     payload: {
@@ -142,6 +160,14 @@ export async function POST(request: Request) {
     imageIndex: parsed.metadata.imageIndex,
     totalCount: parsed.metadata.totalCount,
     stagedFilePath,
+  });
+
+  log("info", result.status === "created" ? "accepted" : "deduped", {
+    id: result.submission.id,
+    batchId: result.submission.batchId,
+    imageIndex: result.submission.imageIndex,
+    totalCount: result.submission.totalCount,
+    status: result.submission.status,
   });
 
   return Response.json(
