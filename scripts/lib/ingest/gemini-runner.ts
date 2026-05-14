@@ -1,10 +1,12 @@
 // Calls Gemini via Vercel AI SDK (`ai` + `@ai-sdk/google`). Uses generateText
 // with Output.object(zodSchema) so the returned `output` is guaranteed to
 // match the Zod schema — no manual JSON parsing, no hand-rolled JSON Schema.
-// For URL ingests we also wire google.tools.urlContext so Gemini fetches the
-// URLs itself (https://ai.google.dev/gemini-api/docs/url-context). For images
-// we attach inline image parts. The worker forces the post type after the
-// model returns so a model regression can't drift it.
+// URL ingests run a two-step pattern: first call uses google.tools.urlContext
+// to fetch + summarize (https://ai.google.dev/gemini-api/docs/url-context),
+// second call structures that summary into PostDraftSchema. Gemini rejects
+// tools + responseMimeType=application/json in the same request, so we split
+// them. For images we attach inline image parts. The worker forces the post
+// type after the model returns so a model regression can't drift it.
 
 import { readFileSync } from "node:fs";
 import { extname } from "node:path";
@@ -118,6 +120,24 @@ function buildPrompt(input: PipelineInput): string {
   return lines.join("\n");
 }
 
+function buildUrlStructuringPrompt(summary: string, notes: string): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const lines = [
+    "You are drafting a single FINDING post for the copt-dev personal blog from a pre-fetched URL summary.",
+    `Today's date: ${today}.`,
+    "Voice: first-person, observational, concrete. 80-300 words.",
+    "No marketing copy. No 'Here is' preambles. No code fences in the body.",
+    "Summarize what's on the page, why it's worth noting, anything specific that surprised you. Cite any quoted phrases inline naturally.",
+    "",
+    "Pre-fetched URL summary:",
+    summary,
+  ];
+  if (notes.trim()) {
+    lines.push("", `Author's notes (verbatim): ${notes.trim()}`);
+  }
+  return lines.join("\n");
+}
+
 function loadImagePart(staged: StagedImage) {
   return {
     type: "image" as const,
@@ -157,12 +177,17 @@ export async function runGemini(input: PipelineInput): Promise<GeminiOutput> {
   const prompt = buildPrompt(input);
 
   if (input.kind === "url") {
-    const { output } = await generateText({
+    const { text: summary } = await generateText({
       model,
       tools: { url_context: google.tools.urlContext({}) },
       stopWhen: stepCountIs(4),
       temperature: config.temperature,
       prompt,
+    });
+    const { output } = await generateText({
+      model,
+      temperature: config.temperature,
+      prompt: buildUrlStructuringPrompt(summary, input.notes),
       output: Output.object({ schema: PostDraftSchema }),
     });
     return toGeminiOutput(output, "FINDING");

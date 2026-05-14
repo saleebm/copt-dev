@@ -23,8 +23,9 @@ module.exports = {
     },
     {
       name: "copt-dev-ingest",
-      script: "scripts/ingest-worker.ts",
-      interpreter: "bun",
+      script: "bun",
+      args: "run worker",
+      interpreter: "none",
       cwd: "/home/deploy/apps/copt-dev",
       env: {
         NODE_ENV: "production",
