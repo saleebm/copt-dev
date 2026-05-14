@@ -9,7 +9,8 @@ export default async function AppleIcon() {
   const logoData = await readFile(
     join(process.cwd(), "public/post-pics/golden_red_light_eye.png")
   );
-  const logoSrc = Uint8Array.from(logoData).buffer;
+  // Satori accepts ArrayBuffer for <img src> at runtime; React types do not.
+  const logoSrc = Uint8Array.from(logoData).buffer as unknown as string;
   return new ImageResponse(
     <div
       style={{
@@ -21,7 +22,6 @@ export default async function AppleIcon() {
         background: "#000",
       }}
     >
-      {/* @ts-expect-error Satori accepts ArrayBuffer for <img src> at runtime */}
       <img alt="" height={160} src={logoSrc} width={160} />
     </div>,
     { ...size }

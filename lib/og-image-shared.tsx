@@ -51,10 +51,13 @@ function getFontBuffer(): Promise<ArrayBuffer> {
   return fontPromise;
 }
 
+// Satori (next/og) accepts ArrayBuffer/typed-array for <img src> at runtime,
+// but React's <img> types only allow string. The cast is the documented escape
+// hatch — both `next build` and `tsc --noEmit` agree once the directive is gone.
 export async function loadOgAssets() {
   const [logo, font] = await Promise.all([getLogoBuffer(), getFontBuffer()]);
   return {
-    logoSrc: Uint8Array.from(logo).buffer,
+    logoSrc: Uint8Array.from(logo).buffer as unknown as string,
     fonts: [
       {
         name: "Space Grotesk",
@@ -69,7 +72,7 @@ export async function loadOgAssets() {
 interface OgFrameProps {
   eyebrow?: string;
   footer?: string;
-  logoSrc: ArrayBuffer;
+  logoSrc: string;
   title: string;
 }
 
@@ -105,7 +108,6 @@ export function OgFrame({
           flexShrink: 0,
         }}
       >
-        {/* @ts-expect-error Satori accepts ArrayBuffer for <img src> at runtime */}
         <img
           alt={siteConfig.ogImageAlt}
           height={360}

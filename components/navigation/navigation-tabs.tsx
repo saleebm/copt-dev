@@ -22,6 +22,12 @@ type TabId = "session" | "browse" | "timeline";
 
 const GITHUB_REPO_URL = "https://github.com/saleebm/copt-dev";
 
+const NAV_TABS: { id: TabId; label: string; shortLabel: string }[] = [
+  { id: "session", label: "SESSION", shortLabel: "S" },
+  { id: "browse", label: "BROWSE", shortLabel: "B" },
+  { id: "timeline", label: "TIMELINE", shortLabel: "T" },
+];
+
 function GitHubMark({ className }: { className?: string }) {
   return (
     <svg
@@ -68,17 +74,11 @@ export function NavigationTabs({
     goHome();
   };
 
-  const tabs: { id: TabId; label: string; shortLabel: string }[] = [
-    { id: "session", label: "SESSION", shortLabel: "S" },
-    { id: "browse", label: "BROWSE", shortLabel: "B" },
-    { id: "timeline", label: "TIMELINE", shortLabel: "T" },
-  ];
-
   const tabButtonsRef = useRef<Array<HTMLButtonElement | null>>([]);
 
   const handleTabKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
-      const lastIndex = tabs.length - 1;
+      const lastIndex = NAV_TABS.length - 1;
       let nextIndex: number | null = null;
       if (event.key === "ArrowRight") {
         nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
@@ -93,11 +93,11 @@ export function NavigationTabs({
         return;
       }
       event.preventDefault();
-      const nextTab = tabs[nextIndex];
+      const nextTab = NAV_TABS[nextIndex];
       setActiveTab(nextTab.id);
       tabButtonsRef.current[nextIndex]?.focus();
     },
-    [setActiveTab, tabs]
+    [setActiveTab]
   );
 
   return (
@@ -173,7 +173,7 @@ export function NavigationTabs({
               className="tab-bar flex flex-shrink-0 border-white/20 border-b bg-black"
               role="tablist"
             >
-              {tabs.map((tab, index) => (
+              {NAV_TABS.map((tab, index) => (
                 <button
                   aria-controls={`tab-panel-${tab.id}`}
                   aria-label={tab.label}

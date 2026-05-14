@@ -153,9 +153,7 @@ const PostCard: React.FC<PostCardProps> = ({
   return (
     <section
       aria-current={isActive ? "true" : undefined}
-      aria-label={post.title}
-      aria-posinset={index + 1}
-      aria-setsize={posts.length}
+      aria-label={`${post.title}, post ${index + 1} of ${posts.length}`}
       className={`flex min-h-screen w-full items-start justify-center px-4 py-6 transition-all duration-300 md:px-6 md:py-8 ${isCurrentlyDismissingThisPost ? styles.dismissContainer : ""}
       `}
       data-post-id={post.id}

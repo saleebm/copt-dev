@@ -30,21 +30,21 @@ interface PostManifestEntry {
 let manifestCache: PostManifestEntry[] | null = null;
 let manifestPromise: Promise<PostManifestEntry[]> | null = null;
 
-async function fetchManifest(): Promise<PostManifestEntry[]> {
+function fetchManifest(): Promise<PostManifestEntry[]> {
   if (manifestCache) {
-    return manifestCache;
+    return Promise.resolve(manifestCache);
   }
   if (manifestPromise) {
     return manifestPromise;
   }
   manifestPromise = fetch("/api/posts-manifest", { cache: "force-cache" })
-    .then((r) => r.json())
-    .then((data: PostManifestEntry[]) => {
+    .then((r) => r.json() as Promise<PostManifestEntry[]>)
+    .then((data) => {
       manifestCache = data;
       manifestPromise = null;
       return data;
     })
-    .catch((e) => {
+    .catch((e: unknown) => {
       manifestPromise = null;
       throw e;
     });
