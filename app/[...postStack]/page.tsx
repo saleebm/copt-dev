@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { EnhancedSuspense } from "@/components/shared/enhanced-suspense";
 import { MainWrapper } from "@/components/shared/main-wrapper";
 import { getPostBySlug } from "@/lib/posts";
-import { siteConfig } from "@/lib/site-config";
+import { POST_TYPE_LABELS, siteConfig } from "@/lib/site-config";
 import { PostStackServer } from "./components/post-stack-server";
 
 interface PostStackPageProps {
@@ -14,9 +14,12 @@ interface PostStackPageProps {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: PostStackPageProps): Promise<Metadata> {
   const { postStack } = await params;
-  const slug = postStack?.[0];
+  const resolvedSearch = await searchParams;
+  const stackSlugs = resolvedSearch?.stack?.split(",").filter(Boolean) ?? [];
+  const slug = stackSlugs.at(-1) ?? postStack?.[0];
   if (!slug) {
     return { title: siteConfig.title };
   }
@@ -27,7 +30,18 @@ export async function generateMetadata({
       robots: { index: false, follow: false },
     };
   }
-  const description = post.excerpt ?? siteConfig.description;
+  const typeLabel =
+    typeof (post as { type?: string }).type === "string"
+      ? (POST_TYPE_LABELS[(post as { type: string }).type] ?? "post")
+      : "post";
+  const date = post.originalDate ?? post.createdAt;
+  const formattedDate = date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+  const description =
+    post.excerpt ?? `A ${typeLabel} by ${siteConfig.author} · ${formattedDate}`;
   const canonical = `/${post.slug}`;
   const tagNames = post.tags.map((t: { name: string }) => t.name);
   const ogImage = {

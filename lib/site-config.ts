@@ -11,3 +11,10 @@ export const siteConfig = {
 } as const;
 
 export const SITE_URL = siteConfig.url;
+
+export const POST_TYPE_LABELS: Record<string, string> = {
+  CONCRETE: "essay",
+  BLOG: "blog",
+  FINDING: "finding",
+  SIGHT: "sight",
+};

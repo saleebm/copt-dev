@@ -2,31 +2,25 @@ import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
 import { loadOgAssets, OG_SIZE, OgFrame } from "@/lib/og-image-shared";
 import { getPostBySlug } from "@/lib/posts";
-import { siteConfig } from "@/lib/site-config";
-
-const TYPE_LABELS: Record<string, string> = {
-  CONCRETE: "essay",
-  BLOG: "blog",
-  FINDING: "finding",
-  SIGHT: "sight",
-};
+import { POST_TYPE_LABELS, siteConfig } from "@/lib/site-config";
 
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
-  const [{ logoSrc, fonts }, post] = await Promise.all([
-    loadOgAssets(),
-    getPostBySlug(slug),
-  ]);
+  const post = await getPostBySlug(slug);
+  if (!post) {
+    return new Response("Not found", { status: 404 });
+  }
+  const { logoSrc, fonts } = await loadOgAssets();
 
-  const title = post?.title ?? siteConfig.title;
+  const title = post.title;
   const eyebrow =
-    post && typeof (post as { type?: string }).type === "string"
-      ? (TYPE_LABELS[(post as { type: string }).type] ?? siteConfig.name)
+    typeof (post as { type?: string }).type === "string"
+      ? (POST_TYPE_LABELS[(post as { type: string }).type] ?? siteConfig.name)
       : siteConfig.name;
-  const footer = post?.originalDate
+  const footer = post.originalDate
     ? new Date(post.originalDate).toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
