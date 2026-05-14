@@ -8,7 +8,8 @@ import { PostStackServer } from "./components/post-stack-server";
 interface PostStackPageProps {
   params: Promise<{ postStack?: string[] }>;
   searchParams?: Promise<{
-    stack?: string; // e.g., "post-alpha,post-bravo" (canonical IDs)
+    stack?: string;
+    initialActivePostId?: string;
   }>;
 }
 
@@ -18,8 +19,17 @@ export async function generateMetadata({
 }: PostStackPageProps): Promise<Metadata> {
   const { postStack } = await params;
   const resolvedSearch = await searchParams;
-  const stackSlugs = resolvedSearch?.stack?.split(",").filter(Boolean) ?? [];
-  const slug = stackSlugs.at(-1) ?? postStack?.[0];
+
+  // Mirror PostStackDataFetcher: path segments first, then ?stack= additions
+  const pathSlugs = postStack ?? [];
+  const stackParam = resolvedSearch?.stack?.split(",").filter(Boolean) ?? [];
+  const allSlugs = [
+    ...pathSlugs,
+    ...stackParam.filter((s) => !pathSlugs.includes(s)),
+  ];
+  // Explicit initialActivePostId wins; otherwise the last slug is the active post
+  const slug =
+    resolvedSearch?.initialActivePostId ?? allSlugs.at(-1);
   if (!slug) {
     return { title: siteConfig.title };
   }

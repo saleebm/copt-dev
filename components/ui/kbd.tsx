@@ -31,20 +31,20 @@ export function Kbd({ combo, className, ...props }: KbdProps) {
 
   return (
     <span className="inline-flex items-center gap-1" {...props}>
-      {segments.map((segment) => {
+      {segments.map((segment, i) => {
         const parts = segment.split("+");
         return (
           <span
             className="inline-flex items-center gap-0.5"
-            key={`seg:${combo}:${segment}`}
+            key={`seg:${i}`}
           >
-            {parts.map((part) => (
+            {parts.map((part, j) => (
               <kbd
                 className={cn(
                   "inline-flex h-5 min-w-5 items-center justify-center rounded border border-border bg-muted/60 px-1.5 font-mono text-[10px] text-muted-foreground",
                   className
                 )}
-                key={`part:${combo}:${segment}:${part}`}
+                key={`part:${i}:${j}`}
               >
                 {renderToken(part)}
               </kbd>
