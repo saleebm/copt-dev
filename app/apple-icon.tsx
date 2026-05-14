@@ -11,21 +11,19 @@ export default async function AppleIcon() {
   );
   const logoSrc = Uint8Array.from(logoData).buffer;
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#000",
-        }}
-      >
-        {/* @ts-expect-error Satori accepts ArrayBuffer for <img src> at runtime */}
-        <img src={logoSrc} width={160} height={160} alt="" />
-      </div>
-    ),
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#000",
+      }}
+    >
+      {/* @ts-expect-error Satori accepts ArrayBuffer for <img src> at runtime */}
+      <img alt="" height={160} src={logoSrc} width={160} />
+    </div>,
     { ...size }
   );
 }

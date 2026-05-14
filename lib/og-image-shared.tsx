@@ -30,7 +30,9 @@ async function loadFont(): Promise<ArrayBuffer> {
   );
   const css = await cssRes.text();
   const matches = Array.from(
-    css.matchAll(/src:\s*url\((https:\/\/[^)]+)\)\s*format\('(woff2?|truetype|opentype)'\)/g)
+    css.matchAll(
+      /src:\s*url\((https:\/\/[^)]+)\)\s*format\('(woff2?|truetype|opentype)'\)/g
+    )
   );
   // Prefer non-WOFF2 since Satori can't decode WOFF2. Fall back to the last match.
   const decodable = matches.filter((m) => m[2] !== "woff2");
@@ -65,10 +67,10 @@ export async function loadOgAssets() {
 }
 
 interface OgFrameProps {
-  title: string;
   eyebrow?: string;
   footer?: string;
   logoSrc: ArrayBuffer;
+  title: string;
 }
 
 export function OgFrame({
@@ -104,7 +106,12 @@ export function OgFrame({
         }}
       >
         {/* @ts-expect-error Satori accepts ArrayBuffer for <img src> at runtime */}
-        <img src={logoSrc} width={360} height={360} alt={siteConfig.ogImageAlt} />
+        <img
+          alt={siteConfig.ogImageAlt}
+          height={360}
+          src={logoSrc}
+          width={360}
+        />
       </div>
 
       <div

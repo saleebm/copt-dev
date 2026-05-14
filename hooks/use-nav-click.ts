@@ -138,7 +138,13 @@ export function useNavClick(onNavigate?: () => void) {
     } catch {
       clearAndReturn();
     }
-  }, [scrollState, isProgrammaticScroll, activePostId, scrollToPost, onNavigate]);
+  }, [
+    scrollState,
+    isProgrammaticScroll,
+    activePostId,
+    scrollToPost,
+    onNavigate,
+  ]);
 
   return {
     handleClickId,

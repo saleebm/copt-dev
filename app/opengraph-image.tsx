@@ -14,14 +14,12 @@ export const contentType = OG_CONTENT_TYPE;
 export default async function Image() {
   const { logoSrc, fonts } = await loadOgAssets();
   return new ImageResponse(
-    (
-      <OgFrame
-        eyebrow={siteConfig.name}
-        footer="writing & work"
-        logoSrc={logoSrc}
-        title={siteConfig.description}
-      />
-    ),
+    <OgFrame
+      eyebrow={siteConfig.name}
+      footer="writing & work"
+      logoSrc={logoSrc}
+      title={siteConfig.description}
+    />,
     { ...size, fonts }
   );
 }

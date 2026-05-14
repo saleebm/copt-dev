@@ -2,11 +2,8 @@
 
 import { useMemo } from "react";
 import { useKeyboardContext } from "@/lib/keyboard/keyboard-context";
+import { SHORTCUT_IDS, ShortcutGroup } from "@/lib/keyboard/shortcuts-registry";
 import { useKeyboardShortcut } from "@/lib/keyboard/use-keyboard-shortcut";
-import {
-  SHORTCUT_IDS,
-  ShortcutGroup,
-} from "@/lib/keyboard/shortcuts-registry";
 
 export function GlobalShortcuts() {
   const { setOverlay, openOverlay } = useKeyboardContext();

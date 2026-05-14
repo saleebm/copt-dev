@@ -7,7 +7,5 @@ import type { ShortcutDescriptor } from "@/lib/keyboard/shortcuts-registry";
 export function useKeyboardShortcut(descriptor: ShortcutDescriptor) {
   const { register } = useKeyboardContext();
 
-  useEffect(() => {
-    return register(descriptor);
-  }, [register, descriptor]);
+  useEffect(() => register(descriptor), [register, descriptor]);
 }

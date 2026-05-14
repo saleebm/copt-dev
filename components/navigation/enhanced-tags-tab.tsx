@@ -195,7 +195,11 @@ export function EnhancedTagsTab({ onNavigate }: EnhancedTagsTabProps) {
       wasScrollingRef.current = true;
       return;
     }
-    if (scrollState === "idle" && wasScrollingRef.current && shouldCloseOnSettleRef.current) {
+    if (
+      scrollState === "idle" &&
+      wasScrollingRef.current &&
+      shouldCloseOnSettleRef.current
+    ) {
       onNavigate?.();
       shouldCloseOnSettleRef.current = false;
       wasScrollingRef.current = false;

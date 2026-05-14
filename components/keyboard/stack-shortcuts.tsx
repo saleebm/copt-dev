@@ -6,12 +6,9 @@ import {
   usePostStackState,
 } from "@/components/post-stack/post-stack-provider-xstate";
 import { useKeyboardContext } from "@/lib/keyboard/keyboard-context";
+import { SHORTCUT_IDS, ShortcutGroup } from "@/lib/keyboard/shortcuts-registry";
 import { useKeyboardShortcut } from "@/lib/keyboard/use-keyboard-shortcut";
 import { cancelCurrentScroll } from "@/lib/scroll-utils";
-import {
-  SHORTCUT_IDS,
-  ShortcutGroup,
-} from "@/lib/keyboard/shortcuts-registry";
 
 const THROTTLE_MS = 120;
 

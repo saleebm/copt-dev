@@ -16,6 +16,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SHORTCUT_IDS, ShortcutGroup } from "@/lib/keyboard/shortcuts-registry";
+import { useKeyboardShortcut } from "@/lib/keyboard/use-keyboard-shortcut";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
@@ -92,21 +94,20 @@ const SidebarProvider = ({
     [isMobile, setOpen]
   );
 
-  // Adds a keyboard shortcut to toggle the sidebar.
-  React.useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
-        (event.metaKey || event.ctrlKey)
-      ) {
-        event.preventDefault();
-        toggleSidebar();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleSidebar]);
+  // Register the sidebar toggle shortcut in the global keyboard registry so
+  // it appears in the help dialog alongside other shortcuts.
+  useKeyboardShortcut(
+    React.useMemo(
+      () => ({
+        id: SHORTCUT_IDS.toggleSidebar,
+        keys: [`Mod+${SIDEBAR_KEYBOARD_SHORTCUT}`],
+        group: ShortcutGroup.Global,
+        description: "Toggle sidebar",
+        handler: () => toggleSidebar(),
+      }),
+      [toggleSidebar]
+    )
+  );
 
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.

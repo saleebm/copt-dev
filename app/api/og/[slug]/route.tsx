@@ -1,10 +1,6 @@
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
-import {
-  loadOgAssets,
-  OG_SIZE,
-  OgFrame,
-} from "@/lib/og-image-shared";
+import { loadOgAssets, OG_SIZE, OgFrame } from "@/lib/og-image-shared";
 import { getPostBySlug } from "@/lib/posts";
 import { siteConfig } from "@/lib/site-config";
 
@@ -39,7 +35,12 @@ export async function GET(
     : undefined;
 
   return new ImageResponse(
-    <OgFrame eyebrow={eyebrow} footer={footer} logoSrc={logoSrc} title={title} />,
+    <OgFrame
+      eyebrow={eyebrow}
+      footer={footer}
+      logoSrc={logoSrc}
+      title={title}
+    />,
     { ...OG_SIZE, fonts }
   );
 }

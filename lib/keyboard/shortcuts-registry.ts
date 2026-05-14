@@ -4,7 +4,8 @@ export const ShortcutGroup = {
   Search: "Search",
 } as const;
 
-export type ShortcutGroupId = (typeof ShortcutGroup)[keyof typeof ShortcutGroup];
+export type ShortcutGroupId =
+  (typeof ShortcutGroup)[keyof typeof ShortcutGroup];
 
 export const GROUP_ORDER: ShortcutGroupId[] = [
   ShortcutGroup.Global,
@@ -30,13 +31,13 @@ export const SHORTCUT_IDS = {
 export type ShortcutKey = string;
 
 export interface ShortcutDescriptor {
+  allowInInput?: boolean;
+  description: string;
+  group: ShortcutGroupId;
+  handler: (event: KeyboardEvent) => void;
   id: string;
   keys: ShortcutKey[];
-  group: ShortcutGroupId;
-  description: string;
   label?: string;
-  handler: (event: KeyboardEvent) => void;
-  when?: () => boolean;
-  allowInInput?: boolean;
   preventDefault?: boolean;
+  when?: () => boolean;
 }

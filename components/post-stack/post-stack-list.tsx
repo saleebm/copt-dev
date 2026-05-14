@@ -1,5 +1,6 @@
 import type React from "react";
 import { Suspense, useMemo } from "react";
+import { PostStackKeyboard } from "@/components/keyboard/post-stack-keyboard";
 import PostStackContent from "@/components/post-stack/post-stack-content";
 import PostStackInteractive from "@/components/post-stack/post-stack-interactive";
 import { PostStackProvider } from "@/components/post-stack/post-stack-provider-xstate";
@@ -88,6 +89,9 @@ const PostStackList: React.FC<PostStackListProps> = ({
         <Suspense fallback={null}>
           <PostStackInteractive serverPostOriginalIds={originalServerPostIds} />
         </Suspense>
+
+        {/* Keyboard shortcuts + command palette scoped to post-stack context */}
+        <PostStackKeyboard />
       </div>
     </PostStackProvider>
   );

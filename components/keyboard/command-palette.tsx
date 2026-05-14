@@ -19,12 +19,12 @@ import {
 import { useKeyboardContext } from "@/lib/keyboard/keyboard-context";
 
 interface PostManifestEntry {
+  categories: string[];
   id: string;
   slug: string;
+  tags: string[];
   title: string;
   type: string;
-  tags: string[];
-  categories: string[];
 }
 
 let manifestCache: PostManifestEntry[] | null = null;
@@ -77,7 +77,10 @@ export function CommandPalette() {
     };
   }, [isOpen]);
 
-  const renderedIds = useMemo(() => new Set(posts.map((p) => p.originalId)), [posts]);
+  const renderedIds = useMemo(
+    () => new Set(posts.map((p) => p.originalId)),
+    [posts]
+  );
 
   const stackPosts = useMemo(
     () => posts.filter((p) => currentStackIds.includes(p.id)),
@@ -198,7 +201,9 @@ export function CommandPalette() {
                   key={`post-${entry.id}`}
                   onSelect={() => {
                     if (renderedIds.has(entry.slug)) {
-                      const existing = posts.find((p) => p.originalId === entry.slug);
+                      const existing = posts.find(
+                        (p) => p.originalId === entry.slug
+                      );
                       if (existing) {
                         handleJumpToStack(existing.id, existing.title);
                       }

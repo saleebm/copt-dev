@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type React from "react";
+import { KeyboardProvider } from "@/components/keyboard/keyboard-provider";
 import { ibmPlexMono, spaceGrotesk } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
@@ -70,7 +71,7 @@ export default function RootLayout({
       lang="en"
     >
       <body className="h-full text-foreground">
-        {children}
+        <KeyboardProvider>{children}</KeyboardProvider>
         <Toaster />
       </body>
     </html>

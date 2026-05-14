@@ -26,9 +26,11 @@ const PostCard: React.FC<PostCardProps> = ({
   index,
   keyPrefix = "server",
 }) => {
-  const { dismissingInfo, scrollState } = usePostStackState();
+  const { dismissingInfo, scrollState, activePostId, posts } =
+    usePostStackState();
   const { setArticleRef } = usePostStackActions();
   const isCurrentlyDismissingThisPost = dismissingInfo?.id === post.id;
+  const isActive = activePostId === post.id;
   const articleRef = useRef<HTMLElement | null>(null);
   const timer1Ref = useRef<NodeJS.Timeout | null>(null);
   const timer2Ref = useRef<NodeJS.Timeout | null>(null);
@@ -150,6 +152,10 @@ const PostCard: React.FC<PostCardProps> = ({
 
   return (
     <section
+      aria-current={isActive ? "true" : undefined}
+      aria-label={post.title}
+      aria-posinset={index + 1}
+      aria-setsize={posts.length}
       className={`flex min-h-screen w-full items-start justify-center px-4 py-6 transition-all duration-300 md:px-6 md:py-8 ${isCurrentlyDismissingThisPost ? styles.dismissContainer : ""}
       `}
       data-post-id={post.id}

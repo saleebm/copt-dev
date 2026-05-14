@@ -790,6 +790,16 @@
   html {
     @apply h-auto min-h-screen scroll-smooth;
   }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .skip-link:focus-visible {
+    outline-offset: 0;
+  }
 }
 
 /* Terminal-Style Navigation Tabs */

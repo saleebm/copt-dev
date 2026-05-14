@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NavigationProvider } from "@/components/navigation/navigation-context";
 import { BrowseSection } from "@/components/navigation/sections/browse-section";
 // Section components
@@ -74,6 +74,32 @@ export function NavigationTabs({
     { id: "timeline", label: "TIMELINE", shortLabel: "T" },
   ];
 
+  const tabButtonsRef = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const handleTabKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
+      const lastIndex = tabs.length - 1;
+      let nextIndex: number | null = null;
+      if (event.key === "ArrowRight") {
+        nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
+      } else if (event.key === "ArrowLeft") {
+        nextIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
+      } else if (event.key === "Home") {
+        nextIndex = 0;
+      } else if (event.key === "End") {
+        nextIndex = lastIndex;
+      }
+      if (nextIndex === null) {
+        return;
+      }
+      event.preventDefault();
+      const nextTab = tabs[nextIndex];
+      setActiveTab(nextTab.id);
+      tabButtonsRef.current[nextIndex]?.focus();
+    },
+    [setActiveTab, tabs]
+  );
+
   return (
     <div className="h-full w-full overflow-hidden bg-black font-mono text-white/90">
       <div className="flex h-full min-h-0 flex-col lg:min-w-0">
@@ -142,9 +168,14 @@ export function NavigationTabs({
         >
           <div className="terminal-nav flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-black">
             {/* Tab Bar */}
-            <div className="tab-bar flex flex-shrink-0 border-white/20 border-b bg-black">
-              {tabs.map((tab) => (
+            <div
+              aria-label="Navigation sections"
+              className="tab-bar flex flex-shrink-0 border-white/20 border-b bg-black"
+              role="tablist"
+            >
+              {tabs.map((tab, index) => (
                 <button
+                  aria-controls={`tab-panel-${tab.id}`}
                   aria-label={tab.label}
                   aria-selected={activeTab === tab.id}
                   className={`flex-1 cursor-pointer border-white/20 border-t border-r border-l px-4 py-3 font-mono text-xs uppercase tracking-wider transition-none ${
@@ -153,9 +184,15 @@ export function NavigationTabs({
                       : "border-white/20 bg-transparent text-white/60 hover:text-white/80"
                   }
                                     `}
+                  id={`tab-${tab.id}`}
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
+                  onKeyDown={(event) => handleTabKeyDown(event, index)}
+                  ref={(el) => {
+                    tabButtonsRef.current[index] = el;
+                  }}
                   role="tab"
+                  tabIndex={activeTab === tab.id ? 0 : -1}
                   type="button"
                 >
                   <span className="hidden md:inline">{tab.label}</span>
@@ -174,7 +211,12 @@ export function NavigationTabs({
             </div>
 
             {/* Tab Content */}
-            <div className="tab-content min-h-0 flex-1 overflow-y-auto overflow-x-hidden bg-black">
+            <div
+              aria-labelledby={`tab-${activeTab}`}
+              className="tab-content min-h-0 flex-1 overflow-y-auto overflow-x-hidden bg-black"
+              id={`tab-panel-${activeTab}`}
+              role="tabpanel"
+            >
               {activeTab === "session" && (
                 <SessionSection onNavigate={onNavigate} />
               )}

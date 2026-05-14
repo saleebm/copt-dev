@@ -19,12 +19,12 @@ const INPUT_SELECTOR =
 export type OverlayId = "help" | "palette" | null;
 
 interface KeyboardContextValue {
-  register: (descriptor: ShortcutDescriptor) => () => void;
-  getAll: () => ShortcutDescriptor[];
-  openOverlay: OverlayId;
-  setOverlay: (overlay: OverlayId) => void;
   announce: (message: string) => void;
   announcement: string;
+  getAll: () => ShortcutDescriptor[];
+  openOverlay: OverlayId;
+  register: (descriptor: ShortcutDescriptor) => () => void;
+  setOverlay: (overlay: OverlayId) => void;
 }
 
 const KeyboardContext = createContext<KeyboardContextValue | null>(null);
@@ -55,7 +55,12 @@ function normalizeKey(event: KeyboardEvent): string {
   if (event.metaKey || event.ctrlKey) {
     parts.push("Mod");
   }
-  if (event.shiftKey && event.key.length === 1 && event.key === event.key.toUpperCase() && event.key !== event.key.toLowerCase()) {
+  if (
+    event.shiftKey &&
+    event.key.length === 1 &&
+    event.key === event.key.toUpperCase() &&
+    event.key !== event.key.toLowerCase()
+  ) {
     parts.push("Shift");
   } else if (event.shiftKey && event.key.length > 1) {
     parts.push("Shift");
@@ -84,7 +89,11 @@ function shortcutMatches(combo: string, event: KeyboardEvent): boolean {
     return true;
   }
 
-  if (combo.startsWith("Mod+") || combo.startsWith("Cmd+") || combo.startsWith("Ctrl+")) {
+  if (
+    combo.startsWith("Mod+") ||
+    combo.startsWith("Cmd+") ||
+    combo.startsWith("Ctrl+")
+  ) {
     const rest = combo.replace(/^(Mod|Cmd|Ctrl)\+/, "").toLowerCase();
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === rest) {
       return true;
@@ -104,7 +113,10 @@ export function KeyboardContextProvider({ children }: KeyboardProviderProps) {
   const [announcement, setAnnouncement] = useState<string>("");
   const announceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
-  const pendingPrefixRef = useRef<{ key: string; timer: ReturnType<typeof setTimeout> } | null>(null);
+  const pendingPrefixRef = useRef<{
+    key: string;
+    timer: ReturnType<typeof setTimeout>;
+  } | null>(null);
 
   const clearPrefix = useCallback(() => {
     if (pendingPrefixRef.current) {
@@ -113,20 +125,21 @@ export function KeyboardContextProvider({ children }: KeyboardProviderProps) {
     }
   }, []);
 
-  const setOverlay = useCallback(
-    (next: OverlayId) => {
-      setOverlayState((prev) => {
-        if (next !== null && next !== prev) {
-          lastFocusedRef.current = document.activeElement as HTMLElement | null;
-        }
-        if (next === null && lastFocusedRef.current && document.body.contains(lastFocusedRef.current)) {
-          queueMicrotask(() => lastFocusedRef.current?.focus());
-        }
-        return next;
-      });
-    },
-    []
-  );
+  const setOverlay = useCallback((next: OverlayId) => {
+    setOverlayState((prev) => {
+      if (next !== null && next !== prev) {
+        lastFocusedRef.current = document.activeElement as HTMLElement | null;
+      }
+      if (
+        next === null &&
+        lastFocusedRef.current &&
+        document.body.contains(lastFocusedRef.current)
+      ) {
+        queueMicrotask(() => lastFocusedRef.current?.focus());
+      }
+      return next;
+    });
+  }, []);
 
   const register = useCallback((descriptor: ShortcutDescriptor) => {
     registryRef.current.set(descriptor.id, descriptor);
@@ -135,7 +148,10 @@ export function KeyboardContextProvider({ children }: KeyboardProviderProps) {
     };
   }, []);
 
-  const getAll = useCallback(() => Array.from(registryRef.current.values()), []);
+  const getAll = useCallback(
+    () => Array.from(registryRef.current.values()),
+    []
+  );
 
   const announce = useCallback((message: string) => {
     if (announceTimerRef.current) {
@@ -167,7 +183,12 @@ export function KeyboardContextProvider({ children }: KeyboardProviderProps) {
           if (d.when && !d.when()) {
             continue;
           }
-          if (inInput && !d.allowInInput && event.key !== "Escape" && !isModifier(event)) {
+          if (
+            inInput &&
+            !d.allowInInput &&
+            event.key !== "Escape" &&
+            !isModifier(event)
+          ) {
             continue;
           }
           for (const combo of d.keys) {
@@ -190,7 +211,12 @@ export function KeyboardContextProvider({ children }: KeyboardProviderProps) {
         if (d.when && !d.when()) {
           continue;
         }
-        if (inInput && !d.allowInInput && event.key !== "Escape" && !isModifier(event)) {
+        if (
+          inInput &&
+          !d.allowInInput &&
+          event.key !== "Escape" &&
+          !isModifier(event)
+        ) {
           continue;
         }
         for (const combo of d.keys) {
@@ -207,11 +233,11 @@ export function KeyboardContextProvider({ children }: KeyboardProviderProps) {
         }
       }
 
-      if (isSequenceStart) {
+      if (isSequenceStart && !inInput) {
         const hasSequenceStartingWithG = descriptors.some((d) =>
           d.keys.some((k) => k.toLowerCase().startsWith("g "))
         );
-        if (hasSequenceStartingWithG && (!inInput || event.key === "Escape")) {
+        if (hasSequenceStartingWithG) {
           if (pendingPrefixRef.current) {
             clearTimeout(pendingPrefixRef.current.timer);
           }
@@ -230,13 +256,14 @@ export function KeyboardContextProvider({ children }: KeyboardProviderProps) {
     };
   }, [clearPrefix]);
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (announceTimerRef.current) {
         clearTimeout(announceTimerRef.current);
       }
-    };
-  }, []);
+    },
+    []
+  );
 
   const value = useMemo<KeyboardContextValue>(
     () => ({

@@ -15,12 +15,14 @@ export function MainWrapper({
   return (
     <main
       className={cn(
-        "min-h-screen w-full text-foreground",
+        "min-h-screen w-full text-foreground focus:outline-none",
         variant === "default" && "bg-background",
         variant === "gradient" &&
           "bg-gradient-to-br from-background via-muted to-secondary text-foreground",
         className
       )}
+      id="main-content"
+      tabIndex={-1}
     >
       {children}
     </main>
