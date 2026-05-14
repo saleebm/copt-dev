@@ -192,7 +192,7 @@ export function NavigationTabs({
                     tabButtonsRef.current[index] = el;
                   }}
                   role="tab"
-                  tabIndex={activeTab === tab.id ? 0 : -1}
+                  tabIndex={0}
                   type="button"
                 >
                   <span className="hidden md:inline">{tab.label}</span>
