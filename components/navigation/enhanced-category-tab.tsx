@@ -46,6 +46,7 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
     return filtered.length > 0 ? filtered : [PostType.BLOG];
   }, [selectedPostTypes]);
   const shouldCloseOnSettleRef = useRef(false);
+  const wasScrollingRef = useRef(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryNode | null>(
     null
@@ -191,11 +192,17 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
     [handleClickPostObj]
   );
 
-  // Defer panel close until scroll settles to avoid race condition
+  // Defer panel close until scroll completes to avoid race condition.
+  // Gate fires on "idle" after "programmaticScroll" — "settling" is never set by the machine.
   useEffect(() => {
-    if (scrollState === "settling" && shouldCloseOnSettleRef.current) {
-      onNavigate?.(); // NOW it's safe to close
+    if (scrollState === "programmaticScroll") {
+      wasScrollingRef.current = true;
+      return;
+    }
+    if (scrollState === "idle" && wasScrollingRef.current && shouldCloseOnSettleRef.current) {
+      onNavigate?.();
       shouldCloseOnSettleRef.current = false;
+      wasScrollingRef.current = false;
     }
   }, [scrollState, onNavigate]);
 

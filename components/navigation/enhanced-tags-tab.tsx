@@ -38,6 +38,7 @@ export function EnhancedTagsTab({ onNavigate }: EnhancedTagsTabProps) {
     error,
   } = useNavigationContext();
   const shouldCloseOnSettleRef = useRef(false);
+  const wasScrollingRef = useRef(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [density, setDensity] = useState<"compact" | "normal" | "expanded">(
@@ -187,11 +188,17 @@ export function EnhancedTagsTab({ onNavigate }: EnhancedTagsTabProps) {
     [handleClickId]
   );
 
-  // Defer panel close until scroll settles to avoid race condition
+  // Defer panel close until scroll completes to avoid race condition.
+  // Gate fires on "idle" after "programmaticScroll" — "settling" is never set by the machine.
   useEffect(() => {
-    if (scrollState === "settling" && shouldCloseOnSettleRef.current) {
-      onNavigate?.(); // NOW it's safe to close
+    if (scrollState === "programmaticScroll") {
+      wasScrollingRef.current = true;
+      return;
+    }
+    if (scrollState === "idle" && wasScrollingRef.current && shouldCloseOnSettleRef.current) {
+      onNavigate?.();
       shouldCloseOnSettleRef.current = false;
+      wasScrollingRef.current = false;
     }
   }, [scrollState, onNavigate]);
 

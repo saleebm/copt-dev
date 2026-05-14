@@ -10,13 +10,14 @@ import type { PostId } from "@/types/post";
 /**
  * Composition hook that mirrors Timeline tab's click + settle gating.
  * - Calls addPost(id)
- * - Optionally closes navigation when scrollState becomes 'settling'
+ * - Optionally closes navigation when scroll cycle completes (programmaticScroll → idle)
  */
-export function useNavClick(_onNavigate?: () => void) {
+export function useNavClick(onNavigate?: () => void) {
   const { addPost, scrollToPost } = usePostStackActions();
   const { scrollState, isProgrammaticScroll, activePostId } =
     usePostStackState();
   const lastClickedIdRef = useRef<PostId | null>(null);
+  const wasScrollingRef = useRef(false);
 
   const handleClickId = useCallback(
     async (id: PostId) => {
@@ -34,6 +35,13 @@ export function useNavClick(_onNavigate?: () => void) {
     async (post: { id: PostId }) => handleClickId(post.id),
     [handleClickId]
   );
+
+  // Track programmatic scroll so the idle gate below knows a scroll cycle completed.
+  useEffect(() => {
+    if (scrollState === "programmaticScroll") {
+      wasScrollingRef.current = true;
+    }
+  }, [scrollState]);
 
   // Verify final alignment when the machine enters settling; no panel close here.
   useEffect(() => {
@@ -78,6 +86,13 @@ export function useNavClick(_onNavigate?: () => void) {
     if (scrollState !== "idle" || isProgrammaticScroll) {
       return;
     }
+
+    // Close nav after a completed programmatic scroll cycle (Timeline / Chronicle tabs).
+    if (wasScrollingRef.current) {
+      wasScrollingRef.current = false;
+      onNavigate?.();
+    }
+
     const id = lastClickedIdRef.current;
     if (!id) {
       return;
@@ -123,7 +138,7 @@ export function useNavClick(_onNavigate?: () => void) {
     } catch {
       clearAndReturn();
     }
-  }, [scrollState, isProgrammaticScroll, activePostId, scrollToPost]);
+  }, [scrollState, isProgrammaticScroll, activePostId, scrollToPost, onNavigate]);
 
   return {
     handleClickId,
