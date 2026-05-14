@@ -1,0 +1,23 @@
+{
+  "skill_name": "nextjs-seo-og",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My Next.js 16 app uses the app router and has a catch-all route at app/[...slug]/page.tsx for blog posts. Set up SEO so when I share a link on iMessage or Slack, the preview shows the post title plus my brand logo at public/brand/logo.png. Posts come from Prisma — fields are title, excerpt, slug, type, publishedAt. The site is https://example.com, called 'Example Blog'. Right now app/layout.tsx has only placeholder metadata and there's nothing else SEO-related in the repo.",
+      "expected_output": "A complete SEO scaffold: lib/site-config.ts, root metadata in app/layout.tsx (with metadataBase, title template, OG, Twitter card, robots), file-convention root opengraph-image + twitter-image, app/icon.tsx + app/apple-icon.tsx, app/sitemap.ts + app/robots.ts, generateMetadata in the catch-all page, a Route Handler at app/api/og/[slug]/route.tsx that composes title + logo into a 1200×630 PNG, and a verification step (typecheck + build + inspect .next/server/app/*.html).",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I have a stack-style navigation where clicking a link inside a post pushes a new post onto a stack — the URL becomes /post-a?stack=post-a,post-b,post-c when the user is reading post-c. The catch-all is app/[...postStack]/page.tsx. When someone shares the URL, the iMessage/Slack preview is showing post-a's title and image, but the user was reading post-c at the time. How do I make the SEO reflect what the user was actually looking at (post-c)?",
+      "expected_output": "Identify that generateMetadata is keying off params.postStack[0] (the initial path) and should instead key off searchParams.stack — specifically the last entry (.at(-1)) of stackSlugs, with fallback to postStack?.[0] for direct navigation. Provide the corrected generateMetadata snippet. Also call out: alternates.canonical should still be the bare /slug (not include ?stack=), and the og:image URL should point at /api/og/${topmostSlug}, not /api/og/${initialSlug}.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I added app/[...slug]/opengraph-image.tsx to my Next.js project to generate per-post OG images and the build is failing with: \"Catch-all must be the last part of the URL in route /[...slug]/opengraph-image\". How do I get per-slug OG images for posts in a catch-all route?",
+      "expected_output": "Explain the constraint (catch-all must be terminal), and prescribe the fix: delete the file-convention opengraph-image.tsx inside the catch-all, build a Route Handler at app/api/og/[slug]/route.tsx that reads the slug, fetches the post, returns an ImageResponse (or 404 when the post doesn't exist), and reference it from the catch-all's generateMetadata via openGraph.images and twitter.images. Include a working route.tsx snippet.",
+      "files": []
+    }
+  ]
+}
