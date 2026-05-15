@@ -50,10 +50,10 @@ import {
 } from "./transcript";
 import {
   buildAnalysisPrompt,
+  renderYouTubeAppendix,
   YouTubeAnalysisSchema,
   type YouTubeAnalysis,
 } from "./analysis";
-import { renderYouTubeAppendix } from "./mdx-appendix";
 
 // Cap how much transcript text we send to the model. Long videos can blow past
 // context windows; this keeps the prompt sane while preserving timestamp

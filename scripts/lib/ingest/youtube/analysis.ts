@@ -10,13 +10,10 @@
 // and keeps the prompt + Zod schema + MDX section assembly together where
 // they're easy to reason about.
 
-import { generateText, Output } from "ai";
-import type { LanguageModel } from "ai";
 import { z } from "zod";
 import { buildTimestampUrl } from "@/lib/ingest/youtube-url";
 import type { YouTubeChapter } from "./chapters";
-import type { YouTubeVideoMetadata } from "./data-api";
-import type { TranscriptFetch, TranscriptSegment } from "./transcript";
+import type { TranscriptSegment } from "./transcript";
 
 // Zod schema for the analysis call. Kept deliberately simple — the goal is
 // stable JSON we can render to MDX, not a research-grade ontology. Quotes
@@ -107,43 +104,26 @@ export const YouTubeAnalysisSchema = z.object({
 
 export type YouTubeAnalysis = z.infer<typeof YouTubeAnalysisSchema>;
 
+// The runner already produces a shared context block via buildSharedContext()
+// (metadata + chapters + warnings). We accept it pre-built so we don't reach
+// back into YouTubeEvidence here.
 export function buildAnalysisPrompt(args: {
-  evidenceSummary: string;
-  metadata: YouTubeVideoMetadata | null;
-  chapters: YouTubeChapter[];
-  hasTranscript: boolean;
+  mergedSummary: string;
+  metadataBlock: string;
   notes: string;
 }): string {
-  const { evidenceSummary, metadata, chapters, hasTranscript, notes } = args;
-  const lines: string[] = [];
-  lines.push(
+  const { mergedSummary, metadataBlock, notes } = args;
+  const lines: string[] = [
     "You are producing a structured analysis of a YouTube video for a personal knowledge base.",
-    "Ground every output in the evidence below. Do not invent timestamps. If a timestamp is uncertain, use null."
-  );
-  if (metadata) {
-    lines.push(
-      "",
-      `Title: ${metadata.title}`,
-      `Channel: ${metadata.channelTitle}`,
-      `Published: ${metadata.publishedAt}`,
-      `Duration (s): ${metadata.durationSeconds}`
-    );
-  }
-  if (chapters.length > 0) {
-    lines.push("", "Chapters (authoritative — use these to anchor timestamps):");
-    for (const c of chapters) {
-      lines.push(`  ${c.startSeconds}s — ${c.title}`);
-    }
-  }
-  lines.push(
+    "Ground every output in the evidence below. Do not invent timestamps. If a timestamp is uncertain, use null.",
     "",
-    `Transcript available: ${hasTranscript ? "yes" : "no"}.`,
+    metadataBlock,
     "",
     "Evidence summary (merged from per-chunk model passes; this is your primary source):",
     "---",
-    evidenceSummary,
-    "---"
-  );
+    mergedSummary,
+    "---",
+  ];
   if (notes.trim()) {
     lines.push("", `Author's notes (verbatim): ${notes.trim()}`);
   }
@@ -152,29 +132,10 @@ export function buildAnalysisPrompt(args: {
     "Constraints:",
     "- keyClaims: prefer concrete, verifiable statements over vibes.",
     "- quotes: must be verbatim from the evidence summary. If you cannot find a verbatim quote, omit it rather than paraphrase.",
-    "- notableMoments: only emit a moment when you can attach a real timestamp.",
+    "- notableMoments: only emit a moment when you can attach a real timestamp; include a short title and a one-sentence description.",
     "- entities: dedupe (case-insensitive) and cap at ~25."
   );
   return lines.join("\n");
-}
-
-export async function generateYouTubeAnalysis(args: {
-  textModel: LanguageModel;
-  temperature: number;
-  evidenceSummary: string;
-  metadata: YouTubeVideoMetadata | null;
-  chapters: YouTubeChapter[];
-  hasTranscript: boolean;
-  notes: string;
-}): Promise<YouTubeAnalysis> {
-  const { textModel, temperature } = args;
-  const { output } = await generateText({
-    model: textModel,
-    temperature,
-    prompt: buildAnalysisPrompt(args),
-    output: Output.object({ schema: YouTubeAnalysisSchema }),
-  });
-  return output;
 }
 
 function formatTimestamp(seconds: number): string {
@@ -249,11 +210,16 @@ function renderAnalysisMarkdown(
   return out.join("\n").trimEnd();
 }
 
+type TranscriptInput = {
+  segments: TranscriptSegment[];
+  language: string | null;
+};
+
 // Group transcript segments under chapter headings so the disclosure widget
 // is browseable. When no chapters exist, we fall back to a single "Full
 // transcript" group. Each line is its own bullet with a deeplink timestamp.
 function renderTranscriptMarkdown(
-  transcript: TranscriptFetch,
+  transcript: TranscriptInput,
   chapters: YouTubeChapter[],
   videoId: string
 ): string {
@@ -305,42 +271,38 @@ function renderTranscriptMarkdown(
   return out.join("\n").trimEnd();
 }
 
-// Take the MDX body the structuring call produced and append the Pass 2
-// sections: a Full analysis disclosure (structured + raw appendix), and —
-// only when a transcript exists — a Transcript disclosure grouped by
-// chapter. Sections are appended as raw HTML <details> blocks; MDX passes
-// these through to the browser's native disclosure widget.
-export function appendBodySections(args: {
-  body: string;
-  analysis: YouTubeAnalysis;
-  evidenceSummary: string;
-  transcript: TranscriptFetch | null;
-  chapters: YouTubeChapter[];
+// Build the Pass 2 appendix: a "Full analysis" <details> block (structured
+// sections + nested raw evidence) and — only when a transcript exists — a
+// "Transcript" <details> block grouped by chapter. Returns a single string
+// that the caller appends to the MDX body. MDX needs blank lines around
+// raw HTML for the nested markdown to be re-parsed.
+export function renderYouTubeAppendix(args: {
   videoId: string;
+  analysis: YouTubeAnalysis;
+  mergedSummary: string;
+  transcript: TranscriptInput | null;
+  chapters: YouTubeChapter[];
 }): string {
-  const { body, analysis, evidenceSummary, transcript, chapters, videoId } =
-    args;
+  const { videoId, analysis, mergedSummary, transcript, chapters } = args;
 
   const analysisMd = renderAnalysisMarkdown(analysis, videoId);
-  const rawAppendix = evidenceSummary.trim();
+  const rawAppendix = mergedSummary.trim();
 
-  const sections: string[] = [body.trimEnd(), ""];
-
-  // MDX requires blank lines around raw HTML for markdown inside to be
-  // re-parsed. The blank line after <summary> and before </details> is what
-  // lets the nested headings, lists, and links render.
-  sections.push(
+  const sections: string[] = [
     "<details>",
     "<summary>Full analysis</summary>",
     "",
     analysisMd,
     "",
-    "##### Raw evidence summary",
+    "<details>",
+    "<summary>Raw evidence summary (verbatim merged per-chunk output)</summary>",
     "",
     rawAppendix,
     "",
-    "</details>"
-  );
+    "</details>",
+    "",
+    "</details>",
+  ];
 
   if (transcript && transcript.segments.length > 0) {
     const transcriptMd = renderTranscriptMarkdown(
@@ -364,5 +326,5 @@ export function appendBodySections(args: {
     }
   }
 
-  return `${sections.join("\n").trimEnd()}\n`;
+  return sections.join("\n");
 }
