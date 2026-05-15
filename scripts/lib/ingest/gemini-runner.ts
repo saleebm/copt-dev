@@ -255,7 +255,7 @@ export async function runGemini(input: PipelineInput): Promise<GeminiOutput> {
       prompt: buildUrlStructuringPrompt(summary, input.notes),
       output: Output.object({ schema: PostDraftSchema }),
     });
-    return toGeminiOutput(output, "FINDING");
+    return toGeminiOutput(output, "FINDING", input.urls[0]);
   }
 
   if (input.kind === "image") {

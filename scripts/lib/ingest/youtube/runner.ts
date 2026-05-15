@@ -556,7 +556,7 @@ export async function runYouTubeGemini(
   // If we have an analysis, append the collapsible <details> blocks to the
   // post body in place. Transcript block is omitted entirely when missing
   // (per Pass 2 contract).
-  const draft = toGeminiOutput(output, "FINDING");
+  const draft = toGeminiOutput(output, "FINDING", evidence.parse.canonicalUrl);
   if (analysis) {
     const appendix = renderYouTubeAppendix({
       videoId: evidence.parse.videoId,
