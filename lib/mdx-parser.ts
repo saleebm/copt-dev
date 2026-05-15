@@ -495,6 +495,8 @@ function copyImageToPublic(
   // Create the target path in public directory (declare at function scope)
   const publicPath = path.join(process.cwd(), "public", originalPath.slice(1)); // Remove leading /
   const publicDir = path.dirname(publicPath);
+  // Relative target so the symlink is portable across machines (and survives git)
+  const relativeTarget = path.relative(publicDir, sourceImagePath);
 
   try {
     // Create directory if it doesn't exist
@@ -502,20 +504,27 @@ function copyImageToPublic(
       fs.mkdirSync(publicDir, { recursive: true });
     }
 
-    // Check if symlink or file already exists
-    if (fs.existsSync(publicPath)) {
+    // Check if symlink or file already exists. lstat does not follow links, so
+    // dangling symlinks (e.g. older absolute-path links committed from another
+    // machine) are still detected and cleaned up here.
+    let existingStats: fs.Stats | undefined;
+    try {
+      existingStats = fs.lstatSync(publicPath);
+    } catch {
+      existingStats = undefined;
+    }
+    if (existingStats) {
       try {
-        const stats = fs.lstatSync(publicPath);
-        if (stats.isSymbolicLink()) {
-          // Check if symlink points to the correct source
+        if (existingStats.isSymbolicLink()) {
+          // Check if symlink points to the correct relative source
           const currentTarget = fs.readlinkSync(publicPath);
-          if (currentTarget === sourceImagePath) {
+          if (currentTarget === relativeTarget) {
             // Symlink already correct, no action needed
             return originalPath;
           }
-          // Remove incorrect symlink
+          // Remove incorrect symlink (absolute, stale, or dangling)
           fs.unlinkSync(publicPath);
-        } else if (stats.isFile()) {
+        } else if (existingStats.isFile()) {
           // Remove the copied file to replace with symlink
           fs.unlinkSync(publicPath);
         }
@@ -526,7 +535,7 @@ function copyImageToPublic(
     }
 
     // Create symlink instead of copying
-    fs.symlinkSync(sourceImagePath, publicPath, "file");
+    fs.symlinkSync(relativeTarget, publicPath, "file");
 
     // Return the path that Next.js can serve (without /public prefix)
     return originalPath;
