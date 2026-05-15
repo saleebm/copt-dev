@@ -3,6 +3,7 @@
 @import "../styles/hlexicon.css";
 @import "../styles/logo.css";
 @import "../styles/findings-accordion.css";
+@import "../styles/youtube-embed.css";
 
 @source "../*.{js,ts,jsx,tsx,mdx}";
 

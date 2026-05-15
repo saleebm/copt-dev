@@ -49,15 +49,13 @@ function YouTubeEmbed({
     params.set("start", String(resolvedStart));
   }
   const src = `https://www.youtube-nocookie.com/embed/${resolvedId}?${params.toString()}`;
+  const classes = ["youtube-embed", className].filter(Boolean).join(" ");
   return (
-    <figure
-      className={`my-6 overflow-hidden rounded-xl border border-border/60 bg-black/40 shadow-sm ring-1 ring-white/5 ${className}`}
-    >
-      <div className="relative aspect-video w-full">
+    <figure className={classes}>
+      <div className="youtube-embed__frame">
         <iframe
           allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
-          className="absolute inset-0 h-full w-full"
           loading="lazy"
           referrerPolicy="strict-origin-when-cross-origin"
           src={src}

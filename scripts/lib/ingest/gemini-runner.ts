@@ -170,9 +170,12 @@ export function toGeminiOutput(
     frontmatter.original_url = trimmedUrl;
   }
   const drafted = draft.body.trim();
-  const sourceLine = trimmedUrl
-    ? `${parseYouTubeUrl(trimmedUrl) ? "Watch" : "Source"}: ${trimmedUrl}\n\n`
-    : "";
+  let sourceLine = "";
+  if (trimmedUrl) {
+    sourceLine = parseYouTubeUrl(trimmedUrl)
+      ? `<YouTubeEmbed url="${trimmedUrl}" />\n\n`
+      : `Source: ${trimmedUrl}\n\n`;
+  }
   const body = `${sourceLine}${drafted}\n`;
   return {
     slug,
