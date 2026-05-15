@@ -121,15 +121,9 @@ export function createUTCDate(dateString: string): Date {
  * Build a UTC-midnight Date from numeric Y/M/D, returning null if invalid
  * (e.g. month 13, day 32, day 31 for a 30-day month).
  */
-function utcDateFromYMD(
-  year: number,
-  month: number,
-  day: number
-): Date | null {
+function utcDateFromYMD(year: number, month: number, day: number): Date | null {
   if (
-    !Number.isFinite(year) ||
-    !Number.isFinite(month) ||
-    !Number.isFinite(day)
+    !(Number.isFinite(year) && Number.isFinite(month) && Number.isFinite(day))
   ) {
     return null;
   }
@@ -200,7 +194,9 @@ export function parsePostDate(
     const mo = Number(m[2]);
     const d = Number(m[3]);
     const ymd = utcDateFromYMD(y, mo, d);
-    if (ymd) return ymd;
+    if (ymd) {
+      return ymd;
+    }
     // Fall through to MMDDYYYY interpretation if YMD is invalid
   }
 
@@ -213,7 +209,9 @@ export function parsePostDate(
     const d = Number(m[2]);
     const y = Number(m[3]);
     const mdy = utcDateFromYMD(y, mo, d);
-    if (mdy) return mdy;
+    if (mdy) {
+      return mdy;
+    }
   }
 
   // MM-DD-YYYY or MM/DD/YYYY
@@ -266,7 +264,9 @@ export function parsePostDate(
 export function extractDateFromBody(
   body: string | undefined | null
 ): Date | null {
-  if (!body) return null;
+  if (!body) {
+    return null;
+  }
   const window = body.slice(0, 2000);
 
   // Order matters: longest/most-specific patterns first so that
@@ -281,13 +281,17 @@ export function extractDateFromBody(
   let earliestMatch: string | null = null;
   for (const re of patterns) {
     const match = window.match(re);
-    if (match && match.index !== undefined) {
-      if (earliestIdx === -1 || match.index < earliestIdx) {
-        earliestIdx = match.index;
-        earliestMatch = match[0];
-      }
+    if (
+      match &&
+      match.index !== undefined &&
+      (earliestIdx === -1 || match.index < earliestIdx)
+    ) {
+      earliestIdx = match.index;
+      earliestMatch = match[0];
     }
   }
-  if (!earliestMatch) return null;
+  if (!earliestMatch) {
+    return null;
+  }
   return parsePostDate(earliestMatch, "body");
 }

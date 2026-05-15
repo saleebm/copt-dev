@@ -44,9 +44,7 @@ describe("parsePostDate", () => {
 
   it("parses MMDDYYYY when YYYYMMDD interpretation is invalid", () => {
     // 05122026: as YYYYMMDD = year 0512, month 20 → invalid → falls back
-    expect(parsePostDate("05122026", "test")?.getTime()).toBe(
-      utc(2026, 5, 12)
-    );
+    expect(parsePostDate("05122026", "test")?.getTime()).toBe(utc(2026, 5, 12));
   });
 
   it("preserves ISO 8601 timestamps (truncated to UTC midnight)", () => {
@@ -102,7 +100,9 @@ describe("extractDateFromBody", () => {
   });
 
   it("returns null when no date appears", () => {
-    expect(extractDateFromBody("Just some prose with no date in it.")).toBeNull();
+    expect(
+      extractDateFromBody("Just some prose with no date in it.")
+    ).toBeNull();
   });
 
   it("only scans the first ~2000 chars", () => {

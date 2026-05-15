@@ -194,7 +194,9 @@ function extractDateFromFilename(filePath: string): string | null {
     const m = filename.match(re);
     if (m) {
       const parsed = parsePostDate(m[1], `filename ${filename}`);
-      if (parsed) return parsed.toISOString();
+      if (parsed) {
+        return parsed.toISOString();
+      }
     }
   }
 
