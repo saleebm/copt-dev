@@ -5,6 +5,7 @@
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import matter from "gray-matter";
+import { escapeMdxProse, validateMdx } from "@/lib/mdx-validate";
 import { getPostDirectory } from "../post-type-meta";
 import type { GeminiOutput, PipelineInput, StagedImage } from "./types";
 
@@ -88,6 +89,17 @@ export async function writePost(
   const name = fileName(parsed);
   const absPath = join(absDir, name);
   const relPath = join(relDir, name);
+
+  body = escapeMdxProse(body);
+  try {
+    await validateMdx(body, relPath);
+  } catch (err) {
+    console.warn(
+      `[ingest] MDX pre-flight failed for ${relPath}; writing anyway — sync-posts will reject if still broken. Reason: ${
+        err instanceof Error ? err.message : String(err)
+      }`
+    );
+  }
 
   const finalMdx = matter.stringify(body, parsed.frontmatter);
   // matter.stringify omits trailing newline; ensure consistent file ending

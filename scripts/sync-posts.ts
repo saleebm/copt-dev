@@ -1,12 +1,10 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { compile } from "@mdx-js/mdx";
-import remarkComment from "remark-comment";
-import remarkGfm from "remark-gfm";
 import { parsePostDate } from "@/lib/date-utils";
 import { type PostStatus, PostType } from "@/lib/generated/prisma";
 import { syncHlexiconEntries } from "@/lib/hlexicon-utils";
+import { validateMdx } from "@/lib/mdx-validate";
 import { getAllPosts, type ParsedPost } from "@/lib/mdx-parser";
 import { prisma } from "@/lib/prisma";
 
@@ -131,12 +129,7 @@ async function syncPosts() {
       try {
         // Only validate for posts that are created/updated (changed or new)
         if (needsUpdate) {
-          await compile(post.content, {
-            development: false,
-            jsx: true,
-            jsxImportSource: "react",
-            remarkPlugins: [remarkGfm, remarkComment],
-          });
+          await validateMdx(post.content, post.filePath);
         }
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : String(e);

@@ -148,9 +148,14 @@ function loadImagePart(staged: StagedImage) {
   };
 }
 
-export function toGeminiOutput(draft: PostDraft, forcedType: PostType): GeminiOutput {
+export function toGeminiOutput(
+  draft: PostDraft,
+  forcedType: PostType,
+  originalUrl?: string
+): GeminiOutput {
   const title = draft.title.trim() || "Untitled Ingest";
   const slug = slugify(draft.slug?.trim() || title);
+  const trimmedUrl = originalUrl?.trim() || "";
   const frontmatter: Record<string, unknown> = {
     title,
     type: forcedType,
@@ -161,7 +166,14 @@ export function toGeminiOutput(draft: PostDraft, forcedType: PostType): GeminiOu
     categories: draft.categories,
     slug,
   };
-  const body = draft.body.trim() + "\n";
+  if (trimmedUrl) {
+    frontmatter.original_url = trimmedUrl;
+  }
+  const drafted = draft.body.trim();
+  const sourceLine = trimmedUrl
+    ? `${parseYouTubeUrl(trimmedUrl) ? "Watch" : "Source"}: ${trimmedUrl}\n\n`
+    : "";
+  const body = `${sourceLine}${drafted}\n`;
   return {
     slug,
     title,
