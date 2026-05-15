@@ -13,6 +13,10 @@ export type AIConfig = {
 const DEFAULT_MODEL = "gemini-2.5-flash";
 const DEFAULT_TEMPERATURE = 0.7;
 const DEFAULT_EMBEDDING_MODEL = "gemini-embedding-001";
+// YouTube ingest needs a model that supports fileData YouTube URIs. Preview
+// models (e.g. gemini-3.1-pro-preview) routinely return INVALID_ARGUMENT for
+// YouTube fileData, so we pin a known-good default and let env override.
+const DEFAULT_YOUTUBE_MODEL = "gemini-2.5-pro";
 
 export function resolveApiKey(): string | undefined {
   return (
@@ -42,4 +46,13 @@ export function getAIConfig(apiKeyOverride?: string): AIConfig {
   };
 }
 
-export { DEFAULT_EMBEDDING_MODEL, DEFAULT_MODEL, DEFAULT_TEMPERATURE };
+export function getYouTubeModel(): string {
+  return process.env.YOUTUBE_AI_MODEL ?? DEFAULT_YOUTUBE_MODEL;
+}
+
+export {
+  DEFAULT_EMBEDDING_MODEL,
+  DEFAULT_MODEL,
+  DEFAULT_TEMPERATURE,
+  DEFAULT_YOUTUBE_MODEL,
+};

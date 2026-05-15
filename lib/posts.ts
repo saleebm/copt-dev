@@ -380,6 +380,7 @@ export async function getRawPostDataById(id: string): Promise<PostData | null> {
     createdAt: post.createdAt,
     type: post.type,
     tags: post.tags.map((tag: Tag) => tag.name), // Extract tag names from the tag objects
+    originalUrl: post.originalUrl ?? undefined,
   };
 }
 

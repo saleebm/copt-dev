@@ -65,6 +65,7 @@ export async function createRenderedPost(
     createdAt: postData.createdAt,
     type: postData.type,
     tags: postData.tags,
+    originalUrl: postData.originalUrl,
     renderedContent: content,
     isDismissed: false,
     isContentReady: true,

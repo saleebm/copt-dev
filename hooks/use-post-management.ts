@@ -117,6 +117,7 @@ export function usePostManagement({
             createdAt: postDetails.createdAt,
             type: postDetails.type,
             tags: postDetails.tags,
+            originalUrl: postDetails.originalUrl,
             renderedContent,
             isDismissed: false,
             isContentReady,

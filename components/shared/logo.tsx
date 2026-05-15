@@ -162,7 +162,7 @@ export function Logo({
             src={logoImage}
             style={{
               width: imageSize,
-              height: "auto",
+              height: imageSize,
               maxWidth: "100%",
             }}
             width={imageSize}

@@ -1,6 +1,6 @@
 "use client";
 import { format } from "date-fns";
-import { Link2Icon, XIcon } from "lucide-react";
+import { ExternalLinkIcon, Link2Icon, XIcon } from "lucide-react";
 import { motion } from "motion/react";
 import React from "react";
 import {
@@ -28,6 +28,14 @@ interface PostCardHeaderProps {
   index: number;
   post: RenderedPost;
   shouldAnimate?: boolean;
+}
+
+function sourceLabel(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
 }
 
 const PostCardHeader: React.FC<PostCardHeaderProps> = ({
@@ -107,6 +115,25 @@ const PostCardHeader: React.FC<PostCardHeaderProps> = ({
                     })()}
                   </motion.p>
                 )}
+              {post.type === "FINDING" && post.originalUrl && (
+                <motion.p
+                  className="font-medium text-sm"
+                  initial={shouldAnimate ? "hidden" : false}
+                  variants={itemVariants}
+                >
+                  <a
+                    aria-label={`Source: ${post.originalUrl}`}
+                    className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-primary"
+                    href={post.originalUrl}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    title={post.originalUrl}
+                  >
+                    <ExternalLinkIcon className="h-3.5 w-3.5" />
+                    <span>Source: {sourceLabel(post.originalUrl)}</span>
+                  </a>
+                </motion.p>
+              )}
               {post.tags && post.tags.length > 0 && (
                 <PostTags postId={post.id} tags={post.tags} />
               )}

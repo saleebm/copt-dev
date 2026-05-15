@@ -11,6 +11,7 @@ export interface PostData {
   id: PostId;
   isMdx: boolean;
   lastEdited?: Date;
+  originalUrl?: string;
   rawContent: string;
   tags?: string[];
   title: string;
@@ -28,6 +29,7 @@ export interface RenderedPost {
   isDismissed: boolean;
   lastEdited?: Date;
   originalId: PostId;
+  originalUrl?: string;
   renderedContent: React.ReactNode | null;
   tags?: string[];
   title: string;

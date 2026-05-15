@@ -25,6 +25,7 @@ model Post {
   fileHash        String
   findingsCount   Int?
   originalDate    DateTime?
+  originalUrl     String?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   lastEdited      DateTime        @updatedAt

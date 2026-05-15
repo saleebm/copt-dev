@@ -14,10 +14,12 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText, Output, stepCountIs } from "ai";
 import { z } from "zod";
 import type { PostType } from "@/lib/generated/prisma";
+import { parseYouTubeUrl } from "@/lib/ingest/youtube-url";
 import { getAIConfig } from "../ai-config";
 import type { GeminiOutput, PipelineInput, StagedImage } from "./types";
+import { runYouTubeGemini } from "./youtube/runner";
 
-const PostDraftSchema = z.object({
+export const PostDraftSchema = z.object({
   title: z
     .string()
     .min(1)
@@ -46,7 +48,7 @@ const PostDraftSchema = z.object({
     ),
 });
 
-type PostDraft = z.infer<typeof PostDraftSchema>;
+export type PostDraft = z.infer<typeof PostDraftSchema>;
 
 const MIME_BY_EXT: Record<string, string> = {
   jpg: "image/jpeg",
@@ -146,7 +148,7 @@ function loadImagePart(staged: StagedImage) {
   };
 }
 
-function toGeminiOutput(draft: PostDraft, forcedType: PostType): GeminiOutput {
+export function toGeminiOutput(draft: PostDraft, forcedType: PostType): GeminiOutput {
   const title = draft.title.trim() || "Untitled Ingest";
   const slug = slugify(draft.slug?.trim() || title);
   const frontmatter: Record<string, unknown> = {
@@ -177,6 +179,57 @@ export async function runGemini(input: PipelineInput): Promise<GeminiOutput> {
   const prompt = buildPrompt(input);
 
   if (input.kind === "url") {
+    const youtubeUrls = input.urls.filter((u) => parseYouTubeUrl(u));
+    const nonYoutubeUrls = input.urls.filter((u) => !parseYouTubeUrl(u));
+    // Single-URL YouTube ingest: take the dedicated path. Mixed batches stay
+    // on url_context so we don't lose the non-YouTube URLs.
+    if (youtubeUrls.length === 1 && nonYoutubeUrls.length === 0) {
+      try {
+        const result = await runYouTubeGemini({
+          url: youtubeUrls[0]!,
+          notes: input.notes,
+        });
+        if (result) {
+          return result.output;
+        }
+      } catch (error) {
+        console.warn(
+          `[youtube] dedicated path failed, falling back to url_context: ${error instanceof Error ? error.message : String(error)}`
+        );
+        // Surface the underlying Gemini response so 400s like INVALID_ARGUMENT
+        // are actually debuggable. The AI SDK wraps the raw Google error on
+        // `cause` and exposes the response body on `responseBody`/`data`.
+        const e = error as {
+          cause?: unknown;
+          responseBody?: unknown;
+          data?: unknown;
+          statusCode?: unknown;
+          url?: unknown;
+        };
+        if (e.statusCode !== undefined) {
+          console.warn(`[youtube] http status: ${String(e.statusCode)}`);
+        }
+        if (e.url !== undefined) {
+          console.warn(`[youtube] request url: ${String(e.url)}`);
+        }
+        if (e.responseBody !== undefined) {
+          console.warn(
+            `[youtube] response body: ${typeof e.responseBody === "string" ? e.responseBody : JSON.stringify(e.responseBody)}`
+          );
+        }
+        if (e.data !== undefined) {
+          console.warn(
+            `[youtube] response data: ${typeof e.data === "string" ? e.data : JSON.stringify(e.data)}`
+          );
+        }
+        if (e.cause !== undefined) {
+          const cause = e.cause as { message?: unknown };
+          console.warn(
+            `[youtube] cause: ${cause?.message !== undefined ? String(cause.message) : JSON.stringify(e.cause)}`
+          );
+        }
+      }
+    }
     const { text: summary } = await generateText({
       model,
       tools: { url_context: google.tools.urlContext({}) },

@@ -234,6 +234,7 @@ async function syncPosts() {
             originalDate: post.date
               ? parsePostDate(post.date, `post ${post.slug}`)
               : null,
+            originalUrl: post.original_url || null,
             tags: {
               set: tags.map((tag) => ({ id: tag.id })),
             },
@@ -260,6 +261,7 @@ async function syncPosts() {
             originalDate: post.date
               ? parsePostDate(post.date, `post ${post.slug}`)
               : null,
+            originalUrl: post.original_url || null,
             tags: {
               connect: tags.map((tag) => ({ id: tag.id })),
             },
