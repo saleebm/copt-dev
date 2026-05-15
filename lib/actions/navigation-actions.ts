@@ -4,8 +4,8 @@ import { formatDateWithoutTimezone } from "@/lib/date-utils";
 import { PostStatus, PostType } from "@/lib/generated/prisma";
 import { CategoryTreeBuilder } from "@/lib/navigation/category-tree-builder";
 import {
-  getAllBlogPostsWithCategories,
   getAllCategories,
+  getAllNavigablePostsWithCategories,
   getAllPostsByLastEdited,
   getAllPublishedPosts,
   getAllTags,
@@ -33,11 +33,11 @@ interface FindingsByDate {
 }
 
 /**
- * Server action to get all blog posts grouped by categories
+ * Server action to get all navigable posts (BLOG, FINDING, SIGHT) grouped by categories
  */
-export async function getBlogPostsWithCategoriesAction() {
+export async function getNavigablePostsWithCategoriesAction() {
   try {
-    return await getAllBlogPostsWithCategories();
+    return await getAllNavigablePostsWithCategories();
   } catch {
     return [];
   }

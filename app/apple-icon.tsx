@@ -22,6 +22,7 @@ export default async function AppleIcon() {
         background: "#000",
       }}
     >
+      {/* biome-ignore lint/performance/noImgElement: ImageResponse runs Satori, which only renders native <img>, not next/image */}
       <img alt="" height={160} src={logoSrc} width={160} />
     </div>,
     { ...size }

@@ -1,0 +1,16 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - paragraph [ref=e12]: Loading your experience...
+      - generic [ref=e17]:
+        - article [ref=e18]
+        - article [ref=e47]
+        - article [ref=e71]
+  - status [ref=e103]
+  - region "Notifications (F8)":
+    - list
+  - button "Open Next.js Dev Tools" [ref=e109] [cursor=pointer]:
+    - img [ref=e110]
+  - alert [ref=e113]

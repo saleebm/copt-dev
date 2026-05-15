@@ -94,6 +94,10 @@ function placeholderForMode(mode: PaletteMode): string {
       return "#tag...";
     case "history":
       return ">filter timeline...";
+    default: {
+      const _exhaustive: never = mode;
+      return _exhaustive;
+    }
   }
 }
 
@@ -481,6 +485,46 @@ export function CommandPalette() {
     );
   }
 
+  function renderBrowseDrillBody() {
+    if (manifest.length === 0) {
+      return (
+        <CommandItem disabled key="browse-loading" value="browse-loading">
+          <span className="animate-pulse text-muted-foreground text-xs">
+            Loading posts…
+          </span>
+        </CommandItem>
+      );
+    }
+    if (categoryDrillPosts.length === 0) {
+      return (
+        <CommandItem
+          disabled
+          key="browse-drill-empty"
+          value="browse-drill-empty"
+        >
+          <span className="text-muted-foreground text-xs">
+            ∅ No posts in this category
+          </span>
+        </CommandItem>
+      );
+    }
+    return categoryDrillPosts.map((entry) => (
+      <CommandItem
+        disabled={renderedIds.has(entry.slug)}
+        key={`browse-post-${entry.id}`}
+        onSelect={() => handleNavClick(entry.slug, entry.title)}
+        value={`browse-post-${entry.id}`}
+      >
+        <span className="line-clamp-1 flex-1 font-mono text-sm">
+          {entry.title}
+        </span>
+        <span className="ml-2 font-mono text-muted-foreground text-xs uppercase">
+          {entry.type}
+        </span>
+      </CommandItem>
+    ));
+  }
+
   function renderCategoryDrill() {
     if (!drillTarget || drillTarget.type !== "category") {
       return null;
@@ -503,39 +547,7 @@ export function CommandPalette() {
             ⌫ Backspace
           </CommandShortcut>
         </CommandItem>
-        {manifest.length === 0 ? (
-          <CommandItem disabled key="browse-loading" value="browse-loading">
-            <span className="animate-pulse text-muted-foreground text-xs">
-              Loading posts…
-            </span>
-          </CommandItem>
-        ) : categoryDrillPosts.length === 0 ? (
-          <CommandItem
-            disabled
-            key="browse-drill-empty"
-            value="browse-drill-empty"
-          >
-            <span className="text-muted-foreground text-xs">
-              ∅ No posts in this category
-            </span>
-          </CommandItem>
-        ) : (
-          categoryDrillPosts.map((entry) => (
-            <CommandItem
-              disabled={renderedIds.has(entry.slug)}
-              key={`browse-post-${entry.id}`}
-              onSelect={() => handleNavClick(entry.slug, entry.title)}
-              value={`browse-post-${entry.id}`}
-            >
-              <span className="line-clamp-1 flex-1 font-mono text-sm">
-                {entry.title}
-              </span>
-              <span className="ml-2 font-mono text-muted-foreground text-xs uppercase">
-                {entry.type}
-              </span>
-            </CommandItem>
-          ))
-        )}
+        {renderBrowseDrillBody()}
       </CommandGroup>
     );
   }
@@ -575,6 +587,42 @@ export function CommandPalette() {
     );
   }
 
+  function renderTagDrillBody() {
+    if (manifest.length === 0) {
+      return (
+        <CommandItem disabled key="tags-loading" value="tags-loading">
+          <span className="animate-pulse text-muted-foreground text-xs">
+            Loading posts…
+          </span>
+        </CommandItem>
+      );
+    }
+    if (tagDrillPosts.length === 0) {
+      return (
+        <CommandItem disabled key="tags-drill-empty" value="tags-drill-empty">
+          <span className="text-muted-foreground text-xs">
+            ∅ No posts with this tag
+          </span>
+        </CommandItem>
+      );
+    }
+    return tagDrillPosts.map((entry) => (
+      <CommandItem
+        disabled={renderedIds.has(entry.slug)}
+        key={`tag-post-${entry.id}`}
+        onSelect={() => handleNavClick(entry.slug, entry.title)}
+        value={`tag-post-${entry.id}`}
+      >
+        <span className="line-clamp-1 flex-1 font-mono text-sm">
+          {entry.title}
+        </span>
+        <span className="ml-2 font-mono text-muted-foreground text-xs uppercase">
+          {entry.type}
+        </span>
+      </CommandItem>
+    ));
+  }
+
   function renderTagDrill() {
     if (!drillTarget || drillTarget.type !== "tag") {
       return null;
@@ -597,35 +645,7 @@ export function CommandPalette() {
             ⌫ Backspace
           </CommandShortcut>
         </CommandItem>
-        {manifest.length === 0 ? (
-          <CommandItem disabled key="tags-loading" value="tags-loading">
-            <span className="animate-pulse text-muted-foreground text-xs">
-              Loading posts…
-            </span>
-          </CommandItem>
-        ) : tagDrillPosts.length === 0 ? (
-          <CommandItem disabled key="tags-drill-empty" value="tags-drill-empty">
-            <span className="text-muted-foreground text-xs">
-              ∅ No posts with this tag
-            </span>
-          </CommandItem>
-        ) : (
-          tagDrillPosts.map((entry) => (
-            <CommandItem
-              disabled={renderedIds.has(entry.slug)}
-              key={`tag-post-${entry.id}`}
-              onSelect={() => handleNavClick(entry.slug, entry.title)}
-              value={`tag-post-${entry.id}`}
-            >
-              <span className="line-clamp-1 flex-1 font-mono text-sm">
-                {entry.title}
-              </span>
-              <span className="ml-2 font-mono text-muted-foreground text-xs uppercase">
-                {entry.type}
-              </span>
-            </CommandItem>
-          ))
-        )}
+        {renderTagDrillBody()}
       </CommandGroup>
     );
   }
@@ -684,6 +704,10 @@ export function CommandPalette() {
         return drillTarget?.type === "tag" ? renderTagDrill() : renderTagList();
       case "history":
         return renderHistoryContent();
+      default: {
+        const _exhaustive: never = currentMode;
+        return _exhaustive;
+      }
     }
   }
 

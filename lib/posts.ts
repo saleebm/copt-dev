@@ -12,7 +12,7 @@ import type { PostData } from "@/types/post";
 
 // ===== NAVIGATION QUERY TYPES =====
 
-interface BlogPostForNav {
+interface NavPostEntry {
   id: string;
   lastEdited: Date;
   originalId: string;
@@ -20,11 +20,11 @@ interface BlogPostForNav {
   type: PostType;
 }
 
-interface BlogPostCategory {
+interface NavPostCategory {
   count: number;
   name: string;
-  posts: BlogPostForNav[];
-  type: "BLOG";
+  posts: NavPostEntry[];
+  type: "NAV";
 }
 
 interface TagForNav {
@@ -537,22 +537,22 @@ export const getAllConcretePostIds = cache(async (): Promise<string[]> => {
 });
 
 /**
- * Get all blog posts with their categories for navigation
- * @returns Promise<BlogPostCategory[]> Array of blog posts grouped by categories
+ * Get all navigable posts (BLOG, FINDING, SIGHT) with their categories for navigation
+ * @returns Promise<NavPostCategory[]> Array of posts grouped by categories
  */
-export const getAllBlogPostsWithCategories = cache(
-  async (): Promise<BlogPostCategory[]> => {
+export const getAllNavigablePostsWithCategories = cache(
+  async (): Promise<NavPostCategory[]> => {
     try {
-      const cacheKey = "blog-posts-with-categories";
+      const cacheKey = "nav-posts-with-categories";
       const cached = postCache.get(cacheKey);
       if (cached) {
-        return cached as BlogPostCategory[];
+        return cached as NavPostCategory[];
       }
 
-      const blogPosts = await prisma.post.findMany({
+      const navPosts = await prisma.post.findMany({
         where: {
           status: PostStatus.PUBLISHED,
-          type: PostType.BLOG,
+          type: { in: [PostType.BLOG, PostType.FINDING, PostType.SIGHT] },
         },
         include: {
           categories: true,
@@ -562,15 +562,14 @@ export const getAllBlogPostsWithCategories = cache(
         },
       });
 
-      // Group posts by category
       const categoryMap = new Map<
         string,
-        { posts: BlogPostForNav[]; count: number }
+        { posts: NavPostEntry[]; count: number }
       >();
-      const uncategorizedPosts: BlogPostForNav[] = [];
+      const uncategorizedPosts: NavPostEntry[] = [];
 
-      blogPosts.forEach((post) => {
-        const postForNav: BlogPostForNav = {
+      navPosts.forEach((post) => {
+        const postForNav: NavPostEntry = {
           id: post.slug,
           title: post.title,
           type: post.type,
@@ -593,22 +592,21 @@ export const getAllBlogPostsWithCategories = cache(
         }
       });
 
-      const result: BlogPostCategory[] = Array.from(categoryMap.entries()).map(
+      const result: NavPostCategory[] = Array.from(categoryMap.entries()).map(
         ([name, data]) => ({
           name,
           posts: data.posts,
           count: data.count,
-          type: "BLOG" as const,
+          type: "NAV" as const,
         })
       );
 
-      // Add uncategorized posts if any exist
       if (uncategorizedPosts.length > 0) {
         result.push({
           name: "Uncategorized",
           posts: uncategorizedPosts,
           count: uncategorizedPosts.length,
-          type: "BLOG" as const,
+          type: "NAV" as const,
         });
       }
 
@@ -683,29 +681,6 @@ export const getAllPostsByLastEdited = cache(
       const allPosts = await prisma.post.findMany({
         where: {
           status: PostStatus.PUBLISHED,
-          // Exclude individual finding and sight posts, keep only grouped daily posts
-          OR: [
-            // Include grouped findings (findings-YYYY-MM-DD)
-            {
-              AND: [
-                { type: PostType.FINDING },
-                { slug: { startsWith: "findings-" } },
-              ],
-            },
-            // Include grouped sights (sights-YYYY-MM-DD)
-            {
-              AND: [
-                { type: PostType.SIGHT },
-                { slug: { startsWith: "sights-" } },
-              ],
-            },
-            // Include all non-finding and non-sight posts
-            {
-              type: {
-                notIn: [PostType.FINDING, PostType.SIGHT],
-              },
-            },
-          ],
         },
         select: {
           slug: true,

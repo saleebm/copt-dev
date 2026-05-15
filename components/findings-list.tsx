@@ -12,13 +12,26 @@ export interface Finding {
 
 interface FindingsListProps {
   className?: string;
-  findings: Finding[];
+  findings?: Finding[];
+  findingsB64?: string;
 }
 
-export function FindingsList({ findings, className = "" }: FindingsListProps) {
+function decodeFindings(b64: string): Finding[] {
+  const json = Buffer.from(b64, "base64").toString("utf8");
+  const parsed = JSON.parse(json) as unknown;
+  return Array.isArray(parsed) ? (parsed as Finding[]) : [];
+}
+
+export function FindingsList({
+  findings,
+  findingsB64,
+  className = "",
+}: FindingsListProps) {
+  const list: Finding[] =
+    findings ?? (findingsB64 ? decodeFindings(findingsB64) : []);
   return (
     <div className={`font-mono ${className}`}>
-      {findings.map((finding, index) => (
+      {list.map((finding, index) => (
         <div
           className="mb-3 border-foreground/20 border-b pb-3 last:border-b-0"
           key={finding.slug}

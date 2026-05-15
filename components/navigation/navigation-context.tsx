@@ -36,8 +36,12 @@ interface NavigationContextType {
   tags: TagWithMetadata[];
 }
 
-// Default filters: Exclude AI-generated types from main tabs per segregation rules
-const DEFAULT_POST_TYPES: PostType[] = [PostType.BLOG, PostType.CONCRETE];
+const DEFAULT_POST_TYPES: PostType[] = [
+  PostType.BLOG,
+  PostType.CONCRETE,
+  PostType.SIGHT,
+  PostType.FINDING,
+];
 
 const NavigationContext = createContext<NavigationContextType | undefined>(
   undefined

@@ -275,9 +275,26 @@ export function getPostsOfType(type: PostType): ParsedPost[] {
     return posts;
   }
 
-  // For SIGHT posts, look for directories with README.md files
+  // For SIGHT posts, look for directories with README.md files (legacy
+  // layout) and also flat .mdx files at the sight root (ingest pipeline
+  // layout). Flat files are parsed via the standard frontmatter pipeline.
   if (type === PostType.SIGHT) {
-    return getSightPostsRecursively(postsDirectory);
+    const dirPosts = getSightPostsRecursively(postsDirectory);
+    const flatPosts: ParsedPost[] = [];
+
+    try {
+      const items = fs.readdirSync(postsDirectory, { withFileTypes: true });
+      for (const item of items) {
+        if (item.isFile() && /\.mdx?$/.test(item.name)) {
+          const fullPath = path.join(postsDirectory, item.name);
+          flatPosts.push(parseFlatSightPost(fullPath));
+        }
+      }
+    } catch {
+      // Silently handle directory read errors
+    }
+
+    return [...flatPosts, ...dirPosts];
   }
 
   // For BLOG and FINDING posts, use recursive parsing as before
@@ -368,7 +385,6 @@ function createFindingSummaryPost(
   const slug = `findings-${date}`;
   const title = `Findings for ${formattedDate}`;
 
-  // Create clean MDX content using the FindingsList component
   const findingsData = findings.map((finding) => ({
     slug: finding.slug,
     title: finding.title,
@@ -378,7 +394,14 @@ function createFindingSummaryPost(
     tags: finding.tags,
   }));
 
-  const content = `<FindingsList findings={${JSON.stringify(findingsData, null, 2)}} />`;
+  // Encode as base64 JSON so the MDX runtime evaluates a single-line string
+  // attribute instead of a multi-line JSX expression whose contents can be
+  // arbitrarily large/markdown-flavoured.
+  const findingsB64 = Buffer.from(
+    JSON.stringify(findingsData),
+    "utf8"
+  ).toString("base64");
+  const content = `<FindingsList findingsB64="${findingsB64}" />`;
 
   return {
     slug,
@@ -417,6 +440,16 @@ export function getDynamicFindingPosts(findings?: ParsedPost[]): ParsedPost[] {
 }
 
 // Function to transform sight post image paths for Next.js compatibility
+function extractFirstMarkdownImage(
+  content: string
+): { alt: string; src: string } | undefined {
+  const match = content.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+  if (!match) {
+    return;
+  }
+  return { alt: match[1], src: match[2] };
+}
+
 function transformSightImagePaths(
   content: string,
   sightDirPath: string
@@ -573,6 +606,34 @@ function parseSightPostFile(dirPath: string): ParsedPost {
   };
 }
 
+// Flat SIGHT posts (ingest pipeline output) live at `posts/sight/<slug>.mdx`
+// with rich frontmatter and reference images at `/posts/sight/<dir>/<file>`.
+// Parse via the standard frontmatter pipeline, then symlink referenced images
+// into `public/` so Next.js can serve them.
+function parseFlatSightPost(filePath: string): ParsedPost {
+  const post = parsePostFile(filePath, PostType.SIGHT);
+  return {
+    ...post,
+    content: transformFlatSightImagePaths(post.content),
+  };
+}
+
+function transformFlatSightImagePaths(content: string): string {
+  const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+
+  return content.replace(imageRegex, (match, _alt, originalPath) => {
+    if (!originalPath.startsWith("/posts/sight/")) {
+      return match;
+    }
+
+    const sourcePath = path.join(process.cwd(), originalPath.slice(1));
+    if (fs.existsSync(sourcePath)) {
+      copyImageToPublic(sourcePath, originalPath);
+    }
+    return match;
+  });
+}
+
 function getSightPostsRecursively(directory: string): ParsedPost[] {
   const posts: ParsedPost[] = [];
 
@@ -651,16 +712,20 @@ function createSightSummaryPost(
   const slug = `sights-${date}`;
   const title = `Sights for ${formattedDate}`;
 
-  // Create MDX content using SightsList component (similar to FindingsList)
   const sightsData = sights.map((sight) => ({
     slug: sight.slug,
     title: sight.title,
     content: sight.content,
     categories: sight.categories,
     tags: sight.tags,
+    previewImage: extractFirstMarkdownImage(sight.content),
   }));
 
-  const content = `<SightsList sights={${JSON.stringify(sightsData, null, 2)}} />`;
+  // Base64 JSON string attribute — see createFindingSummaryPost for rationale.
+  const sightsB64 = Buffer.from(JSON.stringify(sightsData), "utf8").toString(
+    "base64"
+  );
+  const content = `<SightsList sightsB64="${sightsB64}" />`;
 
   return {
     slug,

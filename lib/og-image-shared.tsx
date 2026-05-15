@@ -36,7 +36,7 @@ async function loadFont(): Promise<ArrayBuffer> {
   );
   // Prefer non-WOFF2 since Satori can't decode WOFF2. Fall back to the last match.
   const decodable = matches.filter((m) => m[2] !== "woff2");
-  const chosen = decodable[decodable.length - 1] ?? matches[matches.length - 1];
+  const chosen = decodable.at(-1) ?? matches.at(-1);
   if (!chosen) {
     throw new Error("Could not parse a font URL from Google Fonts CSS");
   }
@@ -108,6 +108,7 @@ export function OgFrame({
           flexShrink: 0,
         }}
       >
+        {/* biome-ignore lint/performance/noImgElement: ImageResponse runs Satori, which only renders native <img>, not next/image */}
         <img
           alt={siteConfig.ogImageAlt}
           height={360}

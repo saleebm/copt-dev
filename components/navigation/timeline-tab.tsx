@@ -60,9 +60,6 @@ export function TimelineTab({ onNavigate }: TimelineTabProps) {
       timelineMap.get(monthKey)?.posts.push(...filteredPosts);
     });
 
-    // Note: Individual findings/sights are already excluded at the server level
-    // We only get grouped daily posts (findings-YYYY-MM-DD and sights-YYYY-MM-DD)
-
     // Sort and filter based on search
     const sortedEntries = Array.from(timelineMap.values()).sort(
       (a, b) => b.date.getTime() - a.date.getTime()
