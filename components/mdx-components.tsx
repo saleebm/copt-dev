@@ -9,12 +9,64 @@ import {
   AccordionItem as AccordionItemComponent,
   AccordionTrigger as AccordionTriggerComponent,
 } from "@/components/ui/accordion";
+import { parseYouTubeUrl } from "@/lib/ingest/youtube-url";
 import { FindingsList } from "./findings-list";
 import { Hlexicon } from "./hlexicon";
 import { ButtonPostLink, PostLink, RelatedPostLink } from "./mdx/post-link";
 import { BracketedPostName } from "./shared/bracketed-post-name";
 import { CenteredText } from "./shared/centered-text";
 import { SightsList } from "./sights-list";
+
+interface YouTubeEmbedProps {
+  url?: string;
+  videoId?: string;
+  start?: number;
+  title?: string;
+  className?: string;
+}
+
+function YouTubeEmbed({
+  url,
+  videoId,
+  start,
+  title = "YouTube video",
+  className = "",
+}: YouTubeEmbedProps) {
+  let resolvedId = videoId?.trim() || null;
+  let resolvedStart = typeof start === "number" && start > 0 ? start : null;
+  if (!resolvedId && url) {
+    const parsed = parseYouTubeUrl(url);
+    if (parsed) {
+      resolvedId = parsed.videoId;
+      resolvedStart = resolvedStart ?? parsed.startSeconds;
+    }
+  }
+  if (!resolvedId) {
+    return null;
+  }
+  const params = new URLSearchParams({ rel: "0" });
+  if (resolvedStart) {
+    params.set("start", String(resolvedStart));
+  }
+  const src = `https://www.youtube-nocookie.com/embed/${resolvedId}?${params.toString()}`;
+  return (
+    <figure
+      className={`my-6 overflow-hidden rounded-xl border border-border/60 bg-black/40 shadow-sm ring-1 ring-white/5 ${className}`}
+    >
+      <div className="relative aspect-video w-full">
+        <iframe
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          className="absolute inset-0 h-full w-full"
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          src={src}
+          title={title}
+        />
+      </div>
+    </figure>
+  );
+}
 
 // Custom Image component with configuration options
 interface CustomImageProps {
@@ -353,6 +405,18 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
         className={className}
         definition={definition}
         term={term}
+        {...props}
+      />
+    ),
+
+    // Responsive YouTube embed for finding posts
+    YouTubeEmbed: ({ url, videoId, start, title, className, ...props }) => (
+      <YouTubeEmbed
+        className={className}
+        start={start}
+        title={title}
+        url={url}
+        videoId={videoId}
         {...props}
       />
     ),

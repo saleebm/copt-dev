@@ -14,6 +14,8 @@ categories:
   - engineering
 slug: mario-zechner-building-pi-slowing-down-ai-code-generation
 ---
+<YouTubeEmbed url="https://www.youtube.com/watch?v=RjfbvDXpFls" />
+
 Mario Zechner's talk, "Building pi in a World of Slop," is a necessary critique of how we are currently building and using AI coding agents. I found his breakdown of the current agent landscape incredibly validating. He points out that popular harnesses have become bloated and opaque, where "your context is not your context" [1:56]. Frustrated by this lack of observability, he built pi, a minimal, self-modifying agent core inspired by Terminal-Bench [4:44]. Instead of massive default token budgets, pi starts with under 1,000 tokens and relies on TypeScript extensions [7:27] to adapt to the developer's workflow. What really resonated with me is his perspective on the broader open-source ecosystem. He describes repositories being flooded by low-quality, AI-generated "clankers" [10:46] and shares his tactic of requiring manually written issues before accepting pull requests [11:14]. Zechner wraps up with a blunt plea to "slow the fuck down" [12:03]. He argues that using agents to mass-generate code just creates unmanageable technical debt and "enterprise-grade complexity" [13:58]. Since human review is the actual bottleneck, generating code faster only overwhelms the system. His advice to "be in the code" [17:39] by writing critical architecture by hand and pairing with agents feels like the exact discipline we need right now.
 
 <details>
