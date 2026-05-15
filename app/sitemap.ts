@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { PostStatus } from "@/lib/generated/prisma";
+import { POST_DATE_DESC } from "@/lib/post-ordering";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/site-config";
 
@@ -7,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await prisma.post.findMany({
     where: { status: PostStatus.PUBLISHED },
     select: { slug: true, lastEdited: true },
-    orderBy: { lastEdited: "desc" },
+    orderBy: POST_DATE_DESC,
   });
 
   const postEntries: MetadataRoute.Sitemap = posts.map((p) => ({

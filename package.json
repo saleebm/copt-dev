@@ -15,6 +15,7 @@
     "db:studio": "prisma studio",
     "db:sync-posts": "bun run --conditions=react-server scripts/sync-posts.ts",
     "db:sync-posts:dry": "bun run --conditions=react-server scripts/sync-posts.ts --dry-run --verbose",
+    "db:sync-posts:redate": "bun run --conditions=react-server scripts/sync-posts.ts --force-redate",
     "dev:sync": "bun --watch --conditions=react-server scripts/dev-sync-posts.ts",
     "scaffold": "bun run scripts/scaffold-post-v2.ts",
     "new-post": "bun run scripts/scaffold-post-v2.ts",

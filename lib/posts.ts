@@ -7,6 +7,7 @@ import {
   type Prisma,
   type Tag,
 } from "@/lib/generated/prisma";
+import { POST_DATE_ASC, POST_DATE_DESC } from "@/lib/post-ordering";
 import { prisma } from "@/lib/prisma";
 import type { PostData } from "@/types/post";
 
@@ -105,20 +106,24 @@ export interface PostFilters {
 export type { DEFAULT_POST_ID } from "@/lib/constants";
 
 // Helper function to get sort order from option
-function getSortOrder(sort: PostSortOption = "newest") {
+function getSortOrder(
+  sort: PostSortOption = "newest"
+): Prisma.PostOrderByWithRelationInput | Prisma.PostOrderByWithRelationInput[] {
   switch (sort) {
     case "newest":
-      return { createdAt: "desc" as const };
+      return POST_DATE_DESC;
     case "oldest":
-      return { createdAt: "asc" as const };
+      return POST_DATE_ASC;
     case "title_asc":
       return { title: "asc" as const };
     case "title_desc":
       return { title: "desc" as const };
     case "updated":
+      // Intentional: "updated" means "recently edited", so it stays on
+      // updatedAt. Use "newest" for chronological post-date order.
       return { updatedAt: "desc" as const };
     default:
-      return { createdAt: "desc" as const };
+      return POST_DATE_DESC;
   }
 }
 
@@ -318,9 +323,7 @@ export const getPostsByTagName = cache(async (tagName: string) => {
             tags: true,
             categories: true,
           },
-          orderBy: {
-            lastEdited: "desc",
-          },
+          orderBy: POST_DATE_DESC,
         },
       },
     });
@@ -430,7 +433,7 @@ export const searchPosts = cache(
             categories: true,
             hlexiconEntries: true,
           },
-          orderBy: { updatedAt: "desc" },
+          orderBy: POST_DATE_DESC,
           skip: skip > 0 ? skip : undefined,
           take: take > 0 ? take : undefined,
         }),
@@ -459,7 +462,7 @@ export const getAllAvailablePostIds = cache(async (): Promise<string[]> => {
   const rows = await prisma.post.findMany({
     where: { status: PostStatus.PUBLISHED },
     select: { slug: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: POST_DATE_DESC,
   });
   return rows.map((r) => r.slug);
 });
@@ -523,9 +526,7 @@ export const getAllConcretePostIds = cache(async (): Promise<string[]> => {
       select: {
         slug: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: POST_DATE_DESC,
     });
 
     const slugs = concretePosts.map((post) => post.slug);
@@ -557,9 +558,7 @@ export const getAllNavigablePostsWithCategories = cache(
         include: {
           categories: true,
         },
-        orderBy: {
-          lastEdited: "desc",
-        },
+        orderBy: POST_DATE_DESC,
       });
 
       const categoryMap = new Map<

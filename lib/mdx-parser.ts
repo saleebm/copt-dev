@@ -3,7 +3,11 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { PostType } from "@/lib/generated/prisma";
-import { formatDateWithoutTimezone, parsePostDate } from "./date-utils";
+import {
+  extractDateFromBody,
+  formatDateWithoutTimezone,
+  parsePostDate,
+} from "./date-utils";
 import {
   extractHlexiconTerms,
   type HlexiconTerm,
@@ -125,7 +129,16 @@ export function parsePostFile(filePath: string, type: PostType): ParsedPost {
     }
   }
 
-  // 5. Use file creation/modification time as last resort (but NOT current date)
+  // 5. Try to extract a date token from the start of the post body
+  //    (e.g., a "7/20/25" mentioned in the opening paragraph).
+  if (!parsedDate) {
+    const dateFromBody = extractDateFromBody(transformedContent);
+    if (dateFromBody) {
+      parsedDate = dateFromBody.toISOString();
+    }
+  }
+
+  // 6. Use file creation/modification time as last resort (but NOT current date)
   if (!parsedDate) {
     try {
       const stats = fs.statSync(filePath);
@@ -156,37 +169,32 @@ export function parsePostFile(filePath: string, type: PostType): ParsedPost {
   };
 }
 
+/**
+ * Extract a date from a filename. Tries patterns in order of specificity
+ * and delegates the actual Y/M/D validation to `parsePostDate`.
+ *
+ * Recognized patterns (first match wins):
+ *   - YYYY-MM-DD     2025-09-26-post.mdx
+ *   - MM-DD-YYYY     09-26-2025.mdx       (also slash-separated)
+ *   - YYYYMMDD       20250926-post.mdx
+ *   - MMDDYYYY       05122026-post.mdx    (used by /posts/finding)
+ *   - MM-DD-YY       09-26-25.mdx         (also slash-separated)
+ */
 function extractDateFromFilename(filePath: string): string | null {
   const filename = path.basename(filePath);
 
-  // Try various date patterns in filename
-  // Pattern 1: YYYY-MM-DD (e.g., "2025-09-26-post-title.mdx")
-  const pattern1 = /(\d{4})-(\d{2})-(\d{2})/;
-  const match1 = filename.match(pattern1);
-  if (match1) {
-    const date = new Date(`${match1[1]}-${match1[2]}-${match1[3]}`);
-    if (!Number.isNaN(date.getTime())) {
-      return date.toISOString();
-    }
-  }
+  const patterns: RegExp[] = [
+    /(\d{4}-\d{1,2}-\d{1,2})/,
+    /(\d{1,2}[-/]\d{1,2}[-/]\d{4})/,
+    /(\d{8})/, // YYYYMMDD or MMDDYYYY — parsePostDate disambiguates
+    /(\d{1,2}[-/]\d{1,2}[-/]\d{2})/,
+  ];
 
-  // Pattern 2: MM-DD-YYYY or MM/DD/YYYY (e.g., "06-11-2025.mdx" or "06/11/2025.mdx")
-  const pattern2 = /(\d{2})[-/](\d{2})[-/](\d{4})/;
-  const match2 = filename.match(pattern2);
-  if (match2) {
-    const date = new Date(`${match2[3]}-${match2[1]}-${match2[2]}`);
-    if (!Number.isNaN(date.getTime())) {
-      return date.toISOString();
-    }
-  }
-
-  // Pattern 3: YYYYMMDD (e.g., "20250926-post.mdx")
-  const pattern3 = /(\d{4})(\d{2})(\d{2})/;
-  const match3 = filename.match(pattern3);
-  if (match3) {
-    const date = new Date(`${match3[1]}-${match3[2]}-${match3[3]}`);
-    if (!Number.isNaN(date.getTime())) {
-      return date.toISOString();
+  for (const re of patterns) {
+    const m = filename.match(re);
+    if (m) {
+      const parsed = parsePostDate(m[1], `filename ${filename}`);
+      if (parsed) return parsed.toISOString();
     }
   }
 

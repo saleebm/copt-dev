@@ -3,6 +3,7 @@
 import { formatDateWithoutTimezone } from "@/lib/date-utils";
 import { PostStatus, PostType } from "@/lib/generated/prisma";
 import { CategoryTreeBuilder } from "@/lib/navigation/category-tree-builder";
+import { POST_DATE_DESC } from "@/lib/post-ordering";
 import {
   getAllCategories,
   getAllNavigablePostsWithCategories,
@@ -271,7 +272,7 @@ export async function getChroniclePostsAction() {
         tags: { select: { name: true } },
         categories: { select: { name: true } },
       },
-      orderBy: [{ originalDate: "desc" }, { createdAt: "desc" }],
+      orderBy: POST_DATE_DESC,
     });
 
     // Transform minimal shape for navigation consumption
@@ -422,9 +423,7 @@ export async function getPostsByType(type: PostType) {
         categories: true,
         tags: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: POST_DATE_DESC,
     });
 
     return posts;
@@ -565,9 +564,7 @@ export async function getPostsByCategoryName(categoryName: string) {
             tags: true,
             categories: true,
           },
-          orderBy: {
-            lastEdited: "desc",
-          },
+          orderBy: POST_DATE_DESC,
         },
       },
     });
@@ -665,10 +662,7 @@ export async function getCategoryPosts(
           },
         },
       },
-      orderBy: [
-        { originalDate: "desc" }, // Use originalDate as primary sort (Issue #2 fix)
-        { lastEdited: "desc" }, // Fallback to lastEdited
-      ],
+      orderBy: POST_DATE_DESC,
     });
 
     return posts;

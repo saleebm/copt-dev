@@ -63,7 +63,7 @@ FLOW:
 
 ENV:
   GEMINI_API_KEY    — required for sparks + reshape (see .env.example)
-  AI_MODEL          — default gemini-2.5-flash
+  AI_MODEL          — default gemini-3.1-pro-preview (thinking: low)
   AI_TEMPERATURE    — default 0.7
 `);
 }

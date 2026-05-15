@@ -1,19 +1,63 @@
 import { stdin, stdout } from "node:process";
+import { createInterface, type Interface as ReadlineInterface } from "node:readline";
 
-export async function readLine(): Promise<string> {
-  for await (const line of console) {
-    return line;
-  }
-  return "";
+// One readline interface for the life of the process. Bun's `for await
+// (const line of console)` locks stdin's ReadableStream; once it's locked it
+// stays locked across re-rolls and any stdin.on('data') from
+// `withInputSuppressed`. We re-create the interface lazily so raw-mode windows
+// can tear it down and start fresh, avoiding buffer pollution from keystrokes
+// the user banged out during an AI stream.
+let rl: ReadlineInterface | null = null;
+let lineQueue: string[] = [];
+let pendingResolvers: Array<(line: string) => void> = [];
+let closed = false;
+
+function getReadline(): ReadlineInterface {
+  if (rl) return rl;
+  closed = false;
+  rl = createInterface({ input: stdin, terminal: false });
+  rl.on("line", (line) => {
+    const resolver = pendingResolvers.shift();
+    if (resolver) {
+      resolver(line);
+    } else {
+      lineQueue.push(line);
+    }
+  });
+  rl.once("close", () => {
+    closed = true;
+    // Drain any waiters with empty strings so callers see EOF and stop.
+    while (pendingResolvers.length > 0) {
+      const r = pendingResolvers.shift();
+      r?.("");
+    }
+  });
+  return rl;
+}
+
+export function readLine(): Promise<string> {
+  getReadline();
+  return new Promise<string>((resolve) => {
+    if (lineQueue.length > 0) {
+      resolve(lineQueue.shift() ?? "");
+      return;
+    }
+    if (closed) {
+      resolve("");
+      return;
+    }
+    pendingResolvers.push(resolve);
+  });
 }
 
 export async function readBlock(
   endSentinels: readonly string[] = ["."]
 ): Promise<string> {
   const lines: string[] = [];
-  for await (const line of console) {
-    const trimmed = line.trim();
-    if (endSentinels.includes(trimmed)) break;
+  while (true) {
+    const line = await readLine();
+    if (closed && lineQueue.length === 0 && line === "") break;
+    if (endSentinels.includes(line.trim())) break;
     lines.push(line);
   }
   return lines.join("\n").trim();
@@ -32,7 +76,11 @@ export async function readChoice(
 }
 
 export function closeInput(): void {
-  /* no-op for `for await (const line of console)`; kept for API stability */
+  if (rl) {
+    rl.close();
+    rl = null;
+  }
+  // Preserve buffered lines across raw-mode windows; only the interface goes.
 }
 
 /**
@@ -45,6 +93,10 @@ export async function withInputSuppressed<T>(work: () => Promise<T>): Promise<T>
   if (!stdin.isTTY) {
     return work();
   }
+
+  // Tear down readline before entering raw mode so its line-buffer can't
+  // accumulate the raw bytes we're about to drop on the floor.
+  closeInput();
 
   const wasRaw = Boolean(stdin.isRaw);
   stdin.setRawMode(true);
@@ -64,5 +116,6 @@ export async function withInputSuppressed<T>(work: () => Promise<T>): Promise<T>
     stdin.off("data", onData);
     stdin.setRawMode(wasRaw);
     stdin.pause();
+    // readline interface gets rebuilt lazily on the next read* call.
   }
 }

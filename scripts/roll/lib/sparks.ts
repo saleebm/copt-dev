@@ -1,8 +1,20 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import {
+  createGoogleGenerativeAI,
+  type GoogleLanguageModelOptions,
+} from "@ai-sdk/google";
 import { streamText } from "ai";
 import { getAIConfig } from "../../lib/ai-config";
 import type { RolledTopic } from "./types";
 import { loadVoice } from "./voice";
+
+// Gemini 3.1 Pro can't disable thinking; 'low' is the floor. Override the
+// shared AI_MODEL default so roll doesn't drag every other script onto Pro.
+const ROLL_MODEL = process.env.AI_MODEL ?? "gemini-3.1-pro-preview";
+const ROLL_PROVIDER_OPTIONS = {
+  google: {
+    thinkingConfig: { thinkingLevel: "low" },
+  } satisfies GoogleLanguageModelOptions,
+};
 
 function buildSparkPrompt(topic: RolledTopic): string {
   const related = topic.relatedHlexicons
@@ -33,10 +45,11 @@ export async function streamSparks(
   const provider = createGoogleGenerativeAI({ apiKey: cfg.apiKey });
 
   const result = streamText({
-    model: provider(cfg.model),
+    model: provider(ROLL_MODEL),
     system: loadVoice(),
     prompt: buildSparkPrompt(topic),
     temperature: cfg.temperature,
+    providerOptions: ROLL_PROVIDER_OPTIONS,
   });
 
   let raw = "";

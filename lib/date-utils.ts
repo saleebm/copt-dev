@@ -118,11 +118,62 @@ export function createUTCDate(dateString: string): Date {
 }
 
 /**
- * Parse a date string into a Date object for consistent handling
- * Handles various date formats and ensures UTC midnight
+ * Build a UTC-midnight Date from numeric Y/M/D, returning null if invalid
+ * (e.g. month 13, day 32, day 31 for a 30-day month).
+ */
+function utcDateFromYMD(
+  year: number,
+  month: number,
+  day: number
+): Date | null {
+  if (
+    !Number.isFinite(year) ||
+    !Number.isFinite(month) ||
+    !Number.isFinite(day)
+  ) {
+    return null;
+  }
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return null;
+  }
+  const d = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+  // Guard against rollover (e.g. Feb 30 → Mar 2)
+  if (
+    d.getUTCFullYear() !== year ||
+    d.getUTCMonth() !== month - 1 ||
+    d.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  return d;
+}
+
+/**
+ * Expand a 2-digit year using the same pivot POSIX strptime %y uses:
+ * 00-69 → 2000-2069, 70-99 → 1970-1999.
+ */
+function expandTwoDigitYear(yy: number): number {
+  return yy <= 69 ? 2000 + yy : 1900 + yy;
+}
+
+/**
+ * Parse a date string into a Date object at UTC midnight.
+ *
+ * Recognized formats (tried in order):
+ *   - YYYY-MM-DD                    e.g. 2025-07-20
+ *   - YYYY/MM/DD                    e.g. 2025/07/20
+ *   - YYYYMMDD                      e.g. 20250720
+ *   - MMDDYYYY                      e.g. 07202025  (used by some filenames)
+ *   - MM-DD-YYYY  /  MM/DD/YYYY     e.g. 07/20/2025
+ *   - M-D-YY      /  M/D/YY         e.g. 7/20/25  →  2025-07-20
+ *   - ISO 8601 timestamps with T or Z (delegated to the engine)
+ *
+ * Engine-level Date parsing is intentionally restricted to ISO timestamps
+ * so locale-ambiguous strings like "7/20/25" never silently fall through.
+ *
  * @param dateString - The date string to parse
- * @param context - Context for error messages
- * @returns Date object or null if parsing fails
+ * @param _context - Context for error messages (unused; kept for API stability)
+ * @returns Date object at UTC midnight, or null if parsing fails
  */
 export function parsePostDate(
   dateString: string | undefined,
@@ -131,32 +182,112 @@ export function parsePostDate(
   if (!dateString) {
     return null;
   }
-
-  try {
-    // Try parsing as YYYY-MM-DD format first
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-      return createUTCDate(dateString);
-    }
-
-    // Fall back to general Date parsing
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) {
-      return null;
-    }
-
-    // Convert to UTC midnight to ensure consistency
-    return new Date(
-      Date.UTC(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDate(),
-        0,
-        0,
-        0,
-        0
-      )
-    );
-  } catch {
+  const s = dateString.trim();
+  if (!s) {
     return null;
   }
+
+  // YYYY-MM-DD or YYYY/MM/DD
+  let m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+  if (m) {
+    return utcDateFromYMD(Number(m[1]), Number(m[2]), Number(m[3]));
+  }
+
+  // YYYYMMDD (8 digits, year first)
+  m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (m) {
+    const y = Number(m[1]);
+    const mo = Number(m[2]);
+    const d = Number(m[3]);
+    const ymd = utcDateFromYMD(y, mo, d);
+    if (ymd) return ymd;
+    // Fall through to MMDDYYYY interpretation if YMD is invalid
+  }
+
+  // MMDDYYYY (8 digits, year last) — distinguished from YYYYMMDD only when
+  // the YMD interpretation was rejected above. Try this only as a separate
+  // explicit pattern for filenames like 05122026.
+  m = s.match(/^(\d{2})(\d{2})(\d{4})$/);
+  if (m) {
+    const mo = Number(m[1]);
+    const d = Number(m[2]);
+    const y = Number(m[3]);
+    const mdy = utcDateFromYMD(y, mo, d);
+    if (mdy) return mdy;
+  }
+
+  // MM-DD-YYYY or MM/DD/YYYY
+  m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+  if (m) {
+    return utcDateFromYMD(Number(m[3]), Number(m[1]), Number(m[2]));
+  }
+
+  // M-D-YY or M/D/YY (2-digit year)
+  m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2})$/);
+  if (m) {
+    return utcDateFromYMD(
+      expandTwoDigitYear(Number(m[3])),
+      Number(m[1]),
+      Number(m[2])
+    );
+  }
+
+  // ISO 8601 with time/zone — only accept if it actually looks like a
+  // timestamp (contains T or Z). This prevents locale-ambiguous fallthrough.
+  if (/[TZ]/.test(s)) {
+    const date = new Date(s);
+    if (!Number.isNaN(date.getTime())) {
+      return new Date(
+        Date.UTC(
+          date.getUTCFullYear(),
+          date.getUTCMonth(),
+          date.getUTCDate(),
+          0,
+          0,
+          0,
+          0
+        )
+      );
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Scan the start of a post body for the first recognizable date token and
+ * return it as a UTC-midnight Date. Used as a last-resort source for
+ * `originalDate` when frontmatter and filename both fail to provide a date.
+ *
+ * Only the first ~2000 characters are scanned to avoid picking up dates
+ * from later prose (e.g. citations, footnotes). Returns the *earliest
+ * occurring* match in that window, not the chronologically earliest date.
+ */
+export function extractDateFromBody(
+  body: string | undefined | null
+): Date | null {
+  if (!body) return null;
+  const window = body.slice(0, 2000);
+
+  // Order matters: longest/most-specific patterns first so that
+  // "2025-07-20" doesn't get partially matched by the "M/D/YY" regex.
+  const patterns: RegExp[] = [
+    /\b\d{4}[-/]\d{1,2}[-/]\d{1,2}\b/,
+    /\b\d{1,2}[-/]\d{1,2}[-/]\d{4}\b/,
+    /\b\d{1,2}[-/]\d{1,2}[-/]\d{2}\b/,
+  ];
+
+  let earliestIdx = -1;
+  let earliestMatch: string | null = null;
+  for (const re of patterns) {
+    const match = window.match(re);
+    if (match && match.index !== undefined) {
+      if (earliestIdx === -1 || match.index < earliestIdx) {
+        earliestIdx = match.index;
+        earliestMatch = match[0];
+      }
+    }
+  }
+  if (!earliestMatch) return null;
+  return parsePostDate(earliestMatch, "body");
 }

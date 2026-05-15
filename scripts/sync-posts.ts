@@ -14,6 +14,10 @@ import { prisma } from "@/lib/prisma";
 const args = process.argv.slice(2);
 const isDryRun = args.includes("--dry-run") || args.includes("-d");
 const isVerbose = args.includes("--verbose") || args.includes("-v");
+// When true, recompute and write `originalDate` even for unchanged files.
+// This lets us backfill posts after improvements to date extraction without
+// having to bump every fileHash by editing each MDX file.
+const forceRedate = args.includes("--force-redate");
 
 async function syncPosts() {
   console.log(
@@ -45,10 +49,13 @@ async function syncPosts() {
     );
 
     const existingPosts = await prisma.post.findMany({
-      select: { slug: true, fileHash: true },
+      select: { slug: true, fileHash: true, originalDate: true },
     });
     const existingPostMap = new Map(
-      existingPosts.map((p) => [p.slug, p.fileHash])
+      existingPosts.map((p) => [
+        p.slug,
+        { fileHash: p.fileHash, originalDate: p.originalDate },
+      ])
     );
 
     // Track processed slugs to detect deleted files
@@ -60,16 +67,43 @@ async function syncPosts() {
     let skipCount = 0;
     let duplicateWarnings = 0;
     let rejectedCount = 0;
+    let redatedCount = 0;
 
     for (const post of allPosts) {
       // Check if this post already exists in the database
-      const existingHash = existingPostMap.get(post.slug);
-      const isExistingPost = existingHash !== undefined;
-      const needsUpdate = !existingHash || existingHash !== post.fileHash;
+      const existing = existingPostMap.get(post.slug);
+      const isExistingPost = existing !== undefined;
+      const needsUpdate = !existing || existing.fileHash !== post.fileHash;
 
-      // If this post exists and hasn't changed, skip it entirely
+      // If this post exists and hasn't changed, skip it entirely (but allow
+      // a cheap originalDate-only update when --force-redate is set).
       if (isExistingPost && !needsUpdate) {
-        if (isVerbose) {
+        if (forceRedate) {
+          const newDate = post.date
+            ? parsePostDate(post.date, `post ${post.slug}`)
+            : null;
+          const oldDate = existing.originalDate;
+          const changed =
+            (newDate?.getTime() ?? null) !== (oldDate?.getTime() ?? null);
+          if (changed) {
+            if (isDryRun) {
+              console.log(
+                `[DRY RUN] Would redate ${post.slug}: ${oldDate?.toISOString() ?? "null"} → ${newDate?.toISOString() ?? "null"}`
+              );
+            } else {
+              await prisma.post.update({
+                where: { slug: post.slug },
+                data: { originalDate: newDate },
+              });
+              console.log(
+                `📅 Redated ${post.slug}: ${oldDate?.toISOString() ?? "null"} → ${newDate?.toISOString() ?? "null"}`
+              );
+            }
+            redatedCount++;
+          } else if (isVerbose) {
+            console.log(`Skipping unchanged post (date matches): ${post.slug}`);
+          }
+        } else if (isVerbose) {
           console.log(`Skipping unchanged post: ${post.slug}`);
         }
         processedSlugs.add(post.slug);
@@ -276,6 +310,9 @@ async function syncPosts() {
     console.log(`  - Skipped: ${skipCount} posts (unchanged)`);
     console.log(`  - Created: ${createCount} new posts`);
     console.log(`  - Updated: ${updateCount} existing posts`);
+    if (forceRedate) {
+      console.log(`  - 📅 Redated: ${redatedCount} posts (--force-redate)`);
+    }
     if (rejectedCount > 0) {
       console.log(`  - 🚫 Rejected (invalid MDX): ${rejectedCount} posts`);
     }
