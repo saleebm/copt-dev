@@ -1,0 +1,93 @@
+---
+title: Mario Zechner on building pi and slowing down AI code generation
+type: FINDING
+status: DRAFT
+published: false
+date: '2026-05-15'
+tags:
+  - ai-agents
+  - software-engineering
+  - open-source
+  - mario-zechner
+categories:
+  - findings
+  - engineering
+slug: mario-zechner-building-pi-slowing-down-ai-code-generation
+---
+Mario Zechner's talk, "Building pi in a World of Slop," is a necessary critique of how we are currently building and using AI coding agents. I found his breakdown of the current agent landscape incredibly validating. He points out that popular harnesses have become bloated and opaque, where "your context is not your context" [1:56]. Frustrated by this lack of observability, he built pi, a minimal, self-modifying agent core inspired by Terminal-Bench [4:44]. Instead of massive default token budgets, pi starts with under 1,000 tokens and relies on TypeScript extensions [7:27] to adapt to the developer's workflow. What really resonated with me is his perspective on the broader open-source ecosystem. He describes repositories being flooded by low-quality, AI-generated "clankers" [10:46] and shares his tactic of requiring manually written issues before accepting pull requests [11:14]. Zechner wraps up with a blunt plea to "slow the fuck down" [12:03]. He argues that using agents to mass-generate code just creates unmanageable technical debt and "enterprise-grade complexity" [13:58]. Since human review is the actual bottleneck, generating code faster only overwhelms the system. His advice to "be in the code" [17:39] by writing critical architecture by hand and pairing with agents feels like the exact discipline we need right now.
+
+<details>
+<summary>Full analysis</summary>
+
+### Overview
+
+In his talk 'Building pi in a World of Slop,' Mario Zechner outlines his journey of building a minimal, open-source coding agent named 'pi.' Frustrated by bloated existing harnesses like Claude Code and OpenCode, Zechner designed pi to be extensible, self-modifying, and highly transparent. By starting with a minimal token budget and allowing TypeScript extensions, pi is built to adapt to the developer's workflow rather than forcing the developer to adapt to the tool. Beyond the technical architecture of pi, Zechner addresses the broader impact of AI agents on the software engineering ecosystem. He highlights the growing problem of 'clankers'—low-quality, AI-generated contributions flooding open-source projects—and shares his strategy of requiring manual, human-written issues before reviewing pull requests to mitigate this spam. Finally, Zechner issues a strong plea to the developer community to slow down. He argues that mindlessly generating code with agents leads to enterprise-grade complexity and massive technical debt, as human review remains the ultimate bottleneck. Instead of outsourcing entire architectures to AI, he advocates for developers to be in the code, hand-writing critical components and using agents as pairing partners to maintain software quality and developer discipline.
+
+### Key claims
+
+- [1:56](https://www.youtube.com/watch?v=RjfbvDXpFls&t=116s) — Existing agent harnesses like Claude Code and OpenCode have opaque context management where developers lack control.
+- [5:35](https://www.youtube.com/watch?v=RjfbvDXpFls&t=335s) — The pi agent core operates initially on a token budget of less than 1,000 tokens.
+- [10:46](https://www.youtube.com/watch?v=RjfbvDXpFls&t=646s) — AI-generated open-source contributions are reducing the quality of OSS repositories.
+- [13:58](https://www.youtube.com/watch?v=RjfbvDXpFls&t=838s) — The primary bottleneck for software quality is human review, not the speed of code generation.
+
+### Tools and frameworks
+
+- **pi** — A minimal, self-modifying, and extensible open-source coding agent core.
+- **Claude Code** — An existing agent harness criticized for bloated and opaque context management.
+- **OpenCode** — An existing agent harness criticized for failing at context management.
+- **Terminal-Bench** — A minimal benchmark that inspired the design of the pi agent.
+- **TypeScript** — The programming language used to write extensions and mold the pi agent.
+- **OpenClaw** — An overarching project that adopted pi as its agentic core.
+
+### Notable moments
+
+- [1:56](https://www.youtube.com/watch?v=RjfbvDXpFls&t=116s) **Context management failures** — Zechner details why existing agent harnesses are bloated and lack observability.
+- [5:35](https://www.youtube.com/watch?v=RjfbvDXpFls&t=335s) **Introducing the pi agent** — Zechner reveals pi, his minimal, self-modifying coding agent core.
+- [10:46](https://www.youtube.com/watch?v=RjfbvDXpFls&t=646s) **The clanker invasion** — Zechner discusses how AI-generated contributions are negatively impacting open source.
+- [12:03](https://www.youtube.com/watch?v=RjfbvDXpFls&t=723s) **A plea to slow down** — Zechner urges developers to stop producing AI-generated slop and focus on deliberate engineering.
+- [16:12](https://www.youtube.com/watch?v=RjfbvDXpFls&t=972s) **Practical agent integration** — Zechner provides advice on pairing with agents rather than outsourcing architecture to them.
+
+### Quotes
+
+> your context is not your context — Mario Zechner ([1:56](https://www.youtube.com/watch?v=RjfbvDXpFls&t=116s))
+
+> not the other way around — Mario Zechner ([5:58](https://www.youtube.com/watch?v=RjfbvDXpFls&t=358s))
+
+> clankers — Mario Zechner ([10:46](https://www.youtube.com/watch?v=RjfbvDXpFls&t=646s))
+
+> slow the fuck down — Mario Zechner ([12:03](https://www.youtube.com/watch?v=RjfbvDXpFls&t=723s))
+
+> enterprise-grade complexity — Mario Zechner ([13:58](https://www.youtube.com/watch?v=RjfbvDXpFls&t=838s))
+
+> be in the code — Mario Zechner ([17:39](https://www.youtube.com/watch?v=RjfbvDXpFls&t=1059s))
+
+### Entities
+
+- Mario Zechner _(person)_
+- Peter _(person)_
+- pi _(product)_
+- Claude Code _(product)_
+- OpenCode _(product)_
+- Terminal-Bench _(work)_
+- TypeScript _(product)_
+- OpenClaw _(product)_
+- NES _(product)_
+- Doom _(work)_
+- Clankers _(concept)_
+- Technical debt _(concept)_
+- Open Source _(concept)_
+
+<details>
+<summary>Raw evidence summary (verbatim merged per-chunk output)</summary>
+
+In his talk "Building pi in a World of Slop," Mario Zechner presents a three-act "tragedy" about creating his own coding agent, the decay of software quality, and a plea for a more deliberate approach to AI engineering. As the transcript is unavailable, this summary relies on the video, its description, and official chapters.
+
+The talk begins with Zechner's motivation for building **pi**, an open-source coding agent. He was frustrated with existing agent harnesses like Claude Code and OpenCode, which he argues became bloated and opaque. He criticizes their approach to context management, where "your context is not your context" [1:56], leading to a lack of observability and control. Inspired by the minimal approach of the **Terminal-Bench** benchmark [4:44], he built **pi** as a minimal, extensible, and self-modifying agent core [5:35]. Pi starts with a small token budget (<1,000 tokens) and is designed to be molded by the user through TypeScript extensions [7:27], allowing it to adapt to a developer's workflow, "not the other way around" [5:58].
+
+Zechner then critiques the current state of open source, which he sees as being overrun by low-quality, AI-generated contributions he calls "clankers" [10:46]. He shares his strategy for managing this on his own projects: demanding human interaction by requiring a manually written issue before a pull request is considered [11:14].
+
+Finally, he makes a plea to "slow the fuck down" [12:03]. He argues that the rush to generate massive amounts of code with agents creates "enterprise-grade complexity" [13:58] and unmanageable technical debt. The real bottleneck for quality is human review, and simply generating more code faster overwhelms this crucial step. Zechner's practical advice is to "be in the code" [17:39]: write critical architecture by hand and pair with agents rather than outsourcing to them. He concludes that this process requires discipline and, most importantly, humans who can learn, feel the "pain" of bad code, and ultimately build better software [14:51].
+
+</details>
+
+</details>
