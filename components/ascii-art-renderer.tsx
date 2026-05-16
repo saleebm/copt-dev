@@ -249,7 +249,7 @@ const AsciiArtRenderer = ({
     ? "w-full flex items-center justify-center overflow-hidden"
     : "w-full flex items-center justify-center p-1 overflow-hidden";
   const preClasses =
-    `whitespace-pre text-foreground select-none ${className}`.trim();
+    `whitespace-pre text-foreground select-text cursor-text ${className}`.trim();
 
   return (
     <motion.div
