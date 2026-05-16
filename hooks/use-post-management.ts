@@ -6,7 +6,11 @@ import type { ActorRefFrom } from "xstate";
 import { getPostDetailsAction } from "@/app/actions";
 import { getMDXComponents } from "@/components/mdx-components";
 import { ensurePostIdInvariant } from "@/lib/invariants";
-import { mdxRehypePlugins, mdxRemarkPlugins } from "@/lib/mdx-options";
+import {
+  mdxRehypePlugins,
+  mdxRemarkPlugins,
+  stripMdxHtmlComments,
+} from "@/lib/mdx-options";
 import { createPostContent } from "@/lib/post-content-factory";
 import {
   findPostById,
@@ -138,7 +142,7 @@ export function usePostManagement({
             // Plugins must mirror server-side renderMdxContent so first-click
             // posts compile identically (e.g. remark-comment for HTML
             // comments) and heading anchors exist on both paths.
-            serialize(postDetails.rawContent, {
+            serialize(stripMdxHtmlComments(postDetails.rawContent), {
               mdxOptions: {
                 remarkPlugins: mdxRemarkPlugins,
                 rehypePlugins: mdxRehypePlugins,
@@ -168,7 +172,6 @@ export function usePostManagement({
                 });
               })
               .catch((_error) => {
-                // Create error content using factory
                 const { renderedContent: errorRenderedContent } =
                   createPostContent({
                     isError: true,

@@ -1,12 +1,12 @@
 import { compile, type CompileOptions } from "@mdx-js/mdx";
-import remarkComment from "remark-comment";
 import remarkGfm from "remark-gfm";
+import { stripMdxHtmlComments } from "@/lib/mdx-options";
 
 export const MDX_COMPILE_OPTIONS = {
   development: false,
   jsx: true,
   jsxImportSource: "react",
-  remarkPlugins: [remarkGfm, remarkComment],
+  remarkPlugins: [remarkGfm],
 } satisfies CompileOptions;
 
 // Splits content into alternating prose / code-region segments. Even indices
@@ -40,7 +40,9 @@ export async function validateMdx(
   label: string
 ): Promise<void> {
   try {
-    await compile(content, MDX_COMPILE_OPTIONS);
+    // Mirror the runtime render path: HTML comments are stripped before
+    // MDX sees them, so the validator must do the same to stay accurate.
+    await compile(stripMdxHtmlComments(content), MDX_COMPILE_OPTIONS);
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err);
     throw new Error(`MDX compile failed for ${label}: ${reason}`);

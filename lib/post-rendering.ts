@@ -1,7 +1,11 @@
 import type React from "react";
 import { createElement } from "react";
 import { getMDXComponents } from "@/components/mdx-components";
-import { mdxRehypePlugins, mdxRemarkPlugins } from "@/lib/mdx-options";
+import {
+  mdxRehypePlugins,
+  mdxRemarkPlugins,
+  stripMdxHtmlComments,
+} from "@/lib/mdx-options";
 
 /**
  * Renders MDX content to React components on the server side.
@@ -17,7 +21,7 @@ export async function renderMdxContent(
   const { MDXRemote } = await import("next-mdx-remote/rsc");
   const components = getMDXComponents({});
   return createElement(MDXRemote, {
-    source,
+    source: stripMdxHtmlComments(source),
     components,
     options: {
       mdxOptions: {
