@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
   distDir: process.env.BUILD_DIR || ".next",
   reactStrictMode: true,
   pageExtensions: ["ts", "tsx", "mdx"],
+  // Version-skew protection for the PM2 cluster: when the client's build ID
+  // doesn't match the server's, Next.js triggers a full reload instead of
+  // throwing "Failed to find Server Action". Set by deploy.sh from DEPLOY_ID.
+  deploymentId: process.env.NEXT_DEPLOYMENT_ID,
   // Enable new caching and pre-rendering behavior
   cacheComponents: true,
   reactCompiler: true,

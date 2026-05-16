@@ -13,6 +13,20 @@ export NVM_DIR="$HOME/.nvm"
 set +e; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"; set -e
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# Load .env so the build sees NEXT_SERVER_ACTIONS_ENCRYPTION_KEY (and anything
+# else the build needs baked in). Required so all cluster workers across
+# deploys share the same Server Actions encryption key — otherwise mid-deploy
+# tabs hit "Failed to find Server Action".
+if [ -f "$APP_DIR/.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . "$APP_DIR/.env"
+  set +a
+fi
+
+# Expose DEPLOY_ID to Next.js for version-skew protection (deploymentId).
+export NEXT_DEPLOYMENT_ID="$DEPLOY_ID"
+
 echo "==> Pulling latest code"
 git pull --ff-only origin main
 

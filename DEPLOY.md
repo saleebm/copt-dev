@@ -78,3 +78,9 @@ Covers:
 1. `copt-dev` uses Caddy, not Nginx.
 2. `pm2 reload` assumes the app is already in cluster mode.
 3. If PM2 still has an old fork-mode process, recreate it once with `pm2 delete copt-dev && pm2 start ecosystem.config.cjs && pm2 save`.
+4. `.env` on the server **must** contain `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` (32-byte base64). `deploy.sh` sources `.env` before `bun run build` so the key is baked into every build. Without a stable key, mid-deploy tabs hit `Failed to find Server Action`. Rotate only when you're willing to invalidate all in-flight client tabs. Generate with:
+
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+   ```
+5. `deploy.sh` exports `NEXT_DEPLOYMENT_ID=$DEPLOY_ID`, which `next.config.mts` reads as `deploymentId`. This enables version-skew protection: stale client tabs do a full reload instead of throwing.

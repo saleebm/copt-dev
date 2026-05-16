@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import PostStackList from "@/components/post-stack/post-stack-list";
 import {
   getAllPostsByLastEditedAction,
@@ -47,18 +48,16 @@ export async function PostStackDataFetcher({
     allowNotFound
   );
 
-  // Handle case where no valid posts were found
-  if (!allowNotFound && initialPosts.length === 0) {
-    throw new Error("No valid posts found");
-  }
-
-  // For catch-all routes, validate that we have at least one real post (not "not found")
+  // For catch-all routes (allowNotFound=false), 404 when no real posts were
+  // resolved. We must call notFound() directly here — wrapping the async server
+  // component in a parent try/catch does not work because the JSX is returned
+  // synchronously and the throw happens later during React rendering.
   if (!allowNotFound) {
     const validPosts = initialPosts.filter(
       (post) => !post.title.includes("Not Found")
     );
     if (validPosts.length === 0) {
-      throw new Error("No valid posts found");
+      notFound();
     }
   }
 
