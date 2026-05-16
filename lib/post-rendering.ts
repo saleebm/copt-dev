@@ -1,9 +1,7 @@
 import type React from "react";
 import { createElement } from "react";
-import rehypeSlug from "rehype-slug";
-import remarkComment from "remark-comment";
-import remarkGfm from "remark-gfm";
 import { getMDXComponents } from "@/components/mdx-components";
+import { mdxRehypePlugins, mdxRemarkPlugins } from "@/lib/mdx-options";
 
 /**
  * Renders MDX content to React components on the server side.
@@ -23,9 +21,8 @@ export async function renderMdxContent(
     components,
     options: {
       mdxOptions: {
-        remarkPlugins: [remarkGfm, remarkComment],
-        // rehype-slug adds stable id attributes to headings, used as scroll-restore anchors.
-        rehypePlugins: [rehypeSlug],
+        remarkPlugins: mdxRemarkPlugins,
+        rehypePlugins: mdxRehypePlugins,
       },
     },
   });

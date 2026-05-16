@@ -2,12 +2,11 @@
 
 import { serialize } from "next-mdx-remote/serialize";
 import { useCallback, useEffect, useRef } from "react";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
 import type { ActorRefFrom } from "xstate";
 import { getPostDetailsAction } from "@/app/actions";
 import { getMDXComponents } from "@/components/mdx-components";
 import { ensurePostIdInvariant } from "@/lib/invariants";
+import { mdxRehypePlugins, mdxRemarkPlugins } from "@/lib/mdx-options";
 import { createPostContent } from "@/lib/post-content-factory";
 import {
   findPostById,
@@ -136,13 +135,13 @@ export function usePostManagement({
 
           // For MDX posts, render the content asynchronously and update
           if (postDetails.isMdx && postDetails.rawContent) {
+            // Plugins must mirror server-side renderMdxContent so first-click
+            // posts compile identically (e.g. remark-comment for HTML
+            // comments) and heading anchors exist on both paths.
             serialize(postDetails.rawContent, {
               mdxOptions: {
-                remarkPlugins: [remarkGfm],
-                // Keep rehypePlugins aligned with the server-side
-                // renderMdxContent path so heading anchors exist whether the
-                // post was server-rendered or loaded dynamically via addPost.
-                rehypePlugins: [rehypeSlug],
+                remarkPlugins: mdxRemarkPlugins,
+                rehypePlugins: mdxRehypePlugins,
               },
             })
               .then((mdxSource) => {
