@@ -18,7 +18,6 @@ interface AsciiArtRendererProps {
   hero?: boolean;
   lineCount: number;
   maxLineLength: number;
-  src?: string;
 }
 
 /**
@@ -26,16 +25,14 @@ interface AsciiArtRendererProps {
  * Height is completely fluid - no height constraints or animations that cause container jumping.
  */
 const AsciiArtRenderer = ({
-  asciiArt: asciiArtProp,
-  src,
+  asciiArt,
   className = "",
-  maxLineLength: maxLineLengthProp,
-  asciiCategory: asciiCategoryProp,
+  maxLineLength,
+  asciiCategory,
   fontSizeEstimates,
   estimatedHeight,
   hero = false,
 }: AsciiArtRendererProps) => {
-  const [fetchedArt, setFetchedArt] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
   const isInitializedRef = useRef(false);
@@ -53,37 +50,7 @@ const AsciiArtRenderer = ({
     }
   }, []);
 
-  const asciiArt = asciiArtProp || fetchedArt || "";
-
-  // Recalculate metadata from fetched content
-  const lines = asciiArt.split("\n");
-  const maxLineLength = asciiArt
-    ? Math.max(...lines.map((l) => l.length))
-    : maxLineLengthProp;
-  const asciiCategory = (() => {
-    if (!asciiArt) {
-      return asciiCategoryProp;
-    }
-    if (maxLineLength > 120 || lines.length > 40) {
-      return "extremely-large";
-    }
-    if (maxLineLength > 60 || lines.length > 20) {
-      return "large";
-    }
-    return "normal";
-  })();
-
-  // Fetch ASCII art from src if asciiArt prop is empty
-  useEffect(() => {
-    if (asciiArtProp || !src) {
-      return;
-    }
-    fetch(src)
-      .then((res) => res.text())
-      .then(setFetchedArt);
-  }, [asciiArtProp, src]);
-
-  const actualLineCount = lines.length;
+  const actualLineCount = asciiArt.split("\n").length;
 
   // Ref always holds the latest calculation function — bypasses React Compiler memoization
   const calculateFontSizeRef = useRef<(containerWidth: number) => number>(

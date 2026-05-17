@@ -9,6 +9,7 @@ import {
   AccordionItem as AccordionItemComponent,
   AccordionTrigger as AccordionTriggerComponent,
 } from "@/components/ui/accordion";
+import { EYE_ASCII } from "@/lib/assets/eye-ascii";
 import { parseYouTubeUrl } from "@/lib/ingest/youtube-url";
 import { FindingsList } from "./findings-list";
 import { Hlexicon } from "./hlexicon";
@@ -370,21 +371,29 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
     ),
 
     // Custom components
-    AsciiArtRenderer: ({
-      asciiArt,
-      src,
-      className,
-      height,
-      hero,
-      ...props
-    }) => (
+    AsciiArtRenderer: ({ asciiArt, className, height, hero, ...props }) => (
       <div className="my-6">
         <AsciiArtWrapper
           asciiArt={asciiArt}
           className={className}
           height={height}
           hero={hero}
-          src={src}
+          {...props}
+        />
+      </div>
+    ),
+
+    // The eye ASCII art baked into the bundle as a string constant. MDX (via
+    // next-mdx-remote) can't `import` modules at runtime, so we expose the
+    // pre-bundled content as a dedicated component instead of a generic
+    // src-based fetch — this is what eliminated the client-side fetch hang.
+    EyeAscii: ({ className, height, hero, ...props }) => (
+      <div className="my-6">
+        <AsciiArtWrapper
+          asciiArt={EYE_ASCII}
+          className={className}
+          height={height}
+          hero={hero}
           {...props}
         />
       </div>

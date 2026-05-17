@@ -6,7 +6,6 @@ interface AsciiArtWrapperProps {
   className?: string;
   height?: string | number;
   hero?: boolean;
-  src?: string;
 }
 
 /**
@@ -15,54 +14,14 @@ interface AsciiArtWrapperProps {
  */
 export function AsciiArtWrapper({
   asciiArt,
-  src,
   className = "",
   height,
   hero = false,
 }: AsciiArtWrapperProps) {
-  if (!(asciiArt || src)) {
+  if (!asciiArt) {
     return null;
   }
-
-  // When src is provided without asciiArt, render with src and let the client fetch it
-  if (!asciiArt && src) {
-    const heroContainerStyle = hero
-      ? { height: "auto" as const, minHeight: "45vh" }
-      : { height: "auto" as const, minHeight: "200px" };
-
-    return (
-      <div
-        className="flex w-full items-center justify-center overflow-hidden"
-        style={heroContainerStyle}
-      >
-        <Suspense
-          fallback={
-            <div
-              className="flex w-full items-center justify-center text-muted-foreground text-sm"
-              style={{ height: "128px" }}
-            >
-              Loading ASCII art...
-            </div>
-          }
-        >
-          <AsciiArtRenderer
-            asciiArt=""
-            asciiCategory="extremely-large"
-            className={className}
-            estimatedHeight={400}
-            fontSizeEstimates={{ mobile: 0.06, tablet: 0.12, desktop: 0.2 }}
-            hero={hero}
-            lineCount={77}
-            maxLineLength={170}
-            src={src}
-          />
-        </Suspense>
-      </div>
-    );
-  }
-
-  // At this point asciiArt is guaranteed to be defined (early returns handle undefined cases)
-  const resolvedAsciiArt = asciiArt as string;
+  const resolvedAsciiArt = asciiArt;
 
   // Pre-calculate ASCII art metadata on the server
   const lines = resolvedAsciiArt.split("\n");
