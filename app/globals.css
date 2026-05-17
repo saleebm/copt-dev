@@ -56,6 +56,7 @@
   /* Font family configuration */
   --font-mono: var(--font-ibm-plex-mono);
   --font-serif: var(--font-space-grotesk);
+  --font-sans: var(--font-inter);
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -393,6 +394,26 @@
   p {
     line-height: 1.6;
     text-wrap: pretty;
+  }
+
+  /*
+  Long-form article body escapes the monospace default and gets a comfortable
+  sans + measure. UI chrome (sidebars, buttons, terminal labels) and inline
+  code keep IBM Plex Mono.
+  */
+  .article-body,
+  .article-body :is(p, a, span, div, li, td, th, blockquote, label) {
+    font-family: var(--font-sans);
+    font-feature-settings: normal;
+  }
+
+  .article-body {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+
+  .article-body :is(code, pre, kbd, samp) {
+    font-family: var(--font-mono);
   }
 
   /*
@@ -737,14 +758,14 @@
 @layer base {
   :root {
     /* Dark theme as default - Underground mystical slate with subtle green */
-    --background: 215 28% 8%;
+    --background: 215 28% 10%;
     --foreground: 142 20% 92%;
-    --card: 215 25% 11%;
+    --card: 215 25% 12%;
     --card-foreground: 142 15% 88%;
-    --popover: 215 28% 9%;
+    --popover: 215 28% 11%;
     --popover-foreground: 142 20% 92%;
-    --primary: 142 55% 45%;
-    --primary-foreground: 215 28% 8%;
+    --primary: 142 42% 48%;
+    --primary-foreground: 215 28% 10%;
     --secondary: 215 20% 18%;
     --secondary-foreground: 142 15% 85%;
     --muted: 215 22% 15%;
@@ -755,21 +776,21 @@
     --destructive-foreground: 142 20% 92%;
     --border: 215 20% 22%;
     --input: 215 22% 18%;
-    --ring: 142 55% 45%;
+    --ring: 142 42% 48%;
     --chart-1: 142 55% 55%;
     --chart-2: 160 45% 50%;
     --chart-3: 200 50% 50%;
     --chart-4: 120 40% 60%;
     --chart-5: 180 45% 55%;
     --radius: 0.75rem;
-    --sidebar-background: 215 30% 6%;
+    --sidebar-background: 215 30% 8%;
     --sidebar-foreground: 142 15% 85%;
-    --sidebar-primary: 142 55% 45%;
-    --sidebar-primary-foreground: 215 28% 8%;
-    --sidebar-accent: 215 25% 12%;
+    --sidebar-primary: 142 42% 48%;
+    --sidebar-primary-foreground: 215 28% 10%;
+    --sidebar-accent: 215 25% 13%;
     --sidebar-accent-foreground: 142 15% 88%;
     --sidebar-border: 215 22% 18%;
-    --sidebar-ring: 142 55% 45%;
+    --sidebar-ring: 142 42% 48%;
 
     /* Font feature settings for enhanced typography */
     --default-mono-font-feature-settings:
@@ -809,8 +830,8 @@
   .terminal-nav .tab-bar {
     position: relative;
     display: flex;
-    background: #000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--foreground) / 0.2);
   }
 
   /* Tab Buttons */
@@ -820,30 +841,30 @@
     padding: 0.75rem 1rem;
     font-family: var(--font-mono);
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: hsl(var(--foreground) / 0.6);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     cursor: pointer;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid hsl(var(--foreground) / 0.2);
     border-bottom: none;
     transition: none;
   }
 
   /* Tab Button Hover State */
   .terminal-nav .tab-bar button:hover:not([aria-selected="true"]) {
-    color: rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.05);
+    color: hsl(var(--foreground) / 0.85);
+    background: hsl(var(--foreground) / 0.05);
   }
 
   /* Active Tab State */
   .terminal-nav .tab-bar button[aria-selected="true"] {
     z-index: 10;
     font-weight: 500;
-    color: #000;
-    background: #fff;
-    border-color: #fff;
-    border-bottom: 1px solid #000;
+    color: hsl(var(--background));
+    background: hsl(var(--foreground));
+    border-color: hsl(var(--foreground));
+    border-bottom: 1px solid hsl(var(--background));
   }
 
   /* Tab Content Container */
@@ -851,48 +872,48 @@
     flex: 1;
     overflow-x: hidden;
     overflow-y: auto;
-    background: #000;
+    background: hsl(var(--background));
   }
 
   /* Terminal Prompt Styles */
   .terminal-prompt {
     font-family: var(--font-mono);
     font-weight: bold;
-    color: #00ff00;
+    color: hsl(var(--primary));
   }
 
   .terminal-prompt-muted {
     font-family: var(--font-mono);
-    color: rgba(255, 255, 255, 0.4);
+    color: hsl(var(--foreground) / 0.4);
   }
 
   /* Terminal Button Styles */
   .terminal-button {
     font-family: var(--font-mono);
-    color: rgba(255, 255, 255, 0.7);
+    color: hsl(var(--foreground) / 0.7);
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid hsl(var(--foreground) / 0.2);
     transition: none;
   }
 
   .terminal-button:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.4);
+    color: hsl(var(--foreground));
+    background: hsl(var(--foreground) / 0.1);
+    border-color: hsl(var(--foreground) / 0.4);
   }
 
   .terminal-button-destructive {
     font-family: var(--font-mono);
-    color: rgba(255, 100, 100, 0.8);
+    color: hsl(var(--destructive) / 0.8);
     background: transparent;
-    border: 1px solid rgba(255, 100, 100, 0.3);
+    border: 1px solid hsl(var(--destructive) / 0.3);
     transition: none;
   }
 
   .terminal-button-destructive:hover {
-    color: rgba(255, 100, 100, 1);
-    background: rgba(255, 100, 100, 0.1);
-    border-color: rgba(255, 100, 100, 0.5);
+    color: hsl(var(--destructive));
+    background: hsl(var(--destructive) / 0.1);
+    border-color: hsl(var(--destructive) / 0.5);
   }
 
   /* Mobile Responsive Adjustments */
@@ -908,10 +929,10 @@
   @keyframes terminal-glow {
     0%,
     100% {
-      box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.1);
     }
     50% {
-      box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
+      box-shadow: 0 0 40px hsl(var(--primary) / 0.2);
     }
   }
 
@@ -932,8 +953,8 @@
       0deg,
       transparent,
       transparent 2px,
-      rgba(0, 255, 0, 0.02) 2px,
-      rgba(0, 255, 0, 0.02) 4px
+      hsl(var(--primary) / 0.02) 2px,
+      hsl(var(--primary) / 0.02) 4px
     );
     animation: terminal-scan 8s linear infinite;
   }

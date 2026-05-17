@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type React from "react";
 import { KeyboardProvider } from "@/components/keyboard/keyboard-provider";
-import { ibmPlexMono, spaceGrotesk } from "@/lib/fonts";
+import { ibmPlexMono, inter, spaceGrotesk } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -67,7 +67,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={`${ibmPlexMono.variable} ${spaceGrotesk.variable} h-full bg-background`}
+      className={`${ibmPlexMono.variable} ${spaceGrotesk.variable} ${inter.variable} h-full bg-background`}
       lang="en"
     >
       <body className="h-full text-foreground">

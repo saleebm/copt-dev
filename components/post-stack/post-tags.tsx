@@ -173,7 +173,7 @@ export function PostTags({ tags, postId }: PostTagsProps) {
               variants={staggerItemVariants}
             >
               <motion.button
-                className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 font-mono text-xs transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${
+                className={`group inline-flex items-center gap-1 rounded-full border px-3 py-1.5 font-mono text-xs transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${
                   isActive
                     ? "border-primary bg-primary text-primary-foreground shadow-sm"
                     : "border-border bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground"
@@ -188,8 +188,10 @@ export function PostTags({ tags, postId }: PostTagsProps) {
               >
                 <span>{tag}</span>
                 <ChevronDownIcon
-                  className={`h-3 w-3 transition-transform duration-200 ${
-                    isActive ? "rotate-180" : ""
+                  className={`h-2.5 w-2.5 transition-all duration-200 ${
+                    isActive
+                      ? "rotate-180 opacity-100"
+                      : "opacity-40 group-hover:opacity-100"
                   }`}
                 />
               </motion.button>

@@ -169,14 +169,14 @@ export function QuakeTerminalMobile() {
         className={cn(
           "quake-header fixed top-0 right-0 left-0 z-[60]",
           isHeaderVisible ? "quake-header-slide-in" : "quake-header-slide-out",
-          "border-green-500/30 border-b bg-black/95 backdrop-blur-sm"
+          "border-primary/30 border-b bg-background/95 backdrop-blur-sm"
         )}
         ref={headerRef}
       >
         <button
           aria-expanded={isOpen}
           aria-label={isOpen ? "Close terminal" : "Open terminal"}
-          className="flex w-full items-center justify-center gap-2 py-2 font-mono text-green-500 text-xs uppercase tracking-wider"
+          className="flex w-full items-center justify-center gap-2 py-2 font-mono text-primary text-xs uppercase tracking-wider"
           onClick={toggleTerminal}
           type="button"
         >
@@ -202,7 +202,7 @@ export function QuakeTerminalMobile() {
         <div
           aria-hidden="true"
           className={cn(
-            "quake-backdrop fixed inset-0 z-[55] bg-black/50",
+            "quake-backdrop fixed inset-0 z-[55] bg-background/50",
             isClosing && "opacity-0 transition-opacity duration-200"
           )}
           onClick={toggleTerminal}
@@ -221,7 +221,7 @@ export function QuakeTerminalMobile() {
         )}
       >
         {/* Terminal Container */}
-        <div className="relative border-green-500/50 border-b-2 bg-black shadow-[0_0_40px_rgba(0,255,0,0.15)]">
+        <div className="relative border-primary/50 border-b-2 bg-background shadow-[0_0_40px_hsl(var(--primary)/0.15)]">
           {/* CRT Effects */}
           <div className="terminal-crt-glow" />
           <div className="terminal-scanline" />
@@ -229,21 +229,21 @@ export function QuakeTerminalMobile() {
           {/* Terminal Header Bar */}
           <div
             className={cn(
-              "flex items-center justify-between border-green-500/30 border-b bg-black px-4 py-2",
+              "flex items-center justify-between border-primary/30 border-b bg-background px-4 py-2",
               isOpen && !isClosing && "terminal-flicker"
             )}
           >
             <div className="flex items-center gap-2">
-              <span className="font-mono text-green-500 text-xs">
+              <span className="font-mono text-primary text-xs">
                 QUAKE://TERMINAL
               </span>
-              <span className="terminal-cursor font-mono text-green-500/50 text-xs">
+              <span className="terminal-cursor font-mono text-primary/50 text-xs">
                 ▊
               </span>
             </div>
             <button
               aria-label="Close terminal"
-              className="font-mono text-green-500 text-xs transition-colors hover:text-green-400"
+              className="font-mono text-primary text-xs transition-colors hover:text-primary/80"
               onClick={toggleTerminal}
               type="button"
             >

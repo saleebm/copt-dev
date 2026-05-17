@@ -23,7 +23,7 @@
   z-index: 10;
   height: 0;
   content: "";
-  background-color: #000;
+  background-color: hsl(var(--background));
   transition: height 0.5s ease-in-out;
   /* Add animation name for event listening */
   animation-name: tv-shutdown-bars;

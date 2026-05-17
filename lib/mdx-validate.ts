@@ -1,4 +1,4 @@
-import { compile, type CompileOptions } from "@mdx-js/mdx";
+import { type CompileOptions, compile } from "@mdx-js/mdx";
 import remarkGfm from "remark-gfm";
 import { stripMdxHtmlComments } from "@/lib/mdx-options";
 
@@ -29,7 +29,9 @@ export function escapeMdxProse(content: string): string {
   const parts = content.split(CODE_REGION);
   return parts
     .map((part, i) => {
-      if (i % 2 === 1) return part;
+      if (i % 2 === 1) {
+        return part;
+      }
       return part.replace(STRAY_LT, "&lt;").replace(BARE_LBRACE, "\\{");
     })
     .join("");

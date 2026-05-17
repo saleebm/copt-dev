@@ -218,7 +218,7 @@ const PostCard: React.FC<PostCardProps> = ({
             delay: 0.1,
           }}
         >
-          <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl prose-invert min-w-0 max-w-none">
+          <div className="article-body mx-auto min-w-0 max-w-[70ch]">
             {post.renderedContent}
           </div>
         </motion.div>

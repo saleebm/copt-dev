@@ -18,11 +18,11 @@ import { CenteredText } from "./shared/centered-text";
 import { SightsList } from "./sights-list";
 
 interface YouTubeEmbedProps {
-  url?: string;
-  videoId?: string;
+  className?: string;
   start?: number;
   title?: string;
-  className?: string;
+  url?: string;
+  videoId?: string;
 }
 
 function YouTubeEmbed({

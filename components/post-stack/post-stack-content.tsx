@@ -38,7 +38,7 @@ const PostStackContent: React.FC<PostStackContentProps> = ({ posts }) => {
 
       {/* Desktop Navigation - Left Sidebar */}
       <div
-        className="fixed top-0 bottom-0 left-0 z-50 hidden w-96 lg:block"
+        className="fixed top-0 bottom-0 left-0 z-50 hidden w-96 opacity-55 transition-opacity duration-300 focus-within:opacity-100 hover:opacity-100 lg:block"
         id="navigation-panel"
       >
         <div className="flex h-full w-full flex-col">

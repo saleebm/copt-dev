@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
     root: path.join(__dirname, ".."),
     resolveExtensions: [".mdx", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
   },
-  allowedDevOrigins: ['copt.local', 'copt.localhost'],
+  allowedDevOrigins: ["copt.local", "copt.localhost"],
 };
 
 export default nextConfig;
