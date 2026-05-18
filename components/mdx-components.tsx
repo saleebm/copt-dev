@@ -10,6 +10,7 @@ import {
   AccordionTrigger as AccordionTriggerComponent,
 } from "@/components/ui/accordion";
 import { EYE_ASCII } from "@/lib/assets/eye-ascii";
+import { FACE_ASCII } from "@/lib/assets/face-ascii";
 import { parseYouTubeUrl } from "@/lib/ingest/youtube-url";
 import { FindingsList } from "./findings-list";
 import { Hlexicon } from "./hlexicon";
@@ -391,6 +392,18 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
       <div className="my-6">
         <AsciiArtWrapper
           asciiArt={EYE_ASCII}
+          className={className}
+          height={height}
+          hero={hero}
+          {...props}
+        />
+      </div>
+    ),
+
+    FaceAscii: ({ className, height, hero, ...props }) => (
+      <div className="my-6">
+        <AsciiArtWrapper
+          asciiArt={FACE_ASCII}
           className={className}
           height={height}
           hero={hero}
