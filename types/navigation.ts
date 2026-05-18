@@ -95,7 +95,16 @@ export interface NavigationPreferences {
 }
 
 // Navigation tabs
-export type NavigationTab = "rabbithole" | "categories" | "tags" | "timeline";
+// Desktop tab IDs are "session" | "browse" | "timeline".
+// Mobile tab IDs are "topics" | "search" | "reading" | "latest".
+export type NavigationTab =
+  | "session"
+  | "browse"
+  | "timeline"
+  | "topics"
+  | "search"
+  | "reading"
+  | "latest";
 
 // View modes for different layouts
 export type NavigationViewMode = "tree" | "flat" | "cloud" | "list";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -175,22 +175,19 @@ export function QuakeTerminalMobile() {
       >
         <button
           aria-expanded={isOpen}
-          aria-label={isOpen ? "Close terminal" : "Open terminal"}
-          className="flex w-full items-center justify-center gap-2 py-2 font-mono text-primary text-xs uppercase tracking-wider"
+          aria-label={
+            isOpen ? "Close find posts drawer" : "Open find posts drawer"
+          }
+          className="flex min-h-[44px] w-full items-center justify-center gap-2 py-3 font-mono text-primary text-sm tracking-wide"
           onClick={toggleTerminal}
           type="button"
         >
-          <span className="terminal-prompt">❯</span>
-          <span>terminal</span>
+          <Search aria-hidden="true" className="h-4 w-4" />
+          <span>Find posts</span>
           <ChevronDown
+            aria-hidden="true"
             className={cn(
               "h-4 w-4 transition-transform duration-300",
-              isOpen ? "rotate-180" : ""
-            )}
-          />
-          <ChevronDown
-            className={cn(
-              "-ml-2 h-4 w-4 transition-transform duration-300",
               isOpen ? "rotate-180" : ""
             )}
           />
@@ -253,7 +250,11 @@ export function QuakeTerminalMobile() {
 
           {/* Navigation Content */}
           <div className="h-[calc(85vh-3rem)] overflow-hidden">
-            <NavigationTabs navState={navState} onNavigate={handleNavigate} />
+            <NavigationTabs
+              navState={navState}
+              onNavigate={handleNavigate}
+              variant="mobile"
+            />
           </div>
         </div>
 

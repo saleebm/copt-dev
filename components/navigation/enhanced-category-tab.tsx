@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import type { useMobileNavigationState } from "@/hooks/use-mobile-navigation-state";
 import { useNavClick } from "@/hooks/use-nav-click";
 import { getCategoryPosts } from "@/lib/actions/navigation-actions";
 import { PostType } from "@/lib/generated/prisma";
@@ -19,6 +20,7 @@ import {
 import { PostTypeFilterBar } from "./post-type-filter-bar";
 
 interface EnhancedCategoryTabProps {
+  navState?: ReturnType<typeof useMobileNavigationState>;
   onNavigate?: () => void;
 }
 
@@ -26,7 +28,10 @@ interface EnhancedCategoryTabProps {
 // Allowing the filter here would prune the entire tree.
 const CATEGORY_EXCLUDED_TYPES: PostType[] = [PostType.CONCRETE];
 
-export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
+export function EnhancedCategoryTab({
+  onNavigate,
+  navState,
+}: EnhancedCategoryTabProps) {
   const { handleClickPostObj } = useNavClick(onNavigate);
   const {
     selectedPostTypes,
@@ -49,6 +54,11 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
   );
   const [categoryPosts, setCategoryPosts] = useState<PostForNavigation[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
+
+  const expandedPathsSet = useMemo(
+    () => new Set(navState?.expandedCategories ?? []),
+    [navState?.expandedCategories]
+  );
 
   // Filter categories by selected post types first
   const typeFilteredCategories = React.useMemo(() => {
@@ -349,7 +359,12 @@ export function EnhancedCategoryTab({ onNavigate }: EnhancedCategoryTabProps) {
       <div className="flex-1 overflow-hidden">
         <CategoryTree
           categories={filteredCategories}
+          defaultExpandDepth={1}
+          expandedPaths={navState ? expandedPathsSet : undefined}
           onCategoryClick={handleCategoryClick}
+          onToggleExpand={
+            navState ? navState.toggleCategoryExpansion : undefined
+          }
         />
       </div>
     </div>

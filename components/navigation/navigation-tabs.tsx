@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { NavigationProvider } from "@/components/navigation/navigation-context";
 import { BrowseSection } from "@/components/navigation/sections/browse-section";
+import { SearchSection } from "@/components/navigation/sections/search-section";
 // Section components
 import { SessionSection } from "@/components/navigation/sections/session-section";
 import { TimelineSection } from "@/components/navigation/sections/timeline-section";
@@ -13,19 +14,37 @@ import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import type { useMobileNavigationState } from "@/hooks/use-mobile-navigation-state";
 
+type Variant = "desktop" | "mobile";
+
 interface NavigationTabsProps {
   navState?: ReturnType<typeof useMobileNavigationState>;
   onNavigate?: () => void;
+  variant?: Variant;
 }
 
-type TabId = "session" | "browse" | "timeline";
+type DesktopTabId = "session" | "browse" | "timeline";
+type MobileTabId = "topics" | "search" | "reading" | "latest";
+type TabId = DesktopTabId | MobileTabId;
+
+interface TabDef {
+  id: TabId;
+  label: string;
+  shortLabel?: string;
+}
 
 const GITHUB_REPO_URL = "https://github.com/saleebm/copt-dev";
 
-const NAV_TABS: { id: TabId; label: string; shortLabel: string }[] = [
+const DESKTOP_TABS: TabDef[] = [
   { id: "session", label: "SESSION", shortLabel: "S" },
   { id: "browse", label: "BROWSE", shortLabel: "B" },
   { id: "timeline", label: "TIMELINE", shortLabel: "T" },
+];
+
+const MOBILE_TABS: TabDef[] = [
+  { id: "topics", label: "Topics" },
+  { id: "search", label: "Search" },
+  { id: "reading", label: "Reading" },
+  { id: "latest", label: "Latest" },
 ];
 
 function GitHubMark({ className }: { className?: string }) {
@@ -48,29 +67,41 @@ function GitHubMark({ className }: { className?: string }) {
 export function NavigationTabs({
   onNavigate,
   navState,
+  variant = "desktop",
 }: NavigationTabsProps = {}) {
+  const isMobile = variant === "mobile";
+  const tabs = isMobile ? MOBILE_TABS : DESKTOP_TABS;
+  const defaultTab: TabId = isMobile ? "topics" : "session";
+
   const { addPost, goHome } = usePostStackActions();
   const { categories, tags, postTypeCounts } = usePostStackState();
 
-  // Use persisted state if available (mobile), otherwise use local state (desktop)
-  const [localActiveTab, setLocalActiveTab] = useState<TabId>("session");
-  const activeTab = navState?.activeTab || localActiveTab;
-  const setActiveTab = navState?.setActiveTab || setLocalActiveTab;
+  const [localActiveTab, setLocalActiveTab] = useState<TabId>(defaultTab);
+  const activeTab: TabId = isMobile
+    ? (navState?.activeTab ?? localActiveTab)
+    : localActiveTab;
+  const setActiveTab = useCallback(
+    (tab: TabId) => {
+      if (isMobile && navState) {
+        navState.setActiveTab(tab as MobileTabId);
+      }
+      setLocalActiveTab(tab);
+    },
+    [isMobile, navState]
+  );
 
-  // Restore tab from persisted state on mount
+  // Restore tab from persisted state on mount (mobile only)
   useEffect(() => {
-    if (navState?.isRestored && navState.activeTab) {
+    if (isMobile && navState?.isRestored && navState.activeTab) {
       setLocalActiveTab(navState.activeTab);
     }
-  }, [navState?.isRestored, navState?.activeTab]);
+  }, [isMobile, navState?.isRestored, navState?.activeTab]);
 
   const handleHomeClick = () => {
-    // Navigate to root without dismissing current posts
     addPost("root");
   };
 
   const handleCloseAll = () => {
-    // Dismiss all posts and return to root view
     goHome();
   };
 
@@ -78,7 +109,7 @@ export function NavigationTabs({
 
   const handleTabKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
-      const lastIndex = NAV_TABS.length - 1;
+      const lastIndex = tabs.length - 1;
       let nextIndex: number | null = null;
       if (event.key === "ArrowRight") {
         nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
@@ -93,11 +124,11 @@ export function NavigationTabs({
         return;
       }
       event.preventDefault();
-      const nextTab = NAV_TABS[nextIndex];
+      const nextTab = tabs[nextIndex];
       setActiveTab(nextTab.id);
       tabButtonsRef.current[nextIndex]?.focus();
     },
-    [setActiveTab]
+    [tabs, setActiveTab]
   );
 
   return (
@@ -173,17 +204,18 @@ export function NavigationTabs({
               className="tab-bar flex flex-shrink-0 border-white/20 border-b bg-black"
               role="tablist"
             >
-              {NAV_TABS.map((tab, index) => (
+              {tabs.map((tab, index) => (
                 <button
                   aria-controls={`tab-panel-${tab.id}`}
                   aria-label={tab.label}
                   aria-selected={activeTab === tab.id}
-                  className={`flex-1 cursor-pointer border-white/20 border-t border-r border-l px-4 py-3 font-mono text-xs uppercase tracking-wider transition-none ${
+                  className={`flex-1 cursor-pointer border-white/20 border-t border-r border-l px-2 py-3 font-mono text-xs tracking-wider transition-none sm:px-4 ${
+                    isMobile ? "min-h-[44px] normal-case" : "uppercase"
+                  } ${
                     activeTab === tab.id
                       ? "border-white border-b-black bg-white text-black"
                       : "border-white/20 bg-transparent text-white/60 hover:text-white/80"
-                  }
-                                    `}
+                  }`}
                   id={`tab-${tab.id}`}
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
@@ -195,19 +227,29 @@ export function NavigationTabs({
                   tabIndex={0}
                   type="button"
                 >
-                  <span className="hidden md:inline">{tab.label}</span>
-                  <span className="md:hidden">{tab.shortLabel}</span>
+                  {isMobile ? (
+                    <span>{tab.label}</span>
+                  ) : (
+                    <>
+                      <span className="hidden md:inline">{tab.label}</span>
+                      <span className="md:hidden">
+                        {tab.shortLabel ?? tab.label}
+                      </span>
+                    </>
+                  )}
                 </button>
               ))}
-              <a
-                aria-label="View source on GitHub"
-                className="flex cursor-pointer items-center justify-center border-white/20 border-t border-r border-l bg-transparent px-4 py-3 font-mono text-white/60 transition-colors hover:text-white/90 lg:hidden"
-                href={GITHUB_REPO_URL}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <GitHubMark className="h-4 w-4" />
-              </a>
+              {!isMobile && (
+                <a
+                  aria-label="View source on GitHub"
+                  className="flex cursor-pointer items-center justify-center border-white/20 border-t border-r border-l bg-transparent px-4 py-3 font-mono text-white/60 transition-colors hover:text-white/90 lg:hidden"
+                  href={GITHUB_REPO_URL}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <GitHubMark className="h-4 w-4" />
+                </a>
+              )}
             </div>
 
             {/* Tab Content */}
@@ -217,13 +259,27 @@ export function NavigationTabs({
               id={`tab-panel-${activeTab}`}
               role="tabpanel"
             >
-              {activeTab === "session" && (
+              {/* Desktop tabs */}
+              {!isMobile && activeTab === "session" && (
                 <SessionSection onNavigate={onNavigate} />
               )}
-              {activeTab === "browse" && (
+              {!isMobile && activeTab === "browse" && (
                 <BrowseSection navState={navState} onNavigate={onNavigate} />
               )}
-              {activeTab === "timeline" && (
+              {!isMobile && activeTab === "timeline" && (
+                <TimelineSection onNavigate={onNavigate} />
+              )}
+              {/* Mobile tabs */}
+              {isMobile && activeTab === "topics" && (
+                <BrowseSection navState={navState} onNavigate={onNavigate} />
+              )}
+              {isMobile && activeTab === "search" && (
+                <SearchSection navState={navState} onNavigate={onNavigate} />
+              )}
+              {isMobile && activeTab === "reading" && (
+                <SessionSection onNavigate={onNavigate} />
+              )}
+              {isMobile && activeTab === "latest" && (
                 <TimelineSection onNavigate={onNavigate} />
               )}
             </div>

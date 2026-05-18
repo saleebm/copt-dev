@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import navStyles from "@/styles/navigation.module.css";
 import type { CategoryNode } from "@/types/navigation";
@@ -9,22 +9,30 @@ import type { CategoryNode } from "@/types/navigation";
 interface CategoryTreeProps {
   categories: CategoryNode[];
   className?: string;
+  /** Auto-expand top-level nodes up to this depth (0-indexed). 0 = top-level expanded. */
+  defaultExpandDepth?: number;
+  /** External control of expanded paths. When provided, replaces internal state. */
+  expandedPaths?: ReadonlySet<string> | string[];
   onCategoryClick?: (category: CategoryNode) => void;
   onNavigate?: () => void;
+  /** Called when a node is toggled. When provided, used together with `expandedPaths`. */
+  onToggleExpand?: (path: string) => void;
+  /** Show post-type breakdown indicators ([F:3 B:2]). Hidden by default. */
+  showPostTypeBreakdown?: boolean;
 }
 
 interface CategoryNodeItemProps {
   depth: number;
-  expandedNodes: Set<string>;
+  expandedNodes: ReadonlySet<string>;
   isLast?: boolean;
   node: CategoryNode;
   onNavigate?: () => void;
   onNodeClick: (node: CategoryNode) => void;
   onToggleExpand: (path: string) => void;
   parentPrefix?: string;
+  showPostTypeBreakdown: boolean;
 }
 
-// Recursive component for rendering a single category node and its children
 function CategoryNodeItem({
   node,
   depth,
@@ -34,16 +42,15 @@ function CategoryNodeItem({
   onNavigate,
   isLast = false,
   parentPrefix = "",
+  showPostTypeBreakdown,
 }: CategoryNodeItemProps) {
   const hasChildren = node.children && node.children.length > 0;
   const isExpanded = expandedNodes.has(node.path);
 
-  // Post type indicators
   const getPostTypeIndicator = () => {
-    if (!node.postTypes) {
+    if (!(showPostTypeBreakdown && node.postTypes)) {
       return null;
     }
-
     const types: string[] = [];
     if (node.postTypes.FINDING > 0) {
       types.push(`F:${node.postTypes.FINDING}`);
@@ -57,11 +64,9 @@ function CategoryNodeItem({
     if (node.postTypes.CONCRETE > 0) {
       types.push(`C:${node.postTypes.CONCRETE}`);
     }
-
     if (types.length === 0) {
       return null;
     }
-
     return (
       <span className="ml-2 font-mono text-white/30 text-xs">
         [{types.join(" ")}]
@@ -80,8 +85,6 @@ function CategoryNodeItem({
   );
 
   const handleNodeClick = useCallback(() => {
-    // Always trigger navigation - hierarchical matching may find posts
-    // even if the direct category shows 0 posts
     onNodeClick(node);
     onNavigate?.();
   }, [node, onNodeClick, onNavigate]);
@@ -101,10 +104,10 @@ function CategoryNodeItem({
     <>
       <div
         aria-expanded={hasChildren ? isExpanded : undefined}
-        aria-label={`${node.name} category with ${node.totalPostCount} posts`}
+        aria-label={`${node.displayName || node.name} category with ${node.totalPostCount} posts`}
         className={cn(
           navStyles.nodeRow,
-          "group cursor-pointer select-none font-mono text-xs",
+          "group min-h-[44px] cursor-pointer select-none font-mono text-xs",
           node.isActive && "terminal-active-item"
         )}
         onClick={handleNodeClick}
@@ -114,7 +117,6 @@ function CategoryNodeItem({
       >
         <div className="flex w-full items-center justify-between">
           <div className="flex min-w-0 flex-1 items-center">
-            {/* Render tree structure with proper lines */}
             {depth > 0 && (
               <span className="select-none whitespace-pre font-mono text-muted-foreground">
                 {parentPrefix}
@@ -122,11 +124,10 @@ function CategoryNodeItem({
               </span>
             )}
 
-            {/* Expandable chevron - separate click target */}
             {hasChildren && (
               <button
                 aria-label={isExpanded ? "Collapse" : "Expand"}
-                className="mr-1 inline-flex h-4 w-4 items-center justify-center text-muted-foreground hover:text-primary/90 focus:outline-none"
+                className="mr-1 inline-flex h-6 w-6 items-center justify-center text-muted-foreground hover:text-primary/90 focus:outline-none"
                 onClick={handleExpandClick}
                 type="button"
               >
@@ -134,7 +135,6 @@ function CategoryNodeItem({
               </button>
             )}
 
-            {/* Bullet for leaf nodes */}
             {!hasChildren && (
               <span className="mr-1 inline-flex h-4 w-4 items-center justify-center text-muted-foreground">
                 •
@@ -144,21 +144,16 @@ function CategoryNodeItem({
             {getPostTypeIndicator()}
           </div>
           <div className="ml-2 flex flex-shrink-0 items-center gap-2">
-            {node.totalPostCount > node.postCount && (
+            {node.totalPostCount > 0 && (
               <span className="text-muted-foreground text-xs">
-                ({node.postCount}+{node.totalPostCount - node.postCount})
-              </span>
-            )}
-            {node.totalPostCount === node.postCount && node.postCount > 0 && (
-              <span className="terminal-prompt-muted bg-primary/10 px-1.5 py-0.5 text-xs">
-                {node.postCount}
+                {node.totalPostCount}{" "}
+                {node.totalPostCount === 1 ? "post" : "posts"}
               </span>
             )}
           </div>
         </div>
       </div>
 
-      {/* Render children if expanded */}
       {hasChildren && isExpanded && (
         <div className={cn(navStyles.children)}>
           {node.children.map((child, index) => {
@@ -177,6 +172,7 @@ function CategoryNodeItem({
                 onNodeClick={onNodeClick}
                 onToggleExpand={onToggleExpand}
                 parentPrefix={childPrefix}
+                showPostTypeBreakdown={showPostTypeBreakdown}
               />
             );
           })}
@@ -186,33 +182,86 @@ function CategoryNodeItem({
   );
 }
 
+function collectInitialExpansion(
+  categories: CategoryNode[],
+  defaultDepth: number
+): Set<string> {
+  const out = new Set<string>();
+  const walk = (nodes: CategoryNode[], depth: number) => {
+    for (const node of nodes) {
+      if (depth <= defaultDepth && node.children.length > 0) {
+        out.add(node.path);
+      }
+      if (depth < defaultDepth) {
+        walk(node.children, depth + 1);
+      }
+    }
+  };
+  walk(categories, 0);
+  return out;
+}
+
 export function CategoryTree({
   categories,
   onCategoryClick,
   onNavigate,
   className,
+  defaultExpandDepth = 0,
+  expandedPaths,
+  onToggleExpand,
+  showPostTypeBreakdown = false,
 }: CategoryTreeProps) {
-  // Start with all nodes collapsed by default
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const isControlled =
+    expandedPaths !== undefined && onToggleExpand !== undefined;
+
+  const [internalExpanded, setInternalExpanded] = useState<Set<string>>(() =>
+    collectInitialExpansion(categories, defaultExpandDepth)
+  );
+  const [hasSeededControlled, setHasSeededControlled] = useState(false);
+  const [showBreakdown, setShowBreakdown] = useState(showPostTypeBreakdown);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-  // Helper function to check if a category or its children have posts
-  const hasPostsInTree = useCallback((node: CategoryNode): boolean => {
-    // Check if this node has posts
-    if (node.postCount > 0) {
-      return true;
+  // Seed controlled persisted state with depth-1 expansion when empty.
+  useEffect(() => {
+    if (!isControlled || hasSeededControlled || defaultExpandDepth < 0) {
+      return;
     }
+    const incoming = Array.isArray(expandedPaths)
+      ? expandedPaths
+      : Array.from(expandedPaths ?? []);
+    if (incoming.length === 0 && categories.length > 0 && onToggleExpand) {
+      const seed = collectInitialExpansion(categories, defaultExpandDepth);
+      for (const path of seed) {
+        onToggleExpand(path);
+      }
+    }
+    setHasSeededControlled(true);
+  }, [
+    isControlled,
+    hasSeededControlled,
+    expandedPaths,
+    categories,
+    defaultExpandDepth,
+    onToggleExpand,
+  ]);
 
-    // Check if any child has posts (recursively)
-    return node.children.some((child) => hasPostsInTree(child));
-  }, []);
+  const expandedNodes = useMemo<ReadonlySet<string>>(() => {
+    if (isControlled) {
+      return expandedPaths instanceof Set
+        ? (expandedPaths as ReadonlySet<string>)
+        : new Set(expandedPaths);
+    }
+    return internalExpanded;
+  }, [isControlled, expandedPaths, internalExpanded]);
 
   const handleToggleExpand = useCallback(
     (path: string) => {
-      setExpandedNodes((prev) => {
+      if (isControlled) {
+        onToggleExpand?.(path);
+        return;
+      }
+      setInternalExpanded((prev) => {
         const next = new Set(prev);
-
-        // Find the node being toggled
         const findNode = (
           nodes: CategoryNode[],
           targetPath: string
@@ -228,24 +277,16 @@ export function CategoryTree({
           }
           return null;
         };
-
         const targetNode = findNode(categories, path);
-
         if (next.has(path)) {
-          // Collapsing - just remove this path
           next.delete(path);
         } else {
-          // Expanding - add this path and auto-expand empty folders
           next.add(path);
-
-          // Auto-expand children that don't have posts (empty folders)
           if (targetNode) {
             const autoExpandChildren = (node: CategoryNode) => {
               node.children.forEach((child) => {
-                // Auto-expand if this folder has no direct posts and only has subfolders
                 if (child.postCount === 0 && child.children.length > 0) {
                   next.add(child.path);
-                  // Recursively auto-expand empty subfolders
                   autoExpandChildren(child);
                 }
               });
@@ -256,15 +297,12 @@ export function CategoryTree({
         return next;
       });
     },
-    [categories]
+    [isControlled, onToggleExpand, categories]
   );
 
   const handleNodeClick = useCallback(
     (node: CategoryNode) => {
       setSelectedNode(node.path);
-
-      // Always trigger navigation - hierarchical matching may find posts
-      // in subcategories even if the direct category has 0 posts
       onCategoryClick?.(node);
     },
     [onCategoryClick]
@@ -281,19 +319,39 @@ export function CategoryTree({
       });
     };
     collectPaths(categories);
-    setExpandedNodes(allPaths);
-  }, [categories]);
+    if (isControlled && onToggleExpand) {
+      const current =
+        expandedPaths instanceof Set
+          ? expandedPaths
+          : new Set(expandedPaths ?? []);
+      allPaths.forEach((path) => {
+        if (!current.has(path)) {
+          onToggleExpand(path);
+        }
+      });
+    } else {
+      setInternalExpanded(allPaths);
+    }
+  }, [categories, isControlled, onToggleExpand, expandedPaths]);
 
   const handleCollapseAll = useCallback(() => {
-    setExpandedNodes(new Set());
-  }, []);
+    if (isControlled && onToggleExpand) {
+      const current =
+        expandedPaths instanceof Set
+          ? expandedPaths
+          : new Set(expandedPaths ?? []);
+      for (const path of current) {
+        onToggleExpand(path);
+      }
+    } else {
+      setInternalExpanded(new Set());
+    }
+  }, [isControlled, onToggleExpand, expandedPaths]);
 
-  // Calculate tree statistics
   const stats = useMemo(() => {
     let totalCategories = 0;
     let totalPosts = 0;
     let maxDepth = 0;
-
     const calculateStats = (nodes: CategoryNode[], depth = 0) => {
       nodes.forEach((node) => {
         totalCategories++;
@@ -304,39 +362,47 @@ export function CategoryTree({
         }
       });
     };
-
     calculateStats(categories);
     return { totalCategories, totalPosts, maxDepth };
   }, [categories]);
 
   return (
     <div className={cn("flex h-full flex-col", className)}>
-      {/* Terminal header */}
+      {/* Header */}
       <div className="border-white/10 border-b p-3">
-        <div className="mb-2 flex items-center gap-2 text-white/40 text-xs">
-          <span className="terminal-prompt">❯</span>
-          <span>./topics --tree</span>
-        </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-white/60">
-            {stats.totalCategories} categories • {stats.totalPosts} posts
+            {stats.totalCategories} topics • {stats.totalPosts} posts
           </span>
           <div className="flex gap-2">
             <button
-              aria-label="Expand all categories"
-              className="terminal-interactive"
+              aria-label="Expand all topics"
+              className="min-h-[44px] px-2 text-white/60 transition-colors hover:text-white/90"
               onClick={handleExpandAll}
               type="button"
             >
               [expand]
             </button>
             <button
-              aria-label="Collapse all categories"
-              className="text-white/40 transition-colors hover:text-white/60"
+              aria-label="Collapse all topics"
+              className="min-h-[44px] px-2 text-white/40 transition-colors hover:text-white/60"
               onClick={handleCollapseAll}
               type="button"
             >
               [collapse]
+            </button>
+            <button
+              aria-label={
+                showBreakdown
+                  ? "Hide post type breakdown"
+                  : "Show post type breakdown"
+              }
+              aria-pressed={showBreakdown}
+              className="min-h-[44px] px-2 text-white/40 transition-colors hover:text-white/70"
+              onClick={() => setShowBreakdown((prev) => !prev)}
+              type="button"
+            >
+              {showBreakdown ? "[hide types]" : "[types]"}
             </button>
           </div>
         </div>
@@ -347,7 +413,7 @@ export function CategoryTree({
         {categories.length === 0 ? (
           <div className="p-4 text-center text-white/40 text-xs">
             <span className="mb-2 block">∅</span>
-            <span>No categories found</span>
+            <span>No topics found</span>
           </div>
         ) : (
           <div className="py-0">
@@ -362,6 +428,7 @@ export function CategoryTree({
                 onNodeClick={handleNodeClick}
                 onToggleExpand={handleToggleExpand}
                 parentPrefix=""
+                showPostTypeBreakdown={showBreakdown}
               />
             ))}
           </div>
