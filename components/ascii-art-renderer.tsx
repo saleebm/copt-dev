@@ -18,6 +18,7 @@ interface AsciiArtRendererProps {
   hero?: boolean;
   lineCount: number;
   maxLineLength: number;
+  size?: "default" | "lg";
 }
 
 /**
@@ -32,6 +33,7 @@ const AsciiArtRenderer = ({
   fontSizeEstimates,
   estimatedHeight,
   hero = false,
+  size = "default",
 }: AsciiArtRendererProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
@@ -64,9 +66,14 @@ const AsciiArtRenderer = ({
       typeof window === "undefined" ? rawContainerWidth : window.innerWidth;
     const containerWidth = Math.min(rawContainerWidth, viewportWidth);
 
-    const targetMobile = 0.08;
-    const targetTablet = 0.15;
-    const targetDesktop = 0.3;
+    // size="lg" lifts the cap on the extremely-large bucket so an opted-in
+    // instance (e.g. the about-page face) can actually fill the column.
+    const lgScale =
+      size === "lg" && asciiCategory === "extremely-large" ? 1.85 : 1;
+
+    const targetMobile = 0.08 * lgScale;
+    const targetTablet = 0.15 * lgScale;
+    const targetDesktop = 0.3 * lgScale;
 
     const availableWidth = containerWidth * 0.92;
     const charWidthRatio = maxLineLength > 120 ? 0.52 : 0.62;
@@ -80,11 +87,11 @@ const AsciiArtRenderer = ({
     if (asciiCategory === "extremely-large") {
       minSize = 0.02;
       if (containerWidth < 420) {
-        maxSize = 0.12;
+        maxSize = 0.12 * lgScale;
       } else if (containerWidth < 768) {
-        maxSize = 0.2;
+        maxSize = 0.2 * lgScale;
       } else {
-        maxSize = 0.3;
+        maxSize = 0.3 * lgScale;
       }
     } else if (asciiCategory === "large") {
       minSize = 0.03;

@@ -5,15 +5,17 @@ interface FaceAsciiProps {
   className?: string;
   height?: string | number;
   hero?: boolean;
+  size?: "default" | "lg";
 }
 
-export function FaceAscii({ className, height, hero }: FaceAsciiProps) {
+export function FaceAscii({ className, height, hero, size }: FaceAsciiProps) {
   return (
     <AsciiArtWrapper
       asciiArt={FACE_ASCII}
       className={className}
       height={height}
       hero={hero}
+      size={size}
     />
   );
 }

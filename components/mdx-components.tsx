@@ -400,13 +400,14 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
       </div>
     ),
 
-    FaceAscii: ({ className, height, hero, ...props }) => (
+    FaceAscii: ({ className, height, hero, size, ...props }) => (
       <div className="my-6">
         <AsciiArtWrapper
           asciiArt={FACE_ASCII}
           className={className}
           height={height}
           hero={hero}
+          size={size}
           {...props}
         />
       </div>

@@ -826,55 +826,6 @@
 
 /* Terminal-Style Navigation Tabs */
 @layer components {
-  /* Tab Bar Container */
-  .terminal-nav .tab-bar {
-    position: relative;
-    display: flex;
-    background: hsl(var(--background));
-    border-bottom: 1px solid hsl(var(--foreground) / 0.2);
-  }
-
-  /* Tab Buttons */
-  .terminal-nav .tab-bar button {
-    position: relative;
-    flex: 1;
-    padding: 0.75rem 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: hsl(var(--foreground) / 0.6);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    background: transparent;
-    border: 1px solid hsl(var(--foreground) / 0.2);
-    border-bottom: none;
-    transition: none;
-  }
-
-  /* Tab Button Hover State */
-  .terminal-nav .tab-bar button:hover:not([aria-selected="true"]) {
-    color: hsl(var(--foreground) / 0.85);
-    background: hsl(var(--foreground) / 0.05);
-  }
-
-  /* Active Tab State */
-  .terminal-nav .tab-bar button[aria-selected="true"] {
-    z-index: 10;
-    font-weight: 500;
-    color: hsl(var(--background));
-    background: hsl(var(--foreground));
-    border-color: hsl(var(--foreground));
-    border-bottom: 1px solid hsl(var(--background));
-  }
-
-  /* Tab Content Container */
-  .terminal-nav .tab-content {
-    flex: 1;
-    overflow-x: hidden;
-    overflow-y: auto;
-    background: hsl(var(--background));
-  }
-
   /* Terminal Prompt Styles */
   .terminal-prompt {
     font-family: var(--font-mono);
@@ -914,15 +865,6 @@
     color: hsl(var(--destructive));
     background: hsl(var(--destructive) / 0.1);
     border-color: hsl(var(--destructive) / 0.5);
-  }
-
-  /* Mobile Responsive Adjustments */
-  @media (max-width: 768px) {
-    .terminal-nav .tab-bar button {
-      padding: 0.625rem 0.5rem;
-      font-size: 0.625rem;
-      letter-spacing: 0.025em;
-    }
   }
 
   /* Quake Terminal Animations */

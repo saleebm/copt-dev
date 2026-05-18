@@ -6,6 +6,7 @@ interface AsciiArtWrapperProps {
   className?: string;
   height?: string | number;
   hero?: boolean;
+  size?: "default" | "lg";
 }
 
 /**
@@ -17,6 +18,7 @@ export function AsciiArtWrapper({
   className = "",
   height,
   hero = false,
+  size = "default",
 }: AsciiArtWrapperProps) {
   if (!asciiArt) {
     return null;
@@ -56,11 +58,18 @@ export function AsciiArtWrapper({
     const tabletWidth = 600;
     const desktopWidth = 700; // Conservative desktop estimate accounting for sidebar
 
+    // size="lg" lifts the cap on the extremely-large bucket so an opted-in
+    // instance (e.g. the about-page face) can actually fill the column.
+    const lgScale = size === "lg" ? 1.85 : 1;
     const maxSizeConfig: Record<
       string,
       { mobile: number; tablet: number; desktop: number }
     > = {
-      "extremely-large": { mobile: 0.12, tablet: 0.2, desktop: 0.3 },
+      "extremely-large": {
+        mobile: 0.12 * lgScale,
+        tablet: 0.2 * lgScale,
+        desktop: 0.3 * lgScale,
+      },
       large: { mobile: 0.15, tablet: 0.25, desktop: 0.4 },
       default: { mobile: 0.2, tablet: 0.3, desktop: 0.42 },
     };
@@ -125,7 +134,7 @@ export function AsciiArtWrapper({
     // For server-side estimation, assume desktop size for conservative estimate
     // since that's where height issues are most problematic
     if (asciiCategory === "extremely-large") {
-      expectedFontSize = 0.3; // Desktop target for extremely-large
+      expectedFontSize = size === "lg" ? 0.55 : 0.3; // Desktop target for extremely-large
     } else if (asciiCategory === "large") {
       expectedFontSize = 0.25; // Conservative estimate for large
     } else {
@@ -134,6 +143,13 @@ export function AsciiArtWrapper({
 
     // Convert rem to pixels (assuming 16px base)
     const fontSizeInPx = expectedFontSize * 16;
+
+    // size="lg" pins the font size to a known cap, so the estimate matches the
+    // rendered pre exactly — skip the generous padding/buffer that exists to
+    // prevent layout jump on uncertain auto-sizing.
+    if (size === "lg") {
+      return Math.ceil(lineCount * fontSizeInPx * 1.1);
+    }
 
     // Calculate height: lineCount * fontSize * lineHeight + padding
     const calculatedHeight = Math.ceil(lineCount * fontSizeInPx * 1.1 + 32);
@@ -181,6 +197,7 @@ export function AsciiArtWrapper({
           hero={hero}
           lineCount={lineCount}
           maxLineLength={maxLineLength}
+          size={size}
         />
       </Suspense>
     </div>

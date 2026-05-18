@@ -250,11 +250,7 @@ export function QuakeTerminalMobile() {
 
           {/* Navigation Content */}
           <div className="h-[calc(85vh-3rem)] overflow-hidden">
-            <NavigationTabs
-              navState={navState}
-              onNavigate={handleNavigate}
-              variant="mobile"
-            />
+            <NavigationTabs navState={navState} onNavigate={handleNavigate} />
           </div>
         </div>
 
@@ -262,8 +258,8 @@ export function QuakeTerminalMobile() {
         <div className="pointer-events-none absolute inset-x-0 -bottom-8 h-8 bg-gradient-to-b from-black/20 to-transparent" />
       </div>
 
-      {/* Floating Action Button - only shows when regular nav is hidden */}
-      {!isHeaderVisible && (
+      {/* Floating Action Button - always visible, hidden only when drawer is open */}
+      {!(isOpen || isClosing) && (
         <FloatingActionButton isOpen={isOpen} onClick={toggleTerminal} />
       )}
     </div>
