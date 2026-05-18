@@ -13,6 +13,7 @@ import {
 import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import type { useMobileNavigationState } from "@/hooks/use-mobile-navigation-state";
+import { cn } from "@/lib/utils";
 
 type Variant = "desktop" | "mobile";
 
@@ -133,7 +134,7 @@ export function NavigationTabs({
 
   return (
     <div className="h-full w-full overflow-hidden bg-black font-mono text-white/90">
-      <div className="flex h-full min-h-0 flex-col lg:min-w-0">
+      <div className="flex h-full min-h-0 min-w-0 flex-col">
         {/* Terminal Header - Hidden on mobile */}
         <div className="hidden border-white/20 border-b bg-black p-4 lg:block">
           <div className="mb-3 flex items-center gap-2">
@@ -197,11 +198,19 @@ export function NavigationTabs({
           postTypeCounts={postTypeCounts}
           tags={tags}
         >
-          <div className="terminal-nav flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-black">
+          <div
+            className={cn(
+              "flex h-full min-w-0 flex-1 flex-col overflow-hidden bg-black",
+              !isMobile && "terminal-nav"
+            )}
+          >
             {/* Tab Bar */}
             <div
               aria-label="Navigation sections"
-              className="tab-bar flex flex-shrink-0 border-white/20 border-b bg-black"
+              className={cn(
+                "tab-bar flex-shrink-0 border-white/20 border-b bg-black",
+                isMobile ? "grid grid-cols-4" : "flex"
+              )}
               role="tablist"
             >
               {tabs.map((tab, index) => (
@@ -209,8 +218,10 @@ export function NavigationTabs({
                   aria-controls={`tab-panel-${tab.id}`}
                   aria-label={tab.label}
                   aria-selected={activeTab === tab.id}
-                  className={`flex-1 cursor-pointer border-white/20 border-t border-r border-l px-2 py-3 font-mono text-xs tracking-wider transition-none sm:px-4 ${
-                    isMobile ? "min-h-[44px] normal-case" : "uppercase"
+                  className={`min-w-0 cursor-pointer overflow-hidden border-white/20 border-t border-r border-l px-1 py-3 font-mono text-xs transition-none sm:px-4 ${
+                    isMobile
+                      ? "min-h-[44px] normal-case"
+                      : "flex-1 uppercase tracking-wider"
                   } ${
                     activeTab === tab.id
                       ? "border-white border-b-black bg-white text-black"
@@ -228,7 +239,7 @@ export function NavigationTabs({
                   type="button"
                 >
                   {isMobile ? (
-                    <span>{tab.label}</span>
+                    <span className="block truncate">{tab.label}</span>
                   ) : (
                     <>
                       <span className="hidden md:inline">{tab.label}</span>

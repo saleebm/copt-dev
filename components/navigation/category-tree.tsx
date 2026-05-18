@@ -370,41 +370,39 @@ export function CategoryTree({
     <div className={cn("flex h-full flex-col", className)}>
       {/* Header */}
       <div className="border-white/10 border-b p-3">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-white/60">
-            {stats.totalCategories} topics • {stats.totalPosts} posts
-          </span>
-          <div className="flex gap-2">
-            <button
-              aria-label="Expand all topics"
-              className="min-h-[44px] px-2 text-white/60 transition-colors hover:text-white/90"
-              onClick={handleExpandAll}
-              type="button"
-            >
-              [expand]
-            </button>
-            <button
-              aria-label="Collapse all topics"
-              className="min-h-[44px] px-2 text-white/40 transition-colors hover:text-white/60"
-              onClick={handleCollapseAll}
-              type="button"
-            >
-              [collapse]
-            </button>
-            <button
-              aria-label={
-                showBreakdown
-                  ? "Hide post type breakdown"
-                  : "Show post type breakdown"
-              }
-              aria-pressed={showBreakdown}
-              className="min-h-[44px] px-2 text-white/40 transition-colors hover:text-white/70"
-              onClick={() => setShowBreakdown((prev) => !prev)}
-              type="button"
-            >
-              {showBreakdown ? "[hide types]" : "[types]"}
-            </button>
-          </div>
+        <div className="text-white/60 text-xs">
+          {stats.totalCategories} topics • {stats.totalPosts} posts
+        </div>
+        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs">
+          <button
+            aria-label="Expand all topics"
+            className="min-h-[44px] text-white/60 transition-colors hover:text-white/90"
+            onClick={handleExpandAll}
+            type="button"
+          >
+            [expand]
+          </button>
+          <button
+            aria-label="Collapse all topics"
+            className="min-h-[44px] text-white/40 transition-colors hover:text-white/60"
+            onClick={handleCollapseAll}
+            type="button"
+          >
+            [collapse]
+          </button>
+          <button
+            aria-label={
+              showBreakdown
+                ? "Hide post type breakdown"
+                : "Show post type breakdown"
+            }
+            aria-pressed={showBreakdown}
+            className="min-h-[44px] text-white/40 transition-colors hover:text-white/70"
+            onClick={() => setShowBreakdown((prev) => !prev)}
+            type="button"
+          >
+            {showBreakdown ? "[hide types]" : "[types]"}
+          </button>
         </div>
       </div>
 

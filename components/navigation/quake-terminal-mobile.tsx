@@ -167,7 +167,7 @@ export function QuakeTerminalMobile() {
       {/* Fixed Header with Toggle Button */}
       <div
         className={cn(
-          "quake-header fixed top-0 right-0 left-0 z-[60]",
+          "quake-header fixed top-0 left-0 z-[60] w-screen",
           isHeaderVisible ? "quake-header-slide-in" : "quake-header-slide-out",
           "border-primary/30 border-b bg-background/95 backdrop-blur-sm"
         )}
@@ -209,7 +209,7 @@ export function QuakeTerminalMobile() {
       {/* Quake Terminal Dropdown */}
       <div
         className={cn(
-          "quake-terminal fixed top-0 right-0 left-0 z-[58]",
+          "quake-terminal fixed top-0 left-0 z-[58] w-screen",
           "max-h-[85vh]",
           isOpen && !isClosing && "quake-terminal-opening pointer-events-auto",
           isClosing && "quake-terminal-closing pointer-events-none",
