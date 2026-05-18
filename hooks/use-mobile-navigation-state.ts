@@ -8,20 +8,44 @@ const STORAGE_KEY = "mobile-nav-state";
 
 // Default state values
 const DEFAULT_STATE = {
-  activeTab: "session" as TabId,
+  activeTab: "topics" as TabId,
   selectedPostTypes: [PostType.BLOG, PostType.CONCRETE] as PostType[],
   browseMode: "nodes" as BrowseMode,
   scrollPositions: {
-    session: 0,
-    browse: 0,
-    timeline: 0,
+    topics: 0,
+    search: 0,
+    reading: 0,
+    latest: 0,
   },
   expandedCategories: [] as string[],
+  searchQuery: "",
   lastClosedAt: 0,
 };
 
-export type TabId = "session" | "browse" | "timeline";
+export type TabId = "topics" | "search" | "reading" | "latest";
 export type BrowseMode = "nodes" | "index";
+
+// Map legacy tab IDs (session/browse/timeline) to current ones for state migration.
+function migrateLegacyTabId(value: unknown): TabId {
+  if (
+    value === "topics" ||
+    value === "search" ||
+    value === "reading" ||
+    value === "latest"
+  ) {
+    return value;
+  }
+  if (value === "browse") {
+    return "topics";
+  }
+  if (value === "session") {
+    return "reading";
+  }
+  if (value === "timeline") {
+    return "latest";
+  }
+  return DEFAULT_STATE.activeTab;
+}
 
 export interface MobileNavState {
   activeTab: TabId;
@@ -29,6 +53,7 @@ export interface MobileNavState {
   expandedCategories: string[];
   lastClosedAt: number;
   scrollPositions: Record<TabId, number>;
+  searchQuery: string;
   selectedPostTypes: PostType[];
 }
 
@@ -40,9 +65,10 @@ export function useMobileNavigationState() {
   const [state, setState] = useState<MobileNavState>(DEFAULT_STATE);
   const [isRestored, setIsRestored] = useState(false);
   const scrollRestorationRef = useRef<Record<TabId, boolean>>({
-    session: false,
-    browse: false,
-    timeline: false,
+    topics: false,
+    search: false,
+    reading: false,
+    latest: false,
   });
 
   // Load state from localStorage on mount
@@ -54,12 +80,13 @@ export function useMobileNavigationState() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored) as MobileNavState;
-        // Validate and merge with defaults to handle missing fields
+        const parsed = JSON.parse(stored) as Partial<MobileNavState> & {
+          activeTab?: unknown;
+        };
         setState({
-          activeTab: parsed.activeTab || DEFAULT_STATE.activeTab,
+          activeTab: migrateLegacyTabId(parsed.activeTab),
           selectedPostTypes:
-            parsed.selectedPostTypes?.length > 0
+            parsed.selectedPostTypes && parsed.selectedPostTypes.length > 0
               ? parsed.selectedPostTypes
               : DEFAULT_STATE.selectedPostTypes,
           browseMode: parsed.browseMode || DEFAULT_STATE.browseMode,
@@ -69,6 +96,7 @@ export function useMobileNavigationState() {
           },
           expandedCategories:
             parsed.expandedCategories || DEFAULT_STATE.expandedCategories,
+          searchQuery: parsed.searchQuery || DEFAULT_STATE.searchQuery,
           lastClosedAt: parsed.lastClosedAt || 0,
         });
       }
@@ -179,22 +207,28 @@ export function useMobileNavigationState() {
     setState((prev) => ({ ...prev, lastClosedAt: Date.now() }));
   }, []);
 
+  const setSearchQuery = useCallback((query: string) => {
+    setState((prev) => ({ ...prev, searchQuery: query }));
+  }, []);
+
   // Reset to defaults
   const resetToDefaults = useCallback(() => {
     setState(DEFAULT_STATE);
     scrollRestorationRef.current = {
-      session: false,
-      browse: false,
-      timeline: false,
+      topics: false,
+      search: false,
+      reading: false,
+      latest: false,
     };
   }, []);
 
   // Clear scroll restoration flags when menu opens
   const onMenuOpen = useCallback(() => {
     scrollRestorationRef.current = {
-      session: false,
-      browse: false,
-      timeline: false,
+      topics: false,
+      search: false,
+      reading: false,
+      latest: false,
     };
   }, []);
 
@@ -226,6 +260,10 @@ export function useMobileNavigationState() {
     toggleCategoryExpansion,
     isCategoryExpanded,
     expandedCategories: state.expandedCategories,
+
+    // Drawer-level search query
+    searchQuery: state.searchQuery,
+    setSearchQuery,
 
     // Menu lifecycle
     recordClose,

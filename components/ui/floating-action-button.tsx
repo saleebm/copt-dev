@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronUp, Terminal } from "lucide-react";
+import { ChevronUp, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -73,15 +73,13 @@ export function FloatingActionButton({
             y: 0,
           }}
           aria-expanded={isOpen}
-          aria-label={
-            isOpen ? "Close terminal navigation" : "Open terminal navigation"
-          }
+          aria-label={isOpen ? "Close find posts" : "Open find posts"}
           className={cn(
             "fixed right-6 bottom-6 z-[100]",
-            "flex items-center justify-center",
-            "h-14 w-14 rounded-full",
+            "flex items-center justify-center gap-2",
+            "min-h-[56px] min-w-[56px] rounded-full px-4",
             "border-2 border-green-500 bg-black",
-            "text-green-500",
+            "font-mono text-green-500 text-sm uppercase tracking-wider",
             "shadow-green-500/20 shadow-lg",
             "hover:shadow-green-500/30 hover:shadow-xl",
             "transition-shadow duration-300",
@@ -108,45 +106,42 @@ export function FloatingActionButton({
         >
           <motion.div
             animate={{ rotate: isOpen ? 180 : 0 }}
-            className="relative"
+            className="relative flex items-center justify-center"
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            {/* Primary icon */}
             {isOpen ? (
               <ChevronUp
                 aria-hidden="true"
-                className="h-6 w-6"
+                className="h-5 w-5"
                 strokeWidth={2.5}
               />
             ) : (
-              <Terminal
+              <Search
                 aria-hidden="true"
-                className="h-6 w-6"
+                className="h-5 w-5"
                 strokeWidth={2.5}
               />
             )}
-
-            {/* Pulsing indicator when closed */}
-            {!isOpen && (
-              <motion.div
-                animate={{
-                  scale: [1, 1.4, 1],
-                  opacity: [0.7, 0, 0.7],
-                }}
-                aria-hidden="true"
-                className="absolute inset-0 rounded-full border-2 border-green-500"
-                transition={{
-                  duration: 2,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "easeInOut",
-                }}
-              />
-            )}
           </motion.div>
+          {!isOpen && <span aria-hidden="true">Find</span>}
+          {!isOpen && (
+            <motion.div
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.5, 0, 0.5],
+              }}
+              aria-hidden="true"
+              className="absolute inset-0 rounded-full border-2 border-green-500"
+              transition={{
+                duration: 2,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
+            />
+          )}
 
-          {/* Screen reader text */}
           <span className="sr-only">
-            {isOpen ? "Close" : "Open"} mobile navigation menu
+            {isOpen ? "Close" : "Open"} find posts drawer
           </span>
         </motion.button>
       )}

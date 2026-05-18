@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -167,7 +167,7 @@ export function QuakeTerminalMobile() {
       {/* Fixed Header with Toggle Button */}
       <div
         className={cn(
-          "quake-header fixed top-0 right-0 left-0 z-[60]",
+          "quake-header fixed top-0 left-0 z-[60] w-screen",
           isHeaderVisible ? "quake-header-slide-in" : "quake-header-slide-out",
           "border-primary/30 border-b bg-background/95 backdrop-blur-sm"
         )}
@@ -175,22 +175,19 @@ export function QuakeTerminalMobile() {
       >
         <button
           aria-expanded={isOpen}
-          aria-label={isOpen ? "Close terminal" : "Open terminal"}
-          className="flex w-full items-center justify-center gap-2 py-2 font-mono text-primary text-xs uppercase tracking-wider"
+          aria-label={
+            isOpen ? "Close find posts drawer" : "Open find posts drawer"
+          }
+          className="flex min-h-[44px] w-full items-center justify-center gap-2 py-3 font-mono text-primary text-sm tracking-wide"
           onClick={toggleTerminal}
           type="button"
         >
-          <span className="terminal-prompt">❯</span>
-          <span>terminal</span>
+          <Search aria-hidden="true" className="h-4 w-4" />
+          <span>Find posts</span>
           <ChevronDown
+            aria-hidden="true"
             className={cn(
               "h-4 w-4 transition-transform duration-300",
-              isOpen ? "rotate-180" : ""
-            )}
-          />
-          <ChevronDown
-            className={cn(
-              "-ml-2 h-4 w-4 transition-transform duration-300",
               isOpen ? "rotate-180" : ""
             )}
           />
@@ -212,7 +209,7 @@ export function QuakeTerminalMobile() {
       {/* Quake Terminal Dropdown */}
       <div
         className={cn(
-          "quake-terminal fixed top-0 right-0 left-0 z-[58]",
+          "quake-terminal fixed top-0 left-0 z-[58] w-screen",
           "max-h-[85vh]",
           isOpen && !isClosing && "quake-terminal-opening pointer-events-auto",
           isClosing && "quake-terminal-closing pointer-events-none",
@@ -253,7 +250,11 @@ export function QuakeTerminalMobile() {
 
           {/* Navigation Content */}
           <div className="h-[calc(85vh-3rem)] overflow-hidden">
-            <NavigationTabs navState={navState} onNavigate={handleNavigate} />
+            <NavigationTabs
+              navState={navState}
+              onNavigate={handleNavigate}
+              variant="mobile"
+            />
           </div>
         </div>
 

@@ -70,7 +70,7 @@ export function BrowseSection({ onNavigate, navState }: BrowseSectionProps) {
       {/* Preserve all existing component functionality */}
       <div className={styles.browseContent}>
         {mode === "nodes" ? (
-          <EnhancedCategoryTab onNavigate={onNavigate} />
+          <EnhancedCategoryTab navState={navState} onNavigate={onNavigate} />
         ) : (
           <EnhancedTagsTab onNavigate={onNavigate} />
         )}
