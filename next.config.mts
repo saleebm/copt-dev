@@ -20,7 +20,9 @@ const nextConfig: NextConfig = {
     mdxRs: true,
     inlineCss: true,
     // Forward browser logs to the terminal for easier debugging
-    serverComponentsHmrCache: false, // disable HMR for server components for local development (HMR = hot module replacement)
+    cachedNavigations: true,
+    optimisticRouting: true,
+    serverComponentsHmrCache: true, // disable HMR for server components for local development (HMR = hot module replacement)
   },
   logging: {
     browserToTerminal: true,

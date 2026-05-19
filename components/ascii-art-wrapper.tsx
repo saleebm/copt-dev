@@ -149,10 +149,10 @@ export function AsciiArtWrapper({
     }
 
     // Calculate height: lineCount * fontSize * lineHeight + padding.
-    const calculatedHeight = Math.ceil(lineCount * fontSizeInPx * 1.1 + 32);
+    const calculatedHeight = Math.ceil(lineCount * fontSizeInPx * 1.1 + 12);
 
     // Add some buffer for extremely large ASCII to prevent any overflow
-    const buffer = asciiCategory === "extremely-large" ? 64 : 32;
+    const buffer = asciiCategory === "extremely-large" ? 24 : 12;
 
     return calculatedHeight + buffer;
   };
@@ -166,7 +166,7 @@ export function AsciiArtWrapper({
     if (height) {
       return { height: typeof height === "number" ? `${height}px` : height };
     }
-    return { height: "auto" as const, minHeight: `${estimatedHeight}px` };
+    return { height: "auto" as const };
   };
   const heightStyle = getHeightStyle();
 
@@ -179,7 +179,7 @@ export function AsciiArtWrapper({
         asciiArt={asciiArt}
         asciiCategory={asciiCategory}
         className={className}
-        estimatedHeight={estimatedHeight}
+        estimatedHeight={hero ? estimatedHeight : 0}
         fontSizeEstimates={fontSizeEstimates}
         hero={hero}
         lineCount={lineCount}
