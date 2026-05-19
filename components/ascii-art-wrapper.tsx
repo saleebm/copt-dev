@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import AsciiArtRenderer from "./ascii-art-renderer";
 
 interface AsciiArtWrapperProps {
@@ -10,8 +9,9 @@ interface AsciiArtWrapperProps {
 }
 
 /**
- * Simple server wrapper component for AsciiArtRenderer that provides a stable container.
- * Pre-calculates ASCII art metadata on the server to improve initial sizing.
+ * Server wrapper for ASCII art sizing metadata.
+ * The client renderer measures the final container width, applies the exact
+ * font size, then fades the preformatted content in.
  */
 export function AsciiArtWrapper({
   asciiArt,
@@ -23,14 +23,12 @@ export function AsciiArtWrapper({
   if (!asciiArt) {
     return null;
   }
-  const resolvedAsciiArt = asciiArt;
-
-  // Pre-calculate ASCII art metadata on the server
-  const lines = resolvedAsciiArt.split("\n");
+  // Server-side metadata reserves stable space before client measurement.
+  const lines = asciiArt.split("\n");
   const lineCount = lines.length;
   const maxLineLength = Math.max(...lines.map((line) => line.length));
 
-  // Determine ASCII art category for better initial sizing
+  // Bucket the art so server estimates use the same sizing contract as the client.
   const getAsciiCategory = () => {
     if (maxLineLength > 120 || lineCount > 40) {
       return "extremely-large";
@@ -43,9 +41,9 @@ export function AsciiArtWrapper({
 
   const asciiCategory = getAsciiCategory();
 
-  // Calculate conservative initial font size estimates for different screen sizes
+  // Conservative initial estimates keep layout stable until ResizeObserver runs.
   const getInitialFontSizeEstimates = () => {
-    // Target font sizes based on your requirements
+    // Target font sizes mirrored by the client renderer.
     const targetMobile = 0.08; // Under 420px
     const targetTablet = 0.15; // 420px - 768px
     const targetDesktop = 0.3; // Over 768px
@@ -53,7 +51,7 @@ export function AsciiArtWrapper({
     // Conservative character width ratio
     const charWidthRatio = maxLineLength > 120 ? 0.52 : 0.62;
 
-    // Estimate for different screen sizes with your target values
+    // Estimate for common container widths before the client can measure.
     const mobileWidth = 350;
     const tabletWidth = 600;
     const desktopWidth = 700; // Conservative desktop estimate accounting for sidebar
@@ -126,13 +124,12 @@ export function AsciiArtWrapper({
 
   const fontSizeEstimates = getInitialFontSizeEstimates();
 
-  // Calculate estimated height based on actual expected font sizes to prevent jumping
+  // Reserve enough server-rendered height for the client's measured fade-in.
   const getEstimatedHeight = () => {
     // Use the actual font sizes that will likely be used
     let expectedFontSize: number;
 
-    // For server-side estimation, assume desktop size for conservative estimate
-    // since that's where height issues are most problematic
+    // Server estimates assume desktop size, where height shifts are most visible.
     if (asciiCategory === "extremely-large") {
       expectedFontSize = size === "lg" ? 0.55 : 0.3; // Desktop target for extremely-large
     } else if (asciiCategory === "large") {
@@ -151,7 +148,7 @@ export function AsciiArtWrapper({
       return Math.ceil(lineCount * fontSizeInPx * 1.1);
     }
 
-    // Calculate height: lineCount * fontSize * lineHeight + padding
+    // Calculate height: lineCount * fontSize * lineHeight + padding.
     const calculatedHeight = Math.ceil(lineCount * fontSizeInPx * 1.1 + 32);
 
     // Add some buffer for extremely large ASCII to prevent any overflow
@@ -178,28 +175,17 @@ export function AsciiArtWrapper({
       className="flex w-full items-center justify-center overflow-hidden"
       style={heightStyle}
     >
-      <Suspense
-        fallback={
-          <div
-            className="flex w-full items-center justify-center text-muted-foreground text-sm"
-            style={{ height: `${Math.min(estimatedHeight, 128)}px` }}
-          >
-            Loading ASCII art...
-          </div>
-        }
-      >
-        <AsciiArtRenderer
-          asciiArt={resolvedAsciiArt}
-          asciiCategory={asciiCategory}
-          className={className}
-          estimatedHeight={estimatedHeight}
-          fontSizeEstimates={fontSizeEstimates}
-          hero={hero}
-          lineCount={lineCount}
-          maxLineLength={maxLineLength}
-          size={size}
-        />
-      </Suspense>
+      <AsciiArtRenderer
+        asciiArt={asciiArt}
+        asciiCategory={asciiCategory}
+        className={className}
+        estimatedHeight={estimatedHeight}
+        fontSizeEstimates={fontSizeEstimates}
+        hero={hero}
+        lineCount={lineCount}
+        maxLineLength={maxLineLength}
+        size={size}
+      />
     </div>
   );
 }
