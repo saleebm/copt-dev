@@ -1,0 +1,62 @@
+---
+title: "05/18/2026"
+tags: "ascii,mediapipe,bun,webcam,build-log"
+status: "PUBLISHED"
+date: "2026-05-18"
+---
+
+# FACE//ASCII
+
+<FaceAscii size="lg" />
+
+Shipped a small thing: [face-to-ascii-cam](https://github.com/saleebm/face-to-ascii-cam). Live webcam → face detection → ASCII art, but only the face is rendered. Everything runs in the browser. The webcam stream never leaves the device.
+
+## The shape
+
+Bun serves the bundled frontend and that's the whole backend. `Bun.serve({ routes })` with HTML imports does the TS/CSS bundling for free — no webpack, no vite, no build script. The dev loop is `bun --hot server.ts` and you're done.
+
+Inference is two MediaPipe Tasks Vision models running on WASM/GPU:
+
+- **BlazeFace short-range** — face detection, bounding box in video pixels.
+- **Selfie segmenter** — person/background category mask.
+
+Both load from the MediaPipe CDN at boot. After that, no network.
+
+## Pipeline
+
+1. `getUserMedia` streams to a hidden `<video>`.
+2. Every ~83ms (12 Hz, throttled), run both models on the current frame.
+3. Pick the largest face — closer to camera, less likely to be a poster in the background.
+4. EMA-smooth the bounding box so the crop drifts instead of snapping.
+5. Pad asymmetrically: generous on top (hair), generous on the sides (ears), less on the bottom (chin/neck). BlazeFace boxes are tight; without padding you crop off the hair.
+6. Crop to a `cols × rows` sampler canvas and let the browser do the resampling. Orders of magnitude faster than per-pixel JS scaling.
+7. Read ImageData, apply the segmentation mask to drop background pixels, dilate the foreground by one cell to recover hair/ear trim, gate dilated cells by luminance so dark background that leaked in falls back to space.
+8. Map each kept pixel to Rec. 709 luminance, index into a glyph ramp, emit a char.
+9. Render either as a selectable `<pre>` (DOM-TEXT) or onto a canvas with glow (CANVAS).
+
+## The piece that took the most fiddling
+
+Character aspect. Monospace cells are roughly twice as tall as they are wide — render at 1:1 and faces stretch vertically into ghoul mode. The fix is to sample at the inverse ratio:
+
+```ts
+const CHAR_ASPECT = 0.5;
+const rows = Math.max(1, Math.round(cols * (sh / sw) * CHAR_ASPECT));
+```
+
+`sh/sw` is the source-rect aspect; multiplying by `CHAR_ASPECT` collapses the sampled rows so the rendered grid matches the face's real proportions once each cell expands back into its tall monospace box. Once that was right, everything else — the EMA on the bbox, the dilation, the luminance gate — was a knob, not a rewrite.
+
+## Why only the face
+
+I didn't want a screen full of `@`s wherever a jacket-on-a-chair sat. Gating render on face presence with a 700ms grace window keeps the canvas clean when you step out of frame, and stops it flickering when the detector loses you for a single tick.
+
+## Output
+
+The current frame saves as a PNG (canvas mode, glow intact) or as a `.txt` (DOM mode, copy-pasteable). [Here's a sample](https://github.com/saleebm/face-to-ascii-cam/blob/main/face-ascii-1779157141651.txt) — me at my desk, density 200, dense ramp.
+
+## Stack
+
+- Bun 1.3+ for serving + bundling
+- `@mediapipe/tasks-vision` for both models
+- No framework. No build step beyond what Bun does at request time.
+
+Repo: [github.com/saleebm/face-to-ascii-cam](https://github.com/saleebm/face-to-ascii-cam).
