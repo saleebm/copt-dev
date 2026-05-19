@@ -164,7 +164,7 @@ export function AsciiArtWrapper({
 
   const getHeightStyle = () => {
     if (hero) {
-      return { height: "55vh", minHeight: "300px" };
+      return { height: "auto", minHeight: "42vh" };
     }
     if (height) {
       return { height: typeof height === "number" ? `${height}px` : height };
