@@ -1,6 +1,13 @@
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
-import { loadOgAssets, OG_SIZE, OgFrame } from "@/lib/og-image-shared";
+import {
+  extractFirstMarkdownImage,
+  loadOgAssets,
+  loadOgPublicImage,
+  OG_SIZE,
+  OgFrame,
+  OgSightFrame,
+} from "@/lib/og-image-shared";
 import { getPostBySlug } from "@/lib/posts";
 import { POST_TYPE_LABELS, siteConfig } from "@/lib/site-config";
 
@@ -16,10 +23,10 @@ export async function GET(
   const { logoSrc, fonts } = await loadOgAssets();
 
   const title = post.title;
-  const eyebrow =
-    typeof (post as { type?: string }).type === "string"
-      ? (POST_TYPE_LABELS[(post as { type: string }).type] ?? siteConfig.name)
-      : siteConfig.name;
+  const postType = typeof post.type === "string" ? post.type : undefined;
+  const eyebrow = postType
+    ? (POST_TYPE_LABELS[postType] ?? siteConfig.name)
+    : siteConfig.name;
   const footer = post.originalDate
     ? new Date(post.originalDate).toLocaleDateString("en-US", {
         year: "numeric",
@@ -27,6 +34,25 @@ export async function GET(
         day: "numeric",
       })
     : undefined;
+
+  if (postType === "SIGHT") {
+    const firstImage = extractFirstMarkdownImage(post.content);
+    const imageSrc = firstImage
+      ? await loadOgPublicImage(firstImage.src)
+      : null;
+    if (imageSrc) {
+      return new ImageResponse(
+        <OgSightFrame
+          alt={firstImage?.alt || title}
+          eyebrow={eyebrow}
+          footer={footer}
+          imageSrc={imageSrc}
+          title={title}
+        />,
+        { ...OG_SIZE, fonts }
+      );
+    }
+  }
 
   return new ImageResponse(
     <OgFrame
