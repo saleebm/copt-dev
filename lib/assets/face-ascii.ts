@@ -1,15 +1,7 @@
 // Generated from public/face-ascii-1779062379614.txt — keep in sync.
 // biome-ignore-all lint/style/useTemplate: ASCII art template literal preserves byte-for-byte content.
 
-export const FACE_ASCII = `
-                                                                                                                                                                                    
-                                                                                                                                                                                    
-                                                                                                                                                                                    
-                                                                                                                                                                                    
-                                                                                                                                                                                    
-                                                                                                                                                                                    
-                                                                                                                                                                                    
-                                                                                                                                                                                    
+export const FACE_ASCII = `                                                                                                   
                                                                                  ::----::                                                                                           
                                                                            -:.:::::-:::-::::-:                                                                                      
                                                                     +    ::::::::::-:-::::::::::::                                                                                  
