@@ -6,6 +6,7 @@ import { type PostStatus, PostType } from "@/lib/generated/prisma";
 import { syncHlexiconEntries } from "@/lib/hlexicon-utils";
 import { validateMdx } from "@/lib/mdx-validate";
 import { getAllPosts, type ParsedPost } from "@/lib/mdx-parser";
+import { clearPostCache } from "@/lib/posts";
 import { prisma } from "@/lib/prisma";
 
 // Parse command line arguments
@@ -58,6 +59,9 @@ async function syncPosts() {
 
     // Track processed slugs to detect deleted files
     const processedSlugs = new Set<string>();
+    // Track slugs whose DB row actually changed (create/update/redate) so we
+    // can invalidate per-post + nav tags in the running Next.js server.
+    const changedSlugs = new Set<string>();
 
     // Statistics for dry-run
     let createCount = 0;
@@ -93,6 +97,7 @@ async function syncPosts() {
                 where: { slug: post.slug },
                 data: { originalDate: newDate },
               });
+              changedSlugs.add(post.slug);
               console.log(
                 `📅 Redated ${post.slug}: ${oldDate?.toISOString() ?? "null"} → ${newDate?.toISOString() ?? "null"}`
               );
@@ -236,6 +241,7 @@ async function syncPosts() {
             },
           },
         });
+        changedSlugs.add(post.slug);
         console.log(`✅ Updated post: ${post.slug}`);
         updateCount++;
       } else {
@@ -263,6 +269,7 @@ async function syncPosts() {
             },
           },
         });
+        changedSlugs.add(post.slug);
         console.log(`✅ Created post: ${post.slug}`);
         createCount++;
       }
@@ -294,10 +301,23 @@ async function syncPosts() {
           where: { slug: { in: deletedSlugs } },
           data: { published: false },
         });
+        for (const slug of deletedSlugs) {
+          changedSlugs.add(slug);
+        }
         console.log(
           `⚠️  Marked ${deletedSlugs.length} posts as unpublished: ${deletedSlugs.join(", ")}`
         );
       }
+    }
+
+    if (!isDryRun && changedSlugs.size > 0) {
+      // Best-effort: clear the in-process LRU in case the sync runs inside
+      // the same Node process as the server (rare; mostly for tests).
+      clearPostCache();
+      // If a running Next.js server is reachable, ask it to revalidate the
+      // affected Cache Components tags. The script's revalidateTag would not
+      // reach the server's cache because that runs in a separate process.
+      await notifyRevalidate(changedSlugs);
     }
 
     // Summary
@@ -338,6 +358,43 @@ async function syncPosts() {
   } catch (error) {
     console.error("❌ Error syncing posts:", error);
     throw error;
+  }
+}
+
+async function notifyRevalidate(slugs: Set<string>): Promise<void> {
+  const baseUrl = process.env.REVALIDATE_URL;
+  const secret = process.env.REVALIDATE_SECRET;
+  if (!baseUrl || !secret) {
+    console.log(
+      "ℹ️  Skipping cache revalidation (REVALIDATE_URL/REVALIDATE_SECRET unset)"
+    );
+    return;
+  }
+
+  const tags = ["nav", "posts", ...[...slugs].map((s) => `post:${s}`)];
+  try {
+    const res = await fetch(
+      `${baseUrl.replace(/\/$/, "")}/api/internal/revalidate`,
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${secret}`,
+        },
+        body: JSON.stringify({ tags }),
+      }
+    );
+    if (!res.ok) {
+      console.warn(
+        `⚠️  Cache revalidation HTTP ${res.status}: ${await res.text().catch(() => "")}`
+      );
+      return;
+    }
+    console.log(`🧹 Revalidated ${tags.length} cache tags`);
+  } catch (error) {
+    console.warn(
+      `⚠️  Cache revalidation request failed: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }
 

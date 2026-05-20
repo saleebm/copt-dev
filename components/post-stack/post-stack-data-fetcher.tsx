@@ -1,22 +1,20 @@
 import { notFound } from "next/navigation";
 import PostStackList from "@/components/post-stack/post-stack-list";
 import {
-  getAllPostsByLastEditedAction,
-  getChroniclePostsAction,
-  getNestedCategoriesWithCounts,
-  getPostTypeCounts,
-  getTagsWithMetadata,
-} from "@/lib/actions/navigation-actions";
+  getCachedAllAvailablePostIds,
+  getCachedAllConcretePostIds,
+  getCachedAllPostsByLastEdited,
+  getCachedChroniclePosts,
+  getCachedNestedCategoriesWithCounts,
+  getCachedPostTypeCounts,
+  getCachedTagsWithMetadata,
+} from "@/lib/cached-posts";
 import {
   type PostStackParams,
   parsePostStackParams,
   processPostIds,
 } from "@/lib/post-stack-utils-client";
-import {
-  getConcretePostIds,
-  getRenderedPosts,
-} from "@/lib/post-stack-utils-server";
-import { getAllAvailablePostIds } from "@/lib/posts";
+import { getRenderedPosts } from "@/lib/post-stack-utils-server";
 import type { RenderedPost } from "@/types/post";
 
 interface PostStackDataFetcherProps {
@@ -61,23 +59,25 @@ export async function PostStackDataFetcher({
     }
   }
 
-  // Get all available post IDs for navigation
-  const allAvailablePostIds = await getAllAvailablePostIds();
-
-  // Get concrete post IDs from database (using Prisma PostType.CONCRETE)
-  const concretePostIds = await getConcretePostIds();
-
-  // Fetch all navigation data from server
-  // Optimized: Only fetch metadata for categories/tags, not full post details
-  // Full post lists are loaded on-demand when drilling into categories/tags
-  const [categories, tags, postTypeCounts, allTimeline, chronicleData] =
-    await Promise.all([
-      getNestedCategoriesWithCounts(),
-      getTagsWithMetadata(),
-      getPostTypeCounts(),
-      getAllPostsByLastEditedAction(),
-      getChroniclePostsAction(),
-    ]);
+  // Fetch all navigation data from server in parallel using Cache Components
+  // wrappers. Each call hits the in-memory Next cache after the first request.
+  const [
+    allAvailablePostIds,
+    concretePostIds,
+    categories,
+    tags,
+    postTypeCounts,
+    allTimeline,
+    chronicleData,
+  ] = await Promise.all([
+    getCachedAllAvailablePostIds(),
+    getCachedAllConcretePostIds(),
+    getCachedNestedCategoriesWithCounts(),
+    getCachedTagsWithMetadata(),
+    getCachedPostTypeCounts(),
+    getCachedAllPostsByLastEdited(),
+    getCachedChroniclePosts(),
+  ]);
 
   // Derive initialActivePostId from params.searchParams if present,
   // or from the last post in the stack

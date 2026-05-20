@@ -3,6 +3,7 @@
  * These functions require server-side resources like Prisma and should NOT be imported in client components
  */
 
+import { cacheLife, cacheTag } from "next/cache";
 import { ensurePostIdInvariant } from "@/lib/invariants";
 import { renderMdxContent } from "@/lib/post-rendering";
 import { createNotFoundPost } from "@/lib/post-stack-utils-client";
@@ -73,27 +74,52 @@ export async function createRenderedPost(
 }
 
 /**
+ * Cached per-slug rendered post. Cache key derives from the `slug` arg, so
+ * each post gets its own entry tagged with `post:${slug}`.
+ *
+ * Returns `null` when the slug doesn't resolve to a published post — callers
+ * must keep the "not found" handling (and the sentinel) uncached so URL state
+ * stays request-shaped.
+ */
+export async function getRenderedPostBySlug(
+  slug: string
+): Promise<RenderedPost | null> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("posts", `post:${slug}`);
+
+  const postData = await getRawPostDataById(slug);
+  if (!postData) {
+    return null;
+  }
+  return await createRenderedPost(postData, slug);
+}
+
+/**
  * Fetches and renders multiple posts based on their canonical IDs.
- * This is the main data fetching utility used by both server components.
+ * Stays uncached so that per-request stack ordering and `allowNotFound`
+ * handling remain request-shaped, while delegating the heavy MDX render to
+ * the cached per-slug function above.
  *
  * @param canonicalIds - Array of canonical post IDs to fetch and render
  * @param allowNotFound - Whether to include "not found" posts in the result
- * @returns Promise<RenderedPost[]> - Array of rendered posts
+ * @returns Promise<RenderedPost[]> - Array of rendered posts (original order preserved)
  */
 export async function getRenderedPosts(
   canonicalIds: string[],
   allowNotFound = true
 ): Promise<RenderedPost[]> {
+  const resolved = await Promise.all(
+    canonicalIds.map((id) => getRenderedPostBySlug(id))
+  );
+
   const posts: RenderedPost[] = [];
-
-  for (const canonicalId of canonicalIds) {
-    const postData: PostData | null = await getRawPostDataById(canonicalId);
-
-    if (postData) {
-      const renderedPost = await createRenderedPost(postData, canonicalId);
-      posts.push(renderedPost);
+  for (let i = 0; i < canonicalIds.length; i++) {
+    const rendered = resolved[i];
+    if (rendered) {
+      posts.push(rendered);
     } else if (allowNotFound) {
-      posts.push(createNotFoundPost(canonicalId));
+      posts.push(createNotFoundPost(canonicalIds[i]));
     }
     // If post not found and allowNotFound is false, skip silently
   }

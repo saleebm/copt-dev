@@ -1,8 +1,13 @@
 "use server";
 
+import {
+  getCachedChroniclePosts,
+  getCachedNestedCategoriesWithCounts,
+  getCachedPostTypeCounts,
+  getCachedTagsWithMetadata,
+} from "@/lib/cached-posts";
 import { formatDateWithoutTimezone } from "@/lib/date-utils";
 import { PostStatus, PostType } from "@/lib/generated/prisma";
-import { CategoryTreeBuilder } from "@/lib/navigation/category-tree-builder";
 import { POST_DATE_DESC } from "@/lib/post-ordering";
 import {
   getAllCategories,
@@ -257,35 +262,12 @@ export async function getAllSightsByDateAction(): Promise<FindingsByDate[]> {
 }
 
 /**
- * Server action: Fetch Chronicle posts (FINDING and SIGHT) ordered by originalDate desc
- * Skips any records without originalDate to ensure stable chronology without runtime hacks
+ * Server action wrapper for Chronicle posts.
+ * Data fetching + caching lives in `lib/cached-posts.ts`.
  */
 export async function getChroniclePostsAction() {
   try {
-    const posts = await prisma.post.findMany({
-      where: {
-        status: PostStatus.PUBLISHED,
-        type: { in: [PostType.FINDING, PostType.SIGHT] },
-        NOT: { originalDate: null },
-      },
-      include: {
-        tags: { select: { name: true } },
-        categories: { select: { name: true } },
-      },
-      orderBy: POST_DATE_DESC,
-    });
-
-    // Transform minimal shape for navigation consumption
-    return posts.map((p) => ({
-      id: p.slug,
-      slug: p.slug,
-      title: p.title,
-      type: p.type,
-      // biome-ignore lint/style/noNonNullAssertion: query filters NOT: { originalDate: null }
-      originalDate: p.originalDate!,
-      tags: p.tags?.map((t) => ({ name: t.name })) ?? [],
-      categories: p.categories?.map((c) => ({ name: c.name })) ?? [],
-    }));
+    return await getCachedChroniclePosts();
   } catch {
     return [];
   }
@@ -330,73 +312,12 @@ export async function getAllPostsForNavigationAction() {
 }
 
 /**
- * Server action to get nested categories with hierarchy from CategoryEmbedding
- * Returns a tree structure with full post type distributions for client-side filtering
- * NOTE: Always returns all categories with complete post type counts - filtering happens client-side
+ * Server action wrapper for nested categories.
+ * Data fetching + caching lives in `lib/cached-posts.ts`.
  */
 export async function getNestedCategoriesWithCounts(): Promise<CategoryNode[]> {
   try {
-    // Fetch all category embeddings
-    const embeddings = await prisma.categoryEmbedding.findMany({
-      orderBy: {
-        path: "asc",
-      },
-    });
-
-    // Fetch category post counts with ALL post types (no filtering)
-    // Client will filter based on user selection
-    const categoryCounts = await prisma.category.findMany({
-      include: {
-        _count: {
-          select: {
-            posts: {
-              where: {
-                status: PostStatus.PUBLISHED,
-              },
-            },
-          },
-        },
-        posts: {
-          where: {
-            status: PostStatus.PUBLISHED,
-          },
-          select: {
-            type: true,
-          },
-        },
-      },
-    });
-
-    const _totalPosts = categoryCounts.reduce(
-      (sum, cat) => sum + cat._count.posts,
-      0
-    );
-
-    // Log categories with posts
-    const categoriesWithPosts = categoryCounts.filter(
-      (cat) => cat._count.posts > 0
-    );
-    // Categories with posts are available for logging if needed
-    categoriesWithPosts.slice(0, 5);
-
-    // Transform to a more usable structure - use name (kebab-case) to match with embeddings
-    const categoryData = categoryCounts.map((cat) => ({
-      name: cat.name, // Keep kebab-case name for matching with CategoryEmbedding
-      displayName: cat.displayName, // Human-readable name for display
-      postCount: cat._count.posts,
-      postTypes: cat.posts.reduce(
-        (acc, post) => {
-          acc[post.type] = (acc[post.type] || 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>
-      ),
-    }));
-
-    // Build the tree structure with full counts
-    // NOTE: No pruning here - client will filter based on selected post types
-    const builder = new CategoryTreeBuilder(embeddings, categoryData);
-    return builder.buildTree();
+    return await getCachedNestedCategoriesWithCounts();
   } catch {
     return [];
   }
@@ -433,105 +354,24 @@ export async function getPostsByType(type: PostType) {
 }
 
 /**
- * Server action to get post type counts for filtering UI
+ * Server action wrapper for post type counts.
+ * Data fetching + caching lives in `lib/cached-posts.ts`.
  */
 export async function getPostTypeCounts(): Promise<PostTypeCount[]> {
   try {
-    const counts = await prisma.post.groupBy({
-      by: ["type"],
-      where: {
-        status: PostStatus.PUBLISHED,
-      },
-      _count: {
-        type: true,
-      },
-    });
-
-    const total = counts.reduce((sum, item) => sum + item._count.type, 0);
-
-    return counts.map((item) => ({
-      type: item.type,
-      count: item._count.type,
-      percentage: total > 0 ? (item._count.type / total) * 100 : 0,
-    }));
+    return await getCachedPostTypeCounts();
   } catch {
     return [];
   }
 }
 
 /**
- * Server action to get tags with metadata for intelligent display
- * Returns all tags with full post type distributions for client-side filtering
- * Filters out findings-summary and sights-summary tags by default
+ * Server action wrapper for tags-with-metadata.
+ * Data fetching + caching lives in `lib/cached-posts.ts`.
  */
 export async function getTagsWithMetadata(): Promise<TagWithMetadata[]> {
   try {
-    const tags = await prisma.tag.findMany({
-      include: {
-        posts: {
-          where: {
-            status: PostStatus.PUBLISHED,
-          },
-          select: {
-            type: true,
-          },
-        },
-      },
-    });
-
-    // Filter out auto-generated date-based tags and patterns that clutter the view
-    const filteredTags = tags.filter((tag) => {
-      // Exclude findings and sights date patterns
-      const datePatterns = [
-        /^findings-\d{4}-\d{2}-\d{2}$/, // findings-YYYY-MM-DD
-        /^sights-\d{4}-\d{2}-\d{2}$/, // sights-YYYY-MM-DD
-        /^findings-summary/, // findings-summary tags
-        /^sights-summary/, // sights-summary tags
-        /^\d{4}-\d{2}-\d{2}$/, // Pure date tags YYYY-MM-DD
-        /^\d{8}$/, // Date tags YYYYMMDD
-      ];
-
-      // Check if tag matches any excluded pattern
-      const isExcluded = datePatterns.some(
-        (pattern) => pattern.test(tag.slug) || pattern.test(tag.name)
-      );
-
-      return !isExcluded && tag.posts.length > 0;
-    });
-
-    // Calculate max post count for weight normalization
-    const maxCount = Math.max(
-      ...filteredTags.map((tag) => tag.posts.length),
-      1
-    );
-
-    return filteredTags.map((tag) => {
-      // Calculate post type distribution
-      const distribution = {
-        CONCRETE: 0,
-        BLOG: 0,
-        FINDING: 0,
-        SIGHT: 0,
-      };
-
-      tag.posts.forEach((post) => {
-        if (post.type in distribution) {
-          distribution[post.type]++;
-        }
-      });
-
-      return {
-        id: tag.id,
-        name: tag.name,
-        slug: tag.slug,
-        postCount: tag.posts.length,
-        postTypes: distribution,
-        weight: tag.posts.length / maxCount, // Normalized 0-1
-        isAutoGenerated: false,
-        // Could add clustering logic here based on co-occurrence
-        cluster: undefined,
-      } as TagWithMetadata;
-    });
+    return await getCachedTagsWithMetadata();
   } catch {
     return [];
   }

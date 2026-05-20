@@ -627,30 +627,15 @@ function parseSightPostFile(dirPath: string): ParsedPost {
 
 // Flat SIGHT posts (ingest pipeline output) live at `posts/sight/<slug>.mdx`
 // with rich frontmatter and reference images at `/posts/sight/<dir>/<file>`.
-// Parse via the standard frontmatter pipeline, then symlink referenced images
-// into `public/` so Next.js can serve them.
+//
+// IMPORTANT: any flat sight post referencing images under `/posts/sight/`
+// must be authored through `scripts/lib/ingest/mdx-writer.ts`, which
+// publishes each image into `public/posts/sight/<dir>/<file>` via a
+// relative symlink so Next.js can serve it. Sync parsing is deliberately
+// side-effect-free; manually creating a flat sight `.mdx` outside that
+// pipeline will leave the referenced images 404ing.
 function parseFlatSightPost(filePath: string): ParsedPost {
-  const post = parsePostFile(filePath, PostType.SIGHT);
-  return {
-    ...post,
-    content: transformFlatSightImagePaths(post.content),
-  };
-}
-
-function transformFlatSightImagePaths(content: string): string {
-  const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
-
-  return content.replace(imageRegex, (match, _alt, originalPath) => {
-    if (!originalPath.startsWith("/posts/sight/")) {
-      return match;
-    }
-
-    const sourcePath = path.join(process.cwd(), originalPath.slice(1));
-    if (fs.existsSync(sourcePath)) {
-      copyImageToPublic(sourcePath, originalPath);
-    }
-    return match;
-  });
+  return parsePostFile(filePath, PostType.SIGHT);
 }
 
 function getSightPostsRecursively(directory: string): ParsedPost[] {

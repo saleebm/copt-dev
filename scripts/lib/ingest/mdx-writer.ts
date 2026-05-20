@@ -1,9 +1,11 @@
 // Writes the parsed post into the worker's git workspace using the same
 // filename conventions as scripts/lib/services/file-service.ts (BLOG/FINDING
 // get an MMddyyyy prefix, SIGHT does not). For image batches, copies staged
-// files to posts/sight/<batch>/<n>.<ext> and rewrites IMAGE_N placeholders.
-import { copyFileSync, existsSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
+// files to posts/sight/<batch>/<n>.<ext>, publishes them under
+// public/posts/sight/<batch>/<n>.<ext> via relative symlinks so Next.js can
+// serve them, and rewrites IMAGE_N placeholders.
+import { copyFileSync, existsSync, lstatSync, mkdirSync, symlinkSync } from "node:fs";
+import { join, relative } from "node:path";
 import matter from "gray-matter";
 import { escapeMdxProse, validateMdx } from "@/lib/mdx-validate";
 import { getPostDirectory } from "../post-type-meta";
@@ -38,6 +40,33 @@ function rewriteImagePlaceholders(
   });
 }
 
+// Publish a freshly-copied sight image into `public/` via a relative symlink so
+// Next.js can serve it. Idempotent: skips if anything already exists at the
+// target path (the caller has just written the source, so a pre-existing link
+// from a re-run is fine). Doing this here keeps `db:sync-posts` side-effect-free.
+function linkImageToPublic(
+  workspace: string,
+  sourceAbs: string,
+  batchId: string,
+  imageFileName: string
+): void {
+  const publicDir = join(workspace, "public", "posts", "sight", batchId);
+  const publicPath = join(publicDir, imageFileName);
+  ensureDir(publicDir);
+  let alreadyThere = false;
+  try {
+    lstatSync(publicPath);
+    alreadyThere = true;
+  } catch {
+    alreadyThere = false;
+  }
+  if (alreadyThere) {
+    return;
+  }
+  const relativeTarget = relative(publicDir, sourceAbs);
+  symlinkSync(relativeTarget, publicPath, "file");
+}
+
 function copyImages(
   workspace: string,
   batchId: string,
@@ -47,15 +76,17 @@ function copyImages(
   const absDir = join(workspace, relDir);
   ensureDir(absDir);
   const absolute: string[] = [];
-  const relative: string[] = [];
+  const relativePaths: string[] = [];
   for (const img of images) {
-    const dest = join(absDir, `${img.index + 1}.${img.extension}`);
+    const imageFileName = `${img.index + 1}.${img.extension}`;
+    const dest = join(absDir, imageFileName);
     copyFileSync(img.stagedFilePath, dest);
+    linkImageToPublic(workspace, dest, batchId, imageFileName);
     absolute.push(dest);
-    const fromPost = `/posts/sight/${batchId}/${img.index + 1}.${img.extension}`;
-    relative.push(fromPost);
+    const fromPost = `/posts/sight/${batchId}/${imageFileName}`;
+    relativePaths.push(fromPost);
   }
-  return { absolute, relative };
+  return { absolute, relative: relativePaths };
 }
 
 export type WriteResult = {
