@@ -1,10 +1,20 @@
 import { readFile } from "node:fs/promises";
 import { join, normalize, sep } from "node:path";
 import type { ReactElement } from "react";
+import sharp from "sharp";
 import { siteConfig } from "@/lib/site-config";
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 export const OG_CONTENT_TYPE = "image/png" as const;
+
+// Result of loading a /public image for embedding in an OG card. We expose
+// post-EXIF-rotation dimensions so callers can pick a portrait-aware layout
+// (Satori ignores EXIF orientation, so we must bake it into the pixels).
+export interface OgImage {
+  data: string;
+  height: number;
+  width: number;
+}
 
 const LOGO_REL_PATH = "public/post-pics/golden_red_light_eye.png";
 const PUBLIC_DIR = join(process.cwd(), "public");
@@ -73,19 +83,31 @@ export async function loadOgAssets() {
 // Loads an image from /public for embedding in an OG card.
 // Returns null if the path escapes /public or the file is missing,
 // so callers can fall back to the logo-only frame.
+//
+// Phone photos (iPhone in particular) are stored with their pixel grid in
+// sensor orientation plus an EXIF Orientation tag. Browsers honour that tag;
+// Satori does not, so a portrait photo would render sideways in the OG card.
+// We normalise here: sharp().rotate() applies the EXIF rotation, strips the
+// tag, and returns the buffer in display orientation along with its true
+// post-rotation dimensions.
 export async function loadOgPublicImage(
   publicPath: string
-): Promise<string | null> {
-  // Strip query string + leading slash, then resolve under public/ and confirm
-  // the resolved path is still inside public/ (defense against path traversal).
+): Promise<OgImage | null> {
   const cleaned = publicPath.split("?")[0].split("#")[0].replace(/^\/+/, "");
   const resolved = normalize(join(PUBLIC_DIR, cleaned));
   if (!(resolved === PUBLIC_DIR || resolved.startsWith(PUBLIC_DIR + sep))) {
     return null;
   }
   try {
-    const buf = await readFile(resolved);
-    return Uint8Array.from(buf).buffer as unknown as string;
+    const raw = await readFile(resolved);
+    const { data, info } = await sharp(raw)
+      .rotate()
+      .toBuffer({ resolveWithObject: true });
+    return {
+      data: Uint8Array.from(data).buffer as unknown as string,
+      width: info.width,
+      height: info.height,
+    };
   } catch {
     return null;
   }
@@ -208,19 +230,41 @@ interface OgSightFrameProps {
   alt: string;
   eyebrow?: string;
   footer?: string;
-  imageSrc: string;
+  image: OgImage;
   title: string;
 }
 
-// Full-bleed image card for SIGHT posts: the sight's own photo fills the
-// 1200×630 canvas with a darkened bottom strip carrying the eyebrow, title,
-// brand mark, and date.
+// Image card for SIGHT posts. The OG canvas is fixed at 1200×630 (landscape);
+// photos may be portrait (phone shots) or landscape. We branch on aspect ratio:
+//
+//   landscape ≥ canvas ratio  → full-bleed cover, photo fills the frame
+//   portrait / squarer        → photo contained on the left in its natural
+//                               aspect, text panel on the right
+//
+// The portrait branch is what fixes the "sideways photo" bug — once
+// loadOgPublicImage has baked the EXIF rotation into the pixels, a 3024×4032
+// iPhone shot would otherwise be cropped to a thin vertical strip by `cover`.
 export function OgSightFrame({
   title,
   alt,
   eyebrow,
   footer,
-  imageSrc,
+  image,
+}: OgSightFrameProps): ReactElement {
+  const canvasRatio = OG_SIZE.width / OG_SIZE.height;
+  const imageRatio = image.width / image.height;
+  const isLandscapeFill = imageRatio >= canvasRatio;
+  return isLandscapeFill
+    ? renderFullBleedSight({ title, alt, eyebrow, footer, image })
+    : renderPortraitSight({ title, alt, eyebrow, footer, image });
+}
+
+function renderFullBleedSight({
+  title,
+  alt,
+  eyebrow,
+  footer,
+  image,
 }: OgSightFrameProps): ReactElement {
   return (
     <div
@@ -239,7 +283,7 @@ export function OgSightFrame({
       <img
         alt={alt}
         height={OG_SIZE.height}
-        src={imageSrc}
+        src={image.data}
         style={{
           width: "100%",
           height: "100%",
@@ -300,6 +344,118 @@ export function OgSightFrame({
             justifyContent: "space-between",
             fontSize: 22,
             color: "#d4d4d4",
+          }}
+        >
+          <span style={{ display: "flex" }}>{siteConfig.name}</span>
+          {footer ? <span style={{ display: "flex" }}>{footer}</span> : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Portrait layout: photo contained on the left in a fixed-width column, text
+// panel on the right. Photo column width matches the OG height so a portrait
+// 3:4 photo fits comfortably without any cropping.
+function renderPortraitSight({
+  title,
+  alt,
+  eyebrow,
+  footer,
+  image,
+}: OgSightFrameProps): ReactElement {
+  const photoColWidth = 504;
+  const photoMaxHeight = OG_SIZE.height - 72;
+  const photoMaxWidth = photoColWidth - 72;
+  const scale = Math.min(
+    photoMaxWidth / image.width,
+    photoMaxHeight / image.height
+  );
+  const photoWidth = Math.round(image.width * scale);
+  const photoHeight = Math.round(image.height * scale);
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "row",
+        background:
+          "radial-gradient(circle at 20% 30%, #1a0606 0%, #000000 60%)",
+        color: "#f5f5f5",
+        fontFamily: "Space Grotesk",
+      }}
+    >
+      <div
+        style={{
+          width: photoColWidth,
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          padding: 36,
+        }}
+      >
+        {/* biome-ignore lint/performance/noImgElement: ImageResponse runs Satori, which only renders native <img>, not next/image */}
+        <img
+          alt={alt}
+          height={photoHeight}
+          src={image.data}
+          style={{
+            borderRadius: 8,
+            boxShadow: "0 12px 36px rgba(0,0,0,0.6)",
+          }}
+          width={photoWidth}
+        />
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          minWidth: 0,
+          padding: "72px 72px 56px 24px",
+        }}
+      >
+        {eyebrow ? (
+          <div
+            style={{
+              fontSize: 28,
+              letterSpacing: 4,
+              textTransform: "uppercase",
+              color: "#ef4444",
+              marginBottom: 24,
+              display: "flex",
+            }}
+          >
+            {eyebrow}
+          </div>
+        ) : null}
+
+        <div
+          style={{
+            fontSize: title.length > 60 ? 48 : 60,
+            lineHeight: 1.05,
+            fontWeight: 700,
+            color: "#fafafa",
+            display: "flex",
+          }}
+        >
+          {title}
+        </div>
+
+        <div
+          style={{
+            marginTop: "auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            fontSize: 22,
+            color: "#a3a3a3",
+            paddingTop: 48,
           }}
         >
           <span style={{ display: "flex" }}>{siteConfig.name}</span>

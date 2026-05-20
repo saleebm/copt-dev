@@ -37,16 +37,14 @@ export async function GET(
 
   if (postType === "SIGHT") {
     const firstImage = extractFirstMarkdownImage(post.content);
-    const imageSrc = firstImage
-      ? await loadOgPublicImage(firstImage.src)
-      : null;
-    if (imageSrc) {
+    const image = firstImage ? await loadOgPublicImage(firstImage.src) : null;
+    if (image) {
       return new ImageResponse(
         <OgSightFrame
           alt={firstImage?.alt || title}
           eyebrow={eyebrow}
           footer={footer}
-          imageSrc={imageSrc}
+          image={image}
           title={title}
         />,
         { ...OG_SIZE, fonts }
