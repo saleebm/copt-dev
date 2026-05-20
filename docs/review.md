@@ -85,12 +85,13 @@ Body — `Content-Type: application/json`:
   "method": "squash",      // "squash" (default) | "merge" | "rebase"
   "admin": false,           // gh pr merge --admin (bypass required checks)
   "deleteBranch": true,     // gh pr merge --delete-branch (default true)
+  "markReady": true,        // gh pr ready first if PR is still draft (default true — ingest PRs are draft)
   "publish": false,         // also flip Post.published=true once merged
   "body": "optional merge body"
 }
 ```
 
-iOS Shortcuts ship scalars as text — `number`, `admin`, `deleteBranch`, and `publish` all accept string forms (`"42"`, `"true"`).
+iOS Shortcuts ship scalars as text — `number`, `admin`, `deleteBranch`, `markReady`, and `publish` all accept string forms (`"42"`, `"true"`).
 
 Response:
 
@@ -101,7 +102,8 @@ Response:
     "number": 42,
     "branch": "ingest/img-2025-11-19",
     "provider": { "id": "sight", "label": "Sight", "postType": "SIGHT", "predictedSlug": "cats-on-the-rug", "mdxPath": "posts/sight/cats-on-the-rug.mdx" },
-    "predictedSlug": "cats-on-the-rug"
+    "predictedSlug": "cats-on-the-rug",
+    "markedReady": true
   },
   "publish": null,           // populated if publish=true succeeded
   "publishError": null       // populated if publish=true but the post wasn't in the DB yet (sync still pending)

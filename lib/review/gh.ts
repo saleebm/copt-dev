@@ -210,6 +210,13 @@ export async function mergePullRequest(
   }
 }
 
+export async function markPullRequestReady(num: number): Promise<void> {
+  const result = await run(["gh", "pr", "ready", String(num)]);
+  if (result.exitCode !== 0) {
+    throw ghError("gh pr ready", result);
+  }
+}
+
 export async function closePullRequest(
   num: number,
   comment?: string

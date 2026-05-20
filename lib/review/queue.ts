@@ -8,6 +8,7 @@ import {
   type GhPrSummary,
   listPullRequests,
   type MergeMethod,
+  markPullRequestReady,
   mergePullRequest,
   readPrFile,
   viewPullRequest,
@@ -104,12 +105,15 @@ export interface MergeArgs {
   admin?: boolean;
   body?: string;
   deleteBranch?: boolean;
+  /** If the PR is draft, mark it ready before merging. Default true. */
+  markReady?: boolean;
   method?: MergeMethod;
   number: number;
 }
 
 export interface MergeResult {
   branch: string;
+  markedReady: boolean;
   number: number;
   predictedSlug: string | null;
   provider: ProviderSummary;
@@ -118,6 +122,11 @@ export interface MergeResult {
 export async function mergeReviewPr(args: MergeArgs): Promise<MergeResult> {
   const pr = await viewPullRequest(args.number);
   const provider = summarizePr(pr);
+  let markedReady = false;
+  if (pr.isDraft && args.markReady !== false) {
+    await markPullRequestReady(args.number);
+    markedReady = true;
+  }
   await mergePullRequest(args.number, {
     method: args.method ?? "squash",
     admin: args.admin,
@@ -129,6 +138,7 @@ export async function mergeReviewPr(args: MergeArgs): Promise<MergeResult> {
     branch: pr.headRefName,
     provider,
     predictedSlug: provider.predictedSlug,
+    markedReady,
   };
 }
 

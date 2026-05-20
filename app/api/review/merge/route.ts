@@ -27,6 +27,7 @@ const mergeSchema = z.object({
   method: mergeMethodSchema.optional().default("squash"),
   admin: flexBool.optional().default(false),
   deleteBranch: flexBool.optional().default(true),
+  markReady: flexBool.optional().default(true),
   publish: flexBool.optional().default(false),
   body: z.string().optional(),
 });
@@ -63,13 +64,15 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return jsonError(400, "validation failed", { issues: parsed.error.issues });
   }
-  const { number, method, admin, deleteBranch, publish, body } = parsed.data;
+  const { number, method, admin, deleteBranch, markReady, publish, body } =
+    parsed.data;
   try {
     const result = await mergeReviewPr({
       number,
       method,
       admin,
       deleteBranch,
+      markReady,
       body,
     });
     log("info", "merged", {
