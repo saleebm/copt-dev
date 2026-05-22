@@ -26,8 +26,6 @@ export interface ReviewProvider {
   id: string;
   label: string;
   match(pr: GhPrSummary): ProviderSummary | null;
-  /** Optional post-merge hook (runs server-side after `gh pr merge`). */
-  onMerge?(ctx: { pr: GhPrSummary; summary: ProviderSummary }): Promise<void>;
   /** Optional post-publish hook (runs server-side after publish toggle). */
   onPublishChange?(ctx: { post: Post; published: boolean }): Promise<void>;
   postType: PostType | null;

@@ -23,7 +23,6 @@ function makeProvider(
   priority = 100
 ): ReviewProvider {
   const dirRe = new RegExp(`^posts/${dir}/[^/]+\\.mdx$`, "i");
-  const branchRe = /^ingest\//i;
 
   return {
     id,
@@ -38,21 +37,15 @@ function makeProvider(
         return null;
       }
       const mdxPath = mdxFiles[0] as string;
-      // Only claim the PR if it's clearly *this* content type. If multiple
-      // post-type providers match (rare), the first registered wins via
-      // priority — see `./index.ts`.
-      const summary: ProviderSummary = {
+      // Branch-prefix filter (`ingest/`) happens upstream in listReviewQueue;
+      // file-path match is the authoritative signal here.
+      return {
         id,
         postType,
         label,
         predictedSlug: predictSlug(mdxPath),
         mdxPath,
       };
-      // Soft signal: PRs from the ingest worker carry an `ingest/` branch.
-      if (branchRe.test(pr.headRefName)) {
-        return summary;
-      }
-      return summary;
     },
   };
 }

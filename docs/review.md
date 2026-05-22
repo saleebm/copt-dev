@@ -25,7 +25,23 @@ iOS Shortcut → GET  /api/review/queue                → pick a PR
 | Schema (existing) | `prisma/schema.prisma` — `Post.status` / `Post.published` |
 | Deploy script | `deploy.sh` (flock-locked, tee'd into `$DEPLOY_LOG_DIR/copt-dev-deploy-<id>.log`) |
 
-The system is intentionally **module-style**: each `PostType` (or any future ingest target) registers a `ReviewProvider` that knows how to (1) recognise its PRs by file path, (2) predict the eventual post slug before sync, and (3) optionally run hooks on merge / publish toggle. Adding a new ingest content type is one file under `lib/review/providers/` plus an entry in the registry — routes don't change.
+The system is intentionally **module-style**: each `PostType` (or any future ingest target) registers a `ReviewProvider` that knows how to (1) recognise its PRs by file path, (2) predict the eventual post slug before sync, and (3) optionally run a hook on publish toggle. Adding a new ingest content type is one file under `lib/review/providers/` plus an entry in the registry — routes don't change.
+
+## Happy path: ingest → published on `main`
+
+The end-to-end loop the iOS Shortcut drives. Steps 1, 5, and the deploy poll in 6 are async; everything else is synchronous request/response.
+
+1. **Ingest worker** (separate process; see `docs/ingest.md`) opens a **draft** PR on `ingest/<type>-<id>` containing `posts/<type>/<slug>.mdx` + assets.
+2. `GET /api/review/queue?state=open` — Shortcut lists open PRs annotated by provider (`finding` / `sight` / `blog` / `concrete`).
+3. *(Optional)* `GET /api/review/pr/{n}` — preview the MDX body before deciding.
+4. `POST /api/review/merge` with `{ "number": n, "publish": "true" }` —
+   - If the PR is draft, the API calls `gh pr ready` first (default `markReady:true`).
+   - Then `gh pr merge --squash --delete-branch`.
+   - Then attempts `setPublished({ slug: predictedSlug, published: true })`. This will return `publishError: "post not found: <slug>"` because the new MDX hasn't been synced into the DB yet — that's expected (see [Merge → publish race](#merge--publish-race) below).
+5. `POST /api/review/deploy` (separate strict-tier endpoint) — `deploy.sh` pulls `main`, builds, and runs `db:sync-posts`, which upserts the post.
+6. If step 4 surfaced `publishError`, re-call `POST /api/review/publish` with `{ "slug": "<slug>", "published": "true" }` once `GET /api/review/deploy/{runId}` reports `state: "completed"`. The post is now `published=true` / `status=PUBLISHED` and live.
+
+The "Toggle Published" Shortcut described below covers step 6 (and the reverse direction — flipping any existing post back to draft).
 
 ## Auth
 
@@ -122,7 +138,7 @@ Response:
 }
 ```
 
-Note: posts only appear in the DB after `bun run db:sync-posts` runs against the new `main`. The Linode deploy (`bun run deploy`) does this for you. If you set `publish: true` immediately after merge **before** a deploy/sync, you'll get a 200 with `publishError: "post not found: <slug>"` — re-call `/api/review/publish` after the next deploy.
+<a id="merge--publish-race"></a>**Merge → publish race.** New ingest posts only land in the DB after `bun run db:sync-posts` runs against the new `main` (the Linode deploy does this for you). If `publish: true` fires immediately after merge, the post isn't there yet — the API returns **`200` with `publishError: "post not found: <slug>"`** alongside a successful `merge` block. Treat this as "merged, will publish after deploy" and re-call `/api/review/publish` once `/api/review/deploy/{runId}` reports `state: "completed"`.
 
 ### `POST /api/review/close`
 
@@ -144,6 +160,8 @@ Body — `Content-Type: application/json` (all fields optional):
   "reason": "merged PR #42"        // recorded in the log header
 }
 ```
+
+The API forwards `triggeredBy` and `reason` to `deploy.sh` as `DEPLOY_TRIGGERED_BY` and `DEPLOY_REASON` env vars for log-header annotation only — they are not server-side configurables.
 
 Response (`202`):
 
@@ -227,7 +245,6 @@ Returns 404 if the slug doesn't exist in the DB yet.
 | `REVIEW_DEPLOY_LOG_DIR` | Where per-run deploy logs land. Default: `/tmp/copt-deploys`. Production should override to a persistent path (e.g. `/home/deploy/logs`) so logs survive PM2 restarts. |
 | `DEPLOY_LOCK_FILE` | Path `deploy.sh` `flock`s on to serialize concurrent runs. Default: `$APP_DIR/.deploy.lock`. |
 | `DEPLOY_LOG_DIR` | Where `deploy.sh` writes its `tee`'d log. Default: `/home/deploy/logs`. Should equal `REVIEW_DEPLOY_LOG_DIR` so the API can find the log it spawned. |
-| `DEPLOY_TRIGGERED_BY` | Recorded in the `deploy.sh` log header. The API sets this from the request body's `triggeredBy` when spawning. |
 
 No new infra — runs in the existing Next.js process alongside `/api/ingest`.
 
@@ -262,7 +279,55 @@ The review surface is provider-driven so you can add new ingestable kinds withou
 
 ## iOS Shortcut configuration
 
-Two shortcuts compose the review loop. Both reuse the `INGEST_TOKEN` bearer.
+Three shortcuts compose the review loop: **Review Ingest** (pick + merge), **Deploy Now** (push + tail log), and **Toggle Published** (flip an existing post's status). All three reuse the same `INGEST_TOKEN` bearer by default; set `DEPLOY_TOKEN` separately if you want Deploy Now on a different device.
+
+### First-time setup
+
+You only do this once. The three recipes below assume you've done these steps.
+
+**1. Confirm the server is reachable.**
+
+Smoke-test from your laptop before touching iOS — Shortcuts is harder to debug than curl. Use the `Wire-shape testing without iOS` block below to confirm `/api/review/queue` returns `200` with a `count` and `items` array. If it doesn't, fix the server side first (see [Troubleshooting](#troubleshooting)).
+
+**2. Pick your base URL and token.**
+
+- **Base URL**: `https://copt.dev` for prod, or your tunneled dev URL (e.g. ngrok / portless).
+- **Token**: whatever you set as `INGEST_TOKEN` in the server's `.env`. Treat it like a password — paste it into Shortcuts once and never type it in plaintext anywhere else (Notes, Messages, screenshots).
+
+**3. Open the Shortcuts app on iOS.**
+
+Comes preinstalled. If you removed it, redownload from the App Store. Tap **+** in the top-right of the **My Shortcuts** tab to start a new shortcut.
+
+**4. Learn the four iOS Shortcut primitives this API uses.**
+
+Every recipe below is built from these four building blocks. Search for them by name in the action picker (bottom sheet inside the shortcut editor).
+
+| Action | What it's for | Notes |
+| --- | --- | --- |
+| **Text** | Holds the literal `Bearer <token>` string. | Tap the action, paste the full `Bearer abc123...`. The action's output is a Magic Variable you reference in later steps as the `Authorization` header value. |
+| **Dictionary** | Builds the JSON request body and the headers map. | For request bodies, set each key to the type you want (Text / Number / Boolean). For headers, use Text values so the `Authorization` and `Content-Type` keys come through as strings. |
+| **Get contents of URL** | The HTTP call itself. | Expand **Show More** → set **Method**, **Headers** (point at your Dictionary), and **Request Body** → JSON (point at your body Dictionary). |
+| **Get Dictionary Value** | Reads a single field out of the JSON response. | Type the JSON key into the `Key` field. Supports dotted paths like `provider.predictedSlug`. |
+
+**5. Reference variables as you go.**
+
+When you tap a parameter field in a later action, iOS shows a **Select Variable** chip above the keyboard. That's how you pipe the output of one action into the input of another (the "Magic Variable" pattern referenced throughout the recipes).
+
+**6. Store the bearer once, reuse everywhere.**
+
+Inside each shortcut, the very first action should be a single **Text** action containing `Bearer <your-token>`. Rename its Magic Variable to `Auth` (long-press the variable → Rename). Every subsequent **Get contents of URL** action references `Auth` for the `Authorization` header. This way the token lives in exactly one place per shortcut and never appears in screenshots of headers further down.
+
+**7. Test inside the editor before saving.**
+
+The big **▶** at the bottom of the editor runs the shortcut once with the editor open. After each action runs, tap the action to see its actual output JSON — invaluable for catching a typo'd key path before you wire it into the next step.
+
+**8. (Optional) Promote to one-tap.**
+
+Once a shortcut works, you can:
+- **Home-screen icon**: shortcut details → **Add to Home Screen**.
+- **Siri**: "Hey Siri, Review Ingest" — uses the shortcut name verbatim.
+- **Share sheet**: turn on **Show in Share Sheet** so it appears when sharing a URL from Safari (useful for a different ingest flow, not this one).
+- **Apple Watch**: toggle **Show on Apple Watch** if you want a glanceable trigger.
 
 ### `Review Ingest`
 
