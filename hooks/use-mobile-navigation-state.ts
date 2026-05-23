@@ -8,7 +8,7 @@ const STORAGE_KEY = "mobile-nav-state";
 
 // Default state values
 const DEFAULT_STATE = {
-  activeTab: "topics" as TabId,
+  activeTab: "latest" as TabId,
   selectedPostTypes: [PostType.BLOG, PostType.CONCRETE] as PostType[],
   browseMode: "nodes" as BrowseMode,
   scrollPositions: {

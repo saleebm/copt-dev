@@ -18,11 +18,11 @@ In `.env`:
 
 ```
 GEMINI_API_KEY=…                # required (or GOOGLE_API_KEY, or GOOGLE_GENAI_API_KEY — all three are tried in order)
-AI_MODEL=gemini-2.5-flash       # optional, default shown
+AI_MODEL=gemini-3.1-pro-preview # optional, default shown
 AI_TEMPERATURE=0.7              # optional, default shown
 ```
 
-All env handling goes through `scripts/lib/ai-config.ts` — same shared config the rest of the AI scripts use.
+`AI_MODEL` defaults to `gemini-3.1-pro-preview` for roll specifically — `sparks.ts` and `reshape.ts` override the shared `scripts/lib/ai-config.ts` default (`gemini-2.5-flash`) so the multi-step prompt-and-shape loop runs on Pro with `thinkingLevel: "low"`. Setting `AI_MODEL` in `.env` overrides both. API key + temperature still resolve through `scripts/lib/ai-config.ts`.
 
 Optional: install [`gum`](https://github.com/charmbracelet/gum) for prettier banner + totals card. Without it, the script falls back to hand-drawn boxes — same info, just less glamorous.
 

@@ -56,7 +56,7 @@ export function NavigationTabs({
   onNavigate,
   navState,
 }: NavigationTabsProps = {}) {
-  const defaultTab: TabId = "topics";
+  const defaultTab: TabId = "latest";
 
   const { addPost, goHome } = usePostStackActions();
   const { categories, tags, postTypeCounts } = usePostStackState();
