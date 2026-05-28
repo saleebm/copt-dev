@@ -45,10 +45,10 @@ const AsciiArtRenderer = ({
     : fontSizeEstimates.mobile;
   const fontSizeRef = useRef(initialFontSize);
 
-  const applyFontSize = useCallback((size: number) => {
-    fontSizeRef.current = size;
+  const applyFontSize = useCallback((fontSize: number) => {
+    fontSizeRef.current = fontSize;
     if (preRef.current) {
-      preRef.current.style.fontSize = `${size}rem`;
+      preRef.current.style.fontSize = `${fontSize}rem`;
     }
   }, []);
 

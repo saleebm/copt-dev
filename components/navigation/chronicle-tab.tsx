@@ -70,6 +70,10 @@ function getGroupLabel(date: Date, mode: Grouping): string {
   return `Week of ${formatDateWithoutTimezone(date, { year: "numeric", month: "short", day: "numeric" })}`;
 }
 
+function isSummaryPost(slug: string): boolean {
+  return slug.startsWith("findings-") || slug.startsWith("sights-");
+}
+
 interface ChronicleTabProps {
   onNavigate?: () => void;
 }
@@ -177,68 +181,76 @@ export function ChronicleTab({ onNavigate }: ChronicleTabProps = {}) {
         ) : (
           <div className="p-2">
             <Accordion className="w-full" type="multiple">
-              {grouped.map((group) => (
-                <AccordionItem
-                  className="border-white/10"
-                  key={group.key}
-                  value={group.key}
-                >
-                  {/* Header row: Trigger (button) + separate summary button as sibling */}
-                  <div className={navStyles.chronicleGroupHeader}>
-                    <AccordionTrigger className="flex-1 px-2 text-left">
-                      <span className="text-sm text-white/80">
-                        {getGroupLabel(group.date, grouping)}
-                      </span>
-                    </AccordionTrigger>
-                    {/* Summary button outside of Trigger to avoid button-in-button */}
-                    <button
-                      aria-label="Open daily summary"
-                      className={navStyles.chronicleSummaryButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const summary = group.items.find(
-                          (p) =>
-                            p.slug.startsWith("findings-") ||
-                            p.slug.startsWith("sights-")
-                        );
-                        if (summary) {
-                          onPostClick({
-                            id: summary.slug,
-                            slug: summary.slug,
-                            title: summary.title,
-                            type: summary.type,
-                            lastEdited: summary.originalDate,
-                            tags: summary.tags,
-                            categories: summary.categories,
-                          });
-                        }
-                      }}
-                      type="button"
-                    >
-                      [summary]
-                    </button>
-                  </div>
-                  <AccordionContent>
-                    <div style={{ paddingTop: 4, paddingBottom: 8 }}>
-                      {group.items.map((p) => (
-                        <PostListItem
-                          key={p.slug}
-                          onClick={onPostClick}
-                          post={{
-                            id: p.slug,
-                            slug: p.slug,
-                            title: p.title,
-                            type: p.type,
-                            lastEdited: p.originalDate,
-                            tags: p.tags,
-                            categories: p.categories,
+              {grouped.map((group) => {
+                const isDay = grouping === "day";
+                // Day view: surface the rollup via the [summary] button and keep
+                // it out of the list. Week/month spans many days, so there is no
+                // single rollup — list everything, including the daily summaries.
+                const summary = isDay
+                  ? group.items.find((p) => isSummaryPost(p.slug))
+                  : undefined;
+                const listItems = isDay
+                  ? group.items.filter((p) => !isSummaryPost(p.slug))
+                  : group.items;
+
+                return (
+                  <AccordionItem
+                    className="border-white/10"
+                    key={group.key}
+                    value={group.key}
+                  >
+                    {/* Header row: Trigger (button) + separate summary button as sibling */}
+                    <div className={navStyles.chronicleGroupHeader}>
+                      <AccordionTrigger className="flex-1 px-2 text-left">
+                        <span className="text-sm text-white/80">
+                          {getGroupLabel(group.date, grouping)}
+                        </span>
+                      </AccordionTrigger>
+                      {/* Summary button outside of Trigger to avoid button-in-button */}
+                      {summary && (
+                        <button
+                          aria-label="Open daily summary"
+                          className={navStyles.chronicleSummaryButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onPostClick({
+                              id: summary.slug,
+                              slug: summary.slug,
+                              title: summary.title,
+                              type: summary.type,
+                              lastEdited: summary.originalDate,
+                              tags: summary.tags,
+                              categories: summary.categories,
+                            });
                           }}
-                        />
-                      ))}
+                          type="button"
+                        >
+                          [summary]
+                        </button>
+                      )}
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+                    <AccordionContent>
+                      <div style={{ paddingTop: 4, paddingBottom: 8 }}>
+                        {listItems.map((p) => (
+                          <PostListItem
+                            key={p.slug}
+                            onClick={onPostClick}
+                            post={{
+                              id: p.slug,
+                              slug: p.slug,
+                              title: p.title,
+                              type: p.type,
+                              lastEdited: p.originalDate,
+                              tags: p.tags,
+                              categories: p.categories,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
             </Accordion>
           </div>
         )}

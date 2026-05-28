@@ -16,12 +16,12 @@ const YOUTUBE_HOSTS = new Set([
 
 const SHORT_HOSTS = new Set(["youtu.be"]);
 
-export type YouTubeUrlParse = {
-  videoId: string;
+export interface YouTubeUrlParse {
   canonicalUrl: string;
-  startSeconds: number | null;
   isShort: boolean;
-};
+  startSeconds: number | null;
+  videoId: string;
+}
 
 function isValidVideoId(
   candidate: string | null | undefined
