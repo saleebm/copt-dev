@@ -1,0 +1,81 @@
+.page {
+  --gm-bg: #0b0d17;
+  --gm-panel: #141829;
+  --gm-text: #e7e9f3;
+  --gm-muted: #9aa0b4;
+  --gm-accent: #7c8cff;
+  --gm-border: #232842;
+  --gm-font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+
+  min-height: 100vh;
+  padding: 2.5rem 1.25rem;
+  font-family: var(--gm-font);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gm-text);
+  background: var(--gm-bg);
+}
+
+.card {
+  max-width: 720px;
+  padding: 2.5rem;
+  margin: 0 auto;
+  background: var(--gm-panel);
+  border: 1px solid var(--gm-border);
+  border-radius: 16px;
+}
+
+.title {
+  margin: 0 0 0.25rem;
+  font-family: var(--gm-font);
+  font-size: 1.9rem;
+  letter-spacing: -0.02em;
+}
+
+.updated {
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+  color: var(--gm-muted);
+}
+
+.card h2 {
+  margin: 2rem 0 0.5rem;
+  font-family: var(--gm-font);
+  font-size: 1.2rem;
+  color: var(--gm-accent);
+}
+
+.card p,
+.card li {
+  font-family: var(--gm-font);
+  color: var(--gm-text);
+}
+
+.card a {
+  color: var(--gm-accent);
+}
+
+.card ul {
+  padding-left: 1.25rem;
+}
+
+.card li {
+  margin: 0.35rem 0;
+}
+
+.note {
+  padding-top: 1.25rem;
+  margin-top: 2.5rem;
+  font-size: 0.9rem;
+  color: var(--gm-muted);
+  border-top: 1px solid var(--gm-border);
+}
+
+.footer {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  color: var(--gm-muted);
+  text-align: center;
+}
