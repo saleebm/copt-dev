@@ -1,7 +1,1 @@
-{
-  "plugins": {
-    "prisma": {
-      "enabled": true
-    }
-  }
-}
+{}
