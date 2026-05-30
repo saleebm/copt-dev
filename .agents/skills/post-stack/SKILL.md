@@ -13,22 +13,23 @@ The core UI paradigm: posts stack on top of each other as the user navigates. Cl
 | File | Owns | Key exports |
 |------|------|-------------|
 | `lib/post-stack-machine.ts` | XState machine — states, events, transitions | `postStackMachine`, `PostStackContext`, `PostStackEvent` |
-| `lib/url-state-manager.ts` | URL as single source of truth, navigation direction detection | `UrlStateManager`, `NavigationState`, `NavigationDirection` |
-| `lib/scroll-utils.ts` | Scroll execution, AbortController cancellation, visibility scoring | `scrollToElement`, `cancelCurrentScroll`, `waitForPostElement`, `getMostVisiblePostIndex` |
-| `lib/post-stack-utils-client.ts` | Client-side URL parsing, post ID processing | `parseCurrentUrl`, `ParsedPostIds`, `PostStackParams` |
+| `lib/url-state-manager.ts` | App-initiated URL writes, navigation direction detection | `UrlStateManager`, `NavigationState`, `NavigationDirection` |
+| `lib/scroll-utils.ts` | Scroll execution, AbortController cancellation, visibility scoring | `scrollToElement`, `cancelCurrentScroll`, `waitForPostElement`, `waitForPostStable`, `getMostVisiblePostIndex` |
+| `lib/post-stack-utils-client.ts` | Client-side URL parsing, post ID processing, scroll-anchor memory | `parseCurrentUrl`, `captureAnchorForPost`, `restoreAnchorForPost`, `readScrollMemory` |
 | `lib/post-stack-utils-server.ts` | Server-side post fetching, MDX rendering | `createRenderedPost`, `fetchPostStack` |
-| `components/post-stack/post-stack-provider-xstate.tsx` | React context, XState actor, hooks for state/actions | `usePostStackState`, `usePostStackActions` |
-| `components/post-stack/post-stack-observer.tsx` | IntersectionObserver — tracks which post is "active" | `PostStackObserver` |
+| `components/post-stack/post-stack-provider-xstate.tsx` | React context, XState actor, programmatic-scroll bridge | `usePostStackState`, `usePostStackActions` |
+| `components/post-stack/post-stack-observer.tsx` | `scrollend`-driven active-post tracking + anchor capture | `PostStackObserver` |
 | `components/post-stack/post-stack-interactive.tsx` | Client-side effect coordinator, hydration guard | `PostStackInteractive` |
-| `hooks/use-url-management.ts` | popstate handler, URL push/replace, debouncing | `useUrlManagement` |
+| `hooks/use-url-management.ts` | popstate handler, URL push/replace, deferred pushes during scroll | `useUrlManagement` |
 | `hooks/use-scroll-management.ts` | Scroll-to-post orchestration, operation ID tracking | `useScrollManagement` |
+| `hooks/use-user-scroll-interruption.ts` | Wheel/touch/key interruption → `USER_INTERACTION` / `ENABLE_OBSERVER` | `useUserScrollInterruption` |
 | `app/[...postStack]/page.tsx` | Catch-all route entry point | `PostStackPage` |
 
 ## Architectural Invariants
 
 These rules must not be violated. They protect against race conditions and state corruption.
 
-1. **URL is the single source of truth.** `UrlStateManager` owns the canonical stack. The state machine coordinates transitions but defers to `UrlStateManager.syncWithUrl()` during browser navigation. Stack state lives in `?stack=slug1,slug2` query param and `history.state.stackIds`.
+1. **URL/history state is canonical at navigation boundaries; machine context drives app-initiated writes.** On direct load and browser back/forward, `history.state.stackIds` (read in `use-url-management.ts`) is the source of truth — the popstate handler hands the stack to the machine via `BROWSER_NAVIGATION`, and the machine rebuilds `posts`/`activePostId` from `postCache`. For app-initiated navigation (clicking a `PostLink`, dismiss), the machine context changes first and `UrlStateManager` then writes the `?stack=slug1,slug2` URL. Note: `UrlStateManager.syncWithUrl()` and `getPostsToLoad()` are currently unused by the live flow.
 
 2. **Scroll locking prevents observer interference.** `isProgrammaticScroll` in machine context gates the `IntersectionObserver` in `post-stack-observer.tsx`. When `true`, observer callbacks are suppressed to prevent them from changing the active post during programmatic scrolls.
 
@@ -38,38 +39,51 @@ These rules must not be violated. They protect against race conditions and state
 
 5. **Pending navigation queue handles rapid browser nav.** `pendingNavigation` in machine context stores a navigation that arrived while a scroll was being cancelled (`cancellingScroll` state). After cancellation completes, the pending navigation replays.
 
-6. **Manual scroll restoration.** `history.scrollRestoration = "manual"` is set in `use-url-management.ts:153` to prevent the browser from interfering with programmatic scroll positioning.
+6. **Manual scroll restoration.** `history.scrollRestoration = "manual"` is set in `use-url-management.ts` so the browser never fights programmatic scroll positioning. Reading position is restored from per-post anchors in `history.state.scrollByPostId` (mirrored to `sessionStorage`), not from native scroll restoration.
 
 ## Key Types
 
-- `PostStackContext`, `PostStackEvent`, `PostStackInput` — `lib/post-stack-machine.ts:7-63`
-- `NavigationState`, `NavigationDirection` — `lib/url-state-manager.ts:12-25`
-- `ScrollState` — `lib/scroll-utils.ts:6-10`
+- `PostStackContext`, `PostStackEvent`, `PostStackInput` — `lib/post-stack-machine.ts`
+- `NavigationState`, `NavigationDirection` — `lib/url-state-manager.ts`
+- `ScrollState` — `lib/scroll-utils.ts`
 - `RenderedPost` — `types/post.ts`
-- `PostStackParams`, `ParsedPostIds` — `lib/post-stack-utils-client.ts:11-23`
+- `PostStackParams`, `ParsedPostIds`, `AnchorState`, `ScrollMemory` — `lib/post-stack-utils-client.ts`
 
 ## State Machine Flow
 
-See the docblock at `lib/post-stack-machine.ts:66-89` for the full state transition diagram. Key flows:
+The live machine has **ten** states: `idle`, `loadingPost`, `existingPost`, `scrolling`,
+`dismissing`, `processingNavigation`, `restoringScroll`, `cancellingScroll`, `goingHome`,
+and `error`. There are no `settled`, `settling`, or `settlingScroll` states — scroll
+completion is event-driven (`SCROLL_COMPLETE`/`SCROLL_ERROR`) and lands directly back in
+`idle`. `cancellingScroll`, `existingPost`, `goingHome`, and `processingNavigation` are
+transient (`always`) states that advance synchronously after their entry actions.
 
-- **New post:** idle -> loadingPost -> scrolling -> settled -> idle
-- **Cached post:** idle -> existingPost -> scrolling -> settled -> idle
-- **Dismiss:** idle -> dismissing -> settling -> scrolling -> settled -> idle
-- **Browser nav:** any -> processingNavigation -> restoringScroll -> settlingScroll -> idle
+Key flows (see [`docs/post-stack-statecharts.md`](../../../docs/post-stack-statecharts.md)
+for full diagrams and the event inventory):
+
+- **New post (uncached):** `idle` → `loadingPost` → (`POST_LOADED`) → `scrolling` → (`SCROLL_COMPLETE`) → `idle`
+- **Cached post (click):** `idle` → `existingPost` → `scrolling` → (`SCROLL_COMPLETE`) → `idle`
+- **Dismiss:** `idle` → `dismissing` → (`ANIMATION_COMPLETE`) → `scrolling` → `idle`
+- **Browser nav (all cached):** `idle` → `processingNavigation` → `restoringScroll` → (`SCROLL_COMPLETE`) → `idle`
+- **Browser nav (missing post):** `idle` → `processingNavigation` → `loadingPost` → `scrolling` → `idle`
+- **Browser nav during active scroll:** `scrolling`/`restoringScroll` → `cancellingScroll` → `processingNavigation` → …
+- **Home:** `idle` → `goingHome` → `idle`
+- **Load error:** `loadingPost` → `error` → (`CLEAR_ERROR` or `ADD_POST`) → `idle`/`loadingPost`
 
 ## Validation Checklist
 
 Run these probes when working in post-stack code. If any fail, the doc is stale — fix it.
 
-1. **File map:** Do all 11 files in the File Map exist? Do the listed exports still exist in each file?
+1. **File map:** Do all 12 files in the File Map exist? Do the listed exports still exist in each file?
 2. **Context shape:** Does `PostStackContext` in `lib/post-stack-machine.ts` still contain `isProgrammaticScroll`, `scrollOperationId`, `pendingNavigation`? These are the fields the invariants depend on.
 3. **Scroll lock gate:** Does `post-stack-observer.tsx` still read `isProgrammaticScroll` and skip observer updates when true?
 4. **Operation ID flow:** Does `SCROLL_COMPLETE` event type still carry `operationId`? Does the machine guard against mismatched IDs?
 5. **AbortController:** Does `scroll-utils.ts` still export `cancelCurrentScroll` using a module-level `AbortController`?
-6. **Popstate debounce:** Does `use-url-management.ts` still debounce popstate with a timeout ref? Is `history.scrollRestoration = "manual"` still set?
-7. **State transitions:** Does the docblock at `lib/post-stack-machine.ts:66-89` still describe the state flow? Do the 4 flows listed in "State Machine Flow" match?
+6. **Popstate handoff:** Does `handleBrowserNavigation` in `use-url-management.ts` read `history.state.stackIds` and dispatch `BROWSER_NAVIGATION`? (There is intentionally **no** popstate debounce or URL-push cooldown anymore — `scrollOperationId` + `cancellingScroll` handle concurrent popstates.) Is `history.scrollRestoration = "manual"` still set?
+7. **State names:** Do the ten states in "State Machine Flow" still match the `states:` keys in `lib/post-stack-machine.ts`? Are there still no `settled`/`settling`/`settlingScroll` states?
 8. **Data attributes:** Does `scroll-utils.ts` still query `[data-post-id]` and `[data-post-index]` for DOM targeting?
 
 ## References
 
+- [Post Stack Statecharts](../../../docs/post-stack-statecharts.md) — live XState diagrams, full event inventory, sequence flows, race matrix, follow-up candidates
 - [Browser Integration Deep Dive](references/browser-integration.md) — popstate handling, scroll cancellation pipeline, race condition guards
