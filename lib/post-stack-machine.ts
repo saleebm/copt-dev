@@ -15,7 +15,6 @@ export interface PostStackContext {
   isProgrammaticScroll: boolean; // Lock to prevent observer interference during programmatic scrolls
   pendingNavigation: {
     stackIds: string[];
-    direction: "forward" | "backward";
   } | null; // Store pending navigation during scroll cancellation
   postCache: RenderedPost[]; // Cache of all loaded posts for browser navigation
   posts: RenderedPost[];
@@ -46,13 +45,10 @@ export type PostStackEvent =
   | { type: "ANIMATION_COMPLETE" }
   | { type: "SCROLL_COMPLETE"; operationId?: number }
   | { type: "SCROLL_ERROR"; error: string; operationId?: number }
-  | { type: "URL_UPDATED"; stackIds: string[]; activePostId: string | null }
   | {
       type: "BROWSER_NAVIGATION";
       stackIds: string[];
-      direction: "forward" | "backward";
     }
-  | { type: "GO_HOME" }
   | { type: "CLEAR_ERROR" }
   | {
       type: "UPDATE_POST_CONTENT";
@@ -68,21 +64,94 @@ export type PostStackEvent =
  *
  * Coordinates URL state, post loading, and programmatic scroll.
  *
- * Scroll completion is event-driven: `SCROLL_COMPLETE` / `SCROLL_SUCCESS`
+ * Scroll completion is event-driven: `SCROLL_COMPLETE` / `SCROLL_ERROR`
  * arrives from the provider once the browser fires `scrollend` (or the
  * scroll-utils safety cap fires). The machine has no `after:` timers gating
  * scroll state — it transitions only on real events. `isProgrammaticScroll`
  * is released the instant scroll completion arrives, so the intersection
  * observer wakes up without an artificial buffer.
  *
- * Transient states (`cancellingScroll`, `goingHome`) use `always` to advance
- * synchronously after applying their entry actions.
+ * The transient `cancellingScroll` state uses `always` to advance
+ * synchronously after applying its entry actions.
+ *
+ * `BROWSER_NAVIGATION` is handled identically by `idle` and `error` via the
+ * shared `applyBrowserNavigation` action + `browserNavigationTransition`, so a
+ * failed post load never strands back/forward navigation.
  */
+
+/**
+ * Order-preserving de-duplication of stack ids so `currentStackIds` /
+ * `visiblePostIds` stay consistent with the post-id-deduped `posts` array.
+ */
+function dedupeStackIds(stackIds: string[]): string[] {
+  return [...new Set(stackIds)];
+}
+
+/**
+ * Rebuild the visible stack from the post cache for a given (raw) stack-id list.
+ * Shared by the `idle`/`error` `BROWSER_NAVIGATION` action and the
+ * `cancellingScroll` replay so the three rebuild sites cannot drift. Stack ids
+ * are de-duplicated (order-preserving) to stay consistent with the
+ * post-id-deduped `posts`. The last stack id becomes the active/target post.
+ */
+function rebuildStackFromCache(
+  postCache: RenderedPost[],
+  rawStackIds: string[]
+) {
+  const stackIds = dedupeStackIds(rawStackIds);
+  const newPosts = stackIds
+    .map((id) => postCache.find((p) => p.originalId === id))
+    .filter((p): p is RenderedPost => p !== undefined);
+  const uniquePosts = Array.from(
+    new Map(newPosts.map((post) => [post.id, post])).values()
+  );
+  const targetOriginalId = stackIds.at(-1);
+  const targetPost = targetOriginalId
+    ? postCache.find((p) => p.originalId === targetOriginalId)
+    : null;
+  return {
+    currentStackIds: stackIds,
+    visiblePostIds: stackIds,
+    posts: uniquePosts,
+    activePostId: targetPost?.id ?? null,
+    programmaticScrollTarget: targetPost?.id ?? null,
+  };
+}
+
+/**
+ * Shared `BROWSER_NAVIGATION` transition reused by `idle` and `error`. Cancels
+ * any active scroll, rebuilds the stack from cache (clearing `error`), and
+ * routes through `processingNavigation`.
+ */
+const browserNavigationTransition = {
+  target: "processingNavigation",
+  actions: ["cancelActiveScroll", "applyBrowserNavigation"],
+} as const;
+
 export const postStackMachine = setup({
   types: {
     context: {} as PostStackContext,
     events: {} as PostStackEvent,
     input: {} as PostStackInput,
+  },
+  actions: {
+    // Cancel any in-flight programmatic scroll before navigation rebuilds state.
+    cancelActiveScroll: () => {
+      cancelCurrentScroll();
+    },
+    // Rebuild the stack from the post cache for a browser back/forward event.
+    // Shared by `idle` and `error` so their semantics cannot drift.
+    applyBrowserNavigation: assign(({ context, event }) => {
+      if (event.type !== "BROWSER_NAVIGATION") {
+        return {};
+      }
+      return {
+        ...rebuildStackFromCache(context.postCache, event.stackIds),
+        error: null,
+        isLoadingNewPost: null,
+        dismissingInfo: null,
+      };
+    }),
   },
 }).createMachine({
   id: "postStack",
@@ -178,13 +247,10 @@ export const postStackMachine = setup({
         BROWSER_NAVIGATION: {
           target: "cancellingScroll",
           actions: [
-            () => {
-              cancelCurrentScroll();
-            },
+            "cancelActiveScroll",
             assign({
               pendingNavigation: ({ event }) => ({
                 stackIds: event.stackIds,
-                direction: event.direction,
               }),
               programmaticScrollTarget: null,
               scrollOperationId: ({ context }) => context.scrollOperationId + 1,
@@ -211,26 +277,8 @@ export const postStackMachine = setup({
           if (!nav) {
             return {};
           }
-
-          const newPosts = nav.stackIds
-            .map((id) => context.postCache.find((p) => p.originalId === id))
-            .filter((p): p is RenderedPost => p !== undefined);
-
-          const uniquePosts = Array.from(
-            new Map(newPosts.map((post) => [post.id, post])).values()
-          );
-
-          const targetOriginalId = nav.stackIds.at(-1);
-          const targetPost = targetOriginalId
-            ? context.postCache.find((p) => p.originalId === targetOriginalId)
-            : null;
-
           return {
-            currentStackIds: nav.stackIds,
-            visiblePostIds: nav.stackIds,
-            posts: uniquePosts,
-            activePostId: targetPost?.id ?? null,
-            programmaticScrollTarget: targetPost?.id ?? null,
+            ...rebuildStackFromCache(context.postCache, nav.stackIds),
             pendingNavigation: null,
             isLoadingNewPost: null,
             dismissingInfo: null,
@@ -241,7 +289,7 @@ export const postStackMachine = setup({
 
     /**
      * Default stable state. Observer is unlocked here. Scroll completion
-     * (SCROLL_COMPLETE / SCROLL_SUCCESS) lands directly here from `scrolling`
+     * (SCROLL_COMPLETE / SCROLL_ERROR) lands directly here from `scrolling`
      * and `restoringScroll`.
      */
     idle: {
@@ -338,60 +386,7 @@ export const postStackMachine = setup({
             activePostId: ({ event }) => event.postId,
           }),
         },
-        GO_HOME: {
-          target: "goingHome",
-        },
-        URL_UPDATED: {
-          actions: assign({
-            currentStackIds: ({ event }) => event.stackIds,
-            activePostId: ({ event }) => event.activePostId,
-            programmaticScrollTarget: ({ event }) => event.activePostId,
-          }),
-        },
-        BROWSER_NAVIGATION: {
-          target: "processingNavigation",
-          actions: [
-            () => {
-              cancelCurrentScroll();
-            },
-            assign({
-              currentStackIds: ({ event }) => event.stackIds,
-              visiblePostIds: ({ event }) => event.stackIds,
-              posts: ({ context, event }) => {
-                const newPosts = event.stackIds
-                  .map((id) =>
-                    context.postCache.find((p) => p.originalId === id)
-                  )
-                  .filter((p): p is RenderedPost => p !== undefined);
-                return Array.from(
-                  new Map(newPosts.map((post) => [post.id, post])).values()
-                );
-              },
-              activePostId: ({ context, event }) => {
-                const targetOriginalId = event.stackIds.at(-1);
-                if (!targetOriginalId) {
-                  return null;
-                }
-                const targetPost = context.postCache.find(
-                  (p) => p.originalId === targetOriginalId
-                );
-                return targetPost?.id ?? null;
-              },
-              programmaticScrollTarget: ({ context, event }) => {
-                const targetOriginalId = event.stackIds.at(-1);
-                if (!targetOriginalId) {
-                  return null;
-                }
-                const targetPost = context.postCache.find(
-                  (p) => p.originalId === targetOriginalId
-                );
-                return targetPost?.id ?? null;
-              },
-              isLoadingNewPost: null,
-              dismissingInfo: null,
-            }),
-          ],
-        },
+        BROWSER_NAVIGATION: browserNavigationTransition,
         UPDATE_POST_CONTENT: {
           actions: assign({
             posts: ({ context, event }) =>
@@ -561,13 +556,10 @@ export const postStackMachine = setup({
         BROWSER_NAVIGATION: {
           target: "cancellingScroll",
           actions: [
-            () => {
-              cancelCurrentScroll();
-            },
+            "cancelActiveScroll",
             assign({
               pendingNavigation: ({ event }) => ({
                 stackIds: event.stackIds,
-                direction: event.direction,
               }),
               programmaticScrollTarget: null,
               scrollOperationId: ({ context }) => context.scrollOperationId + 1,
@@ -693,22 +685,6 @@ export const postStackMachine = setup({
       },
     },
 
-    /**
-     * Transient: clear posts/active state, then enter idle.
-     */
-    goingHome: {
-      entry: assign({
-        posts: [],
-        currentStackIds: [],
-        activePostId: null,
-        dismissingInfo: null,
-        isLoadingNewPost: null,
-        scrollState: "idle",
-        programmaticScrollTarget: null,
-      }),
-      always: { target: "idle" },
-    },
-
     error: {
       on: {
         CLEAR_ERROR: {
@@ -723,6 +699,8 @@ export const postStackMachine = setup({
             isLoadingNewPost: ({ event }) => event.originalPostId,
           }),
         },
+        // Browser back/forward must remain functional after a failed load.
+        BROWSER_NAVIGATION: browserNavigationTransition,
       },
     },
   },

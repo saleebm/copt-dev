@@ -310,7 +310,7 @@ export function CommandPalette() {
   }, [tags, searchQuery]);
 
   const categoryDrillPosts = useMemo(() => {
-    if (!drillTarget || drillTarget.type !== "category") {
+    if (drillTarget?.type !== "category") {
       return [];
     }
     const targetName = drillTarget.name.toLowerCase();
@@ -333,7 +333,7 @@ export function CommandPalette() {
   }, [drillTarget, manifest, searchQuery]);
 
   const tagDrillPosts = useMemo(() => {
-    if (!drillTarget || drillTarget.type !== "tag") {
+    if (drillTarget?.type !== "tag") {
       return [];
     }
     const targetName = drillTarget.name.toLowerCase();
@@ -526,7 +526,7 @@ export function CommandPalette() {
   }
 
   function renderCategoryDrill() {
-    if (!drillTarget || drillTarget.type !== "category") {
+    if (drillTarget?.type !== "category") {
       return null;
     }
     return (
@@ -624,7 +624,7 @@ export function CommandPalette() {
   }
 
   function renderTagDrill() {
-    if (!drillTarget || drillTarget.type !== "tag") {
+    if (drillTarget?.type !== "tag") {
       return null;
     }
     return (

@@ -2,52 +2,73 @@
 
 How the Post Stack system integrates with browser back/forward navigation. This is the most race-condition-prone subsystem — multiple async flows (popstate, scroll animation, DOM updates) must coordinate without corrupting state.
 
+> Source of truth is `lib/post-stack-machine.ts`, `hooks/use-url-management.ts`,
+> `hooks/use-scroll-management.ts`, and `lib/scroll-utils.ts`. This file avoids line
+> numbers; search by symbol name. See [`docs/post-stack-statecharts.md`](../../../../docs/post-stack-statecharts.md)
+> for the full statecharts, event inventory, and sequence diagrams.
+
 ## Popstate Handler Flow
 
-Defined in `hooks/use-url-management.ts:91-146`.
+Defined as `handleBrowserNavigation` in `hooks/use-url-management.ts`.
 
 ```
 popstate event
   -> guard: skip if isInternalUpdateRef is true (prevents re-entrant calls)
-  -> debounce: 50ms via popstateDebounceRef (coalesces rapid back/forward clicks)
-  -> record lastBrowserNavTimestampRef (blocks URL pushes for 500ms)
+  -> clear pendingStackIdsRef (drop any URL push deferred during a scroll)
   -> read stackIds from history.state.stackIds (preferred) or parse URL (fallback)
   -> set isInternalUpdateRef = true
-  -> actor.send({ type: "BROWSER_NAVIGATION", stackIds, direction })
-  -> microtask: clear isInternalUpdateRef
+  -> reset lastPushedRef so a later forward-nav to the same URL isn't deduped
+  -> actor.send({ type: "BROWSER_NAVIGATION", stackIds })
+  -> microtask (Promise.resolve().then): clear isInternalUpdateRef
 ```
+
+There is intentionally **no** popstate debounce and **no** post-navigation URL-push
+cooldown. The earlier 50ms `popstateDebounceRef` and 500ms `lastBrowserNavTimestampRef`
+were removed; concurrent popstates are now handled by `scrollOperationId` versioning plus
+the `cancellingScroll` → `processingNavigation` replay path.
+
+The `BROWSER_NAVIGATION` event carries only `stackIds`; the machine has no
+direction-dependent logic, so no `direction` field is sent or stored.
 
 ## Scroll Cancellation Pipeline
 
-When browser navigation arrives during an active scroll, the machine must cancel the scroll before processing the new navigation.
+When browser navigation arrives during an active programmatic scroll (`scrolling` or
+`restoringScroll`), the machine cancels the scroll before applying the new navigation.
 
 ```
-BROWSER_NAVIGATION event during scrolling state
-  -> machine transitions to cancellingScroll
-  -> stores navigation in context.pendingNavigation
-  -> cancelCurrentScroll() called (scroll-utils.ts:30-35, aborts AbortController)
-  -> scrollToElement rejects with ScrollCancelledError
-  -> SCROLL_CANCELLED event fires
-  -> machine checks pendingNavigation
-  -> if present: replays as BROWSER_NAVIGATION, transitions to processingNavigation
-  -> if absent: transitions to idle
+BROWSER_NAVIGATION while in scrolling / restoringScroll
+  -> transition action calls cancelCurrentScroll() (aborts the AbortController)
+  -> stores { stackIds } in context.pendingNavigation
+  -> bumps scrollOperationId (so the aborted scroll's SCROLL_COMPLETE is ignored)
+  -> target state: cancellingScroll
+       entry: clears scrollState + programmaticScrollTarget
+       always: -> processingNavigation, applying pendingNavigation to
+               currentStackIds / visiblePostIds / posts / activePostId from postCache
+  -> processingNavigation re-checks the cache:
+       missing post(s) -> loadingPost
+       all cached      -> restoringScroll
 ```
 
-Key code paths:
-- `cancelCurrentScroll()` — `lib/scroll-utils.ts:30-35`
-- `ScrollCancelledError` handling — `hooks/use-scroll-management.ts:177-184`
-- `pendingNavigation` context field — `lib/post-stack-machine.ts:23`
+The aborted `scrollToElement` rejects with `ScrollCancelledError`, which
+`use-scroll-management.ts` swallows and still answers with `SCROLL_COMPLETE` carrying the
+**stale** `operationId`; the machine's operation-id guard discards it. There is no
+`SCROLL_CANCELLED` event.
+
+Key code paths (search by symbol):
+- `cancelCurrentScroll()` / `currentScrollController` — `lib/scroll-utils.ts`
+- `ScrollCancelledError` handling — `hooks/use-scroll-management.ts`
+- `pendingNavigation` context field + `cancellingScroll` state — `lib/post-stack-machine.ts`
 
 ## Race Condition Guards
 
 | Guard | Location | Purpose |
 |-------|----------|---------|
-| 50ms popstate debounce | `use-url-management.ts:104` | Coalesces rapid browser nav events |
-| 500ms URL push cooldown | `use-url-management.ts:47-50` | Prevents app from pushing URLs immediately after browser nav |
-| `isInternalUpdateRef` | `use-url-management.ts:31` | Blocks popstate handler during app-initiated URL changes |
-| `scrollOperationId` matching | `post-stack-machine.ts:22` | Discards stale SCROLL_COMPLETE events |
-| `isProgrammaticScroll` lock | `post-stack-machine.ts:21` | Suppresses IntersectionObserver during programmatic scrolls |
-| Scroll state URL gating | `use-url-management.ts:61-64` | Defers URL push during programmatic scroll to prevent browser scroll reset |
+| `isInternalUpdateRef` | `use-url-management.ts` | Blocks the popstate handler during app-initiated URL changes |
+| Deferred URL push during scroll | `use-url-management.ts` (`pendingStackIdsRef`) | Holds `pushState` while `scrollState === "programmaticScroll"`, flushes on idle, to avoid a browser scroll reset mid-animation |
+| `scrollOperationId` matching | `post-stack-machine.ts` | Discards stale `SCROLL_COMPLETE` / `SCROLL_ERROR` events |
+| `isProgrammaticScroll` lock | `post-stack-machine.ts` | Suppresses the `scrollend` observer during programmatic scrolls |
+| `pendingNavigation` replay | `post-stack-machine.ts` (`cancellingScroll`) | Applies a navigation that arrived while a scroll was being cancelled |
+| AbortController cancellation | `scroll-utils.ts` (`cancelCurrentScroll`) | Aborts the in-flight scroll animation so a new one can start |
 
 ## Data Attributes for DOM Targeting
 
@@ -56,19 +77,30 @@ Used by `scroll-utils.ts` and `post-stack-observer.tsx` to locate post elements:
 - `data-post-id` — canonical post ID (e.g., `"about"`, `"my-blog-post"`)
 - `data-post-index` — zero-based position in the current stack
 
-Element selectors prioritize wrapper `div[data-post-id][data-post-index]` over inner `section` elements because wrapper divs have correct `offsetTop` values. See `scroll-utils.ts:539-548`.
+`waitForPostElement` prefers the indexed selector
+`[data-post-id="…"][data-post-index="…"]` and falls back to `[data-post-id="…"]`. The
+observer prefers a wrapper element carrying `data-post-index` over an inner `section`
+when scoring visibility.
 
 ## History State Shape
 
-Each `history.pushState` / `replaceState` stores `{ stackIds: string[] }` so that popstate can read stack state without parsing the URL. Set in:
-- `use-url-management.ts:74` (pushState on navigation)
-- `use-url-management.ts:162` (replaceState on initial load)
+Every `history.pushState` / `replaceState` stores
+`{ stackIds: string[], scrollByPostId: ScrollMemory }` so popstate can read the stack
+without parsing the URL, and so per-post reading anchors survive back/forward. Written in
+`use-url-management.ts` (`updateUrl` pushState; the initial `replaceState` seed) and
+`lib/post-stack-utils-client.ts` (`writeScrollMemory`). `scrollByPostId` maps post id →
+`{ anchorId, fineOffsetPx }` and is mirrored to `sessionStorage` (`copt:scroll`) as a
+hard-refresh backup.
 
 ## Validation Probes
 
-Line numbers in this file drift fastest. When consulting this reference:
+When consulting this reference, confirm against live source:
 
-1. Confirm `handleBrowserNavigation` callback still lives in `hooks/use-url-management.ts` near the cited lines. Search for `popstateDebounceRef` if lines shifted.
-2. Confirm `cancelCurrentScroll` still uses `AbortController.abort()` in `lib/scroll-utils.ts`. Search for `currentScrollController` if lines shifted.
-3. Confirm the Race Condition Guards table entries match actual ref names and timeout values in the source files.
-4. If any line reference is off by >10 lines, update this file.
+1. `handleBrowserNavigation` still lives in `hooks/use-url-management.ts`, reads
+   `history.state.stackIds`, and dispatches `BROWSER_NAVIGATION`. There should be **no**
+   `popstateDebounceRef` / `lastBrowserNavTimestampRef`.
+2. `cancelCurrentScroll` still uses `currentScrollController.abort()` in
+   `lib/scroll-utils.ts`.
+3. The Race Condition Guards table still matches the ref names and the machine's
+   `cancellingScroll` / `scrollOperationId` / `pendingNavigation` mechanics.
+4. The history state shape still includes both `stackIds` and `scrollByPostId`.
