@@ -366,7 +366,7 @@ changes and this doc doesn't. Re-run these checks whenever you touch post-stack 
 
 1. **State names:** Do the nine states in §1 still match the `states:` keys in
    `lib/post-stack-machine.ts`? Are there still no `settled`/`settling`/`settlingScroll`?
-2. **Event union:** Do the 16 events in §5 still match the `PostStackEvent` union? If an
+2. **Event union:** Do the 14 events in §5 still match the `PostStackEvent` union? If an
    event was added/removed, update the inventory and any diagram that references it.
 3. **Context invariants:** Do `isProgrammaticScroll`, `scrollOperationId`,
    `pendingNavigation`, and `programmaticScrollTarget` still exist in `PostStackContext`

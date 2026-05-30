@@ -74,6 +74,7 @@ describe("postStackMachine — BROWSER_NAVIGATION dedup (U2)", () => {
     expect(context.currentStackIds).toEqual(["about"]);
     expect(context.visiblePostIds).toEqual(["about"]);
     expect(context.posts.length).toBe(1);
+    expect(context.posts[0]?.id).toBe(ABOUT.id);
   });
 
   it("dedupes when navigation is routed through cancellingScroll", () => {
@@ -88,6 +89,7 @@ describe("postStackMachine — BROWSER_NAVIGATION dedup (U2)", () => {
     expect(context.currentStackIds).toEqual(["about"]);
     expect(context.visiblePostIds).toEqual(["about"]);
     expect(context.posts.length).toBe(1);
+    expect(context.posts[0]?.id).toBe(ABOUT.id);
   });
 });
 
@@ -108,10 +110,24 @@ describe("postStackMachine — error recovery (U3)", () => {
 
     const snapshot = actor.getSnapshot();
     expect(snapshot.matches("error")).toBe(false);
+    // Cached stack with no missing posts settles in restoringScroll.
+    expect(snapshot.matches("restoringScroll")).toBe(true);
     expect(snapshot.context.error).toBeNull();
     expect(snapshot.context.currentStackIds).toEqual(["about"]);
     expect(snapshot.context.posts.length).toBe(1);
     expect(snapshot.context.activePostId).toBe(ABOUT.id);
+  });
+
+  it("routes to loadingPost when recovering to an uncached id from error", () => {
+    const actor = driveToError();
+    actor.send({ type: "BROWSER_NAVIGATION", stackIds: ["uncached"] });
+
+    const snapshot = actor.getSnapshot();
+    // "uncached" is not in postCache, so processingNavigation fetches it.
+    expect(snapshot.matches("loadingPost")).toBe(true);
+    expect(snapshot.context.error).toBeNull();
+    expect(snapshot.context.isLoadingNewPost).toBeNull();
+    expect(snapshot.context.activePostId).toBeNull();
   });
 
   it("still handles ADD_POST from error", () => {

@@ -38,7 +38,7 @@ When browser navigation arrives during an active programmatic scroll (`scrolling
 ```
 BROWSER_NAVIGATION while in scrolling / restoringScroll
   -> transition action calls cancelCurrentScroll() (aborts the AbortController)
-  -> stores { stackIds, direction } in context.pendingNavigation
+  -> stores { stackIds } in context.pendingNavigation
   -> bumps scrollOperationId (so the aborted scroll's SCROLL_COMPLETE is ignored)
   -> target state: cancellingScroll
        entry: clears scrollState + programmaticScrollTarget

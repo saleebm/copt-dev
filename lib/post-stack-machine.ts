@@ -88,6 +88,37 @@ function dedupeStackIds(stackIds: string[]): string[] {
 }
 
 /**
+ * Rebuild the visible stack from the post cache for a given (raw) stack-id list.
+ * Shared by the `idle`/`error` `BROWSER_NAVIGATION` action and the
+ * `cancellingScroll` replay so the three rebuild sites cannot drift. Stack ids
+ * are de-duplicated (order-preserving) to stay consistent with the
+ * post-id-deduped `posts`. The last stack id becomes the active/target post.
+ */
+function rebuildStackFromCache(
+  postCache: RenderedPost[],
+  rawStackIds: string[]
+) {
+  const stackIds = dedupeStackIds(rawStackIds);
+  const newPosts = stackIds
+    .map((id) => postCache.find((p) => p.originalId === id))
+    .filter((p): p is RenderedPost => p !== undefined);
+  const uniquePosts = Array.from(
+    new Map(newPosts.map((post) => [post.id, post])).values()
+  );
+  const targetOriginalId = stackIds.at(-1);
+  const targetPost = targetOriginalId
+    ? postCache.find((p) => p.originalId === targetOriginalId)
+    : null;
+  return {
+    currentStackIds: stackIds,
+    visiblePostIds: stackIds,
+    posts: uniquePosts,
+    activePostId: targetPost?.id ?? null,
+    programmaticScrollTarget: targetPost?.id ?? null,
+  };
+}
+
+/**
  * Shared `BROWSER_NAVIGATION` transition reused by `idle` and `error`. Cancels
  * any active scroll, rebuilds the stack from cache (clearing `error`), and
  * routes through `processingNavigation`.
@@ -114,23 +145,8 @@ export const postStackMachine = setup({
       if (event.type !== "BROWSER_NAVIGATION") {
         return {};
       }
-      const stackIds = dedupeStackIds(event.stackIds);
-      const newPosts = stackIds
-        .map((id) => context.postCache.find((p) => p.originalId === id))
-        .filter((p): p is RenderedPost => p !== undefined);
-      const uniquePosts = Array.from(
-        new Map(newPosts.map((post) => [post.id, post])).values()
-      );
-      const targetOriginalId = stackIds.at(-1);
-      const targetPost = targetOriginalId
-        ? context.postCache.find((p) => p.originalId === targetOriginalId)
-        : null;
       return {
-        currentStackIds: stackIds,
-        visiblePostIds: stackIds,
-        posts: uniquePosts,
-        activePostId: targetPost?.id ?? null,
-        programmaticScrollTarget: targetPost?.id ?? null,
+        ...rebuildStackFromCache(context.postCache, event.stackIds),
         error: null,
         isLoadingNewPost: null,
         dismissingInfo: null,
@@ -261,28 +277,8 @@ export const postStackMachine = setup({
           if (!nav) {
             return {};
           }
-
-          const stackIds = dedupeStackIds(nav.stackIds);
-
-          const newPosts = stackIds
-            .map((id) => context.postCache.find((p) => p.originalId === id))
-            .filter((p): p is RenderedPost => p !== undefined);
-
-          const uniquePosts = Array.from(
-            new Map(newPosts.map((post) => [post.id, post])).values()
-          );
-
-          const targetOriginalId = stackIds.at(-1);
-          const targetPost = targetOriginalId
-            ? context.postCache.find((p) => p.originalId === targetOriginalId)
-            : null;
-
           return {
-            currentStackIds: stackIds,
-            visiblePostIds: stackIds,
-            posts: uniquePosts,
-            activePostId: targetPost?.id ?? null,
-            programmaticScrollTarget: targetPost?.id ?? null,
+            ...rebuildStackFromCache(context.postCache, nav.stackIds),
             pendingNavigation: null,
             isLoadingNewPost: null,
             dismissingInfo: null,
