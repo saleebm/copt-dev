@@ -51,11 +51,11 @@ These rules must not be violated. They protect against race conditions and state
 
 ## State Machine Flow
 
-The live machine has **ten** states: `idle`, `loadingPost`, `existingPost`, `scrolling`,
-`dismissing`, `processingNavigation`, `restoringScroll`, `cancellingScroll`, `goingHome`,
+The live machine has **nine** states: `idle`, `loadingPost`, `existingPost`, `scrolling`,
+`dismissing`, `processingNavigation`, `restoringScroll`, `cancellingScroll`,
 and `error`. There are no `settled`, `settling`, or `settlingScroll` states — scroll
 completion is event-driven (`SCROLL_COMPLETE`/`SCROLL_ERROR`) and lands directly back in
-`idle`. `cancellingScroll`, `existingPost`, `goingHome`, and `processingNavigation` are
+`idle`. `cancellingScroll`, `existingPost`, and `processingNavigation` are
 transient (`always`) states that advance synchronously after their entry actions.
 
 Key flows (see [`docs/post-stack-statecharts.md`](../../../docs/post-stack-statecharts.md)
@@ -67,8 +67,9 @@ for full diagrams and the event inventory):
 - **Browser nav (all cached):** `idle` → `processingNavigation` → `restoringScroll` → (`SCROLL_COMPLETE`) → `idle`
 - **Browser nav (missing post):** `idle` → `processingNavigation` → `loadingPost` → `scrolling` → `idle`
 - **Browser nav during active scroll:** `scrolling`/`restoringScroll` → `cancellingScroll` → `processingNavigation` → …
-- **Home:** `idle` → `goingHome` → `idle`
-- **Load error:** `loadingPost` → `error` → (`CLEAR_ERROR` or `ADD_POST`) → `idle`/`loadingPost`
+- **Browser nav from error:** `error` → `processingNavigation` → `restoringScroll`/`loadingPost` → … (back/forward stays functional after a failed load)
+- **Home:** `goHome()` performs a full-page reload (`window.location.href = "/"`); there is no machine state for it.
+- **Load error:** `loadingPost` → `error` → (`CLEAR_ERROR`, `ADD_POST`, or `BROWSER_NAVIGATION`) → `idle`/`loadingPost`/`processingNavigation`
 
 ## Validation Checklist
 
@@ -80,7 +81,7 @@ Run these probes when working in post-stack code. If any fail, the doc is stale 
 4. **Operation ID flow:** Does `SCROLL_COMPLETE` event type still carry `operationId`? Does the machine guard against mismatched IDs?
 5. **AbortController:** Does `scroll-utils.ts` still export `cancelCurrentScroll` using a module-level `AbortController`?
 6. **Popstate handoff:** Does `handleBrowserNavigation` in `use-url-management.ts` read `history.state.stackIds` and dispatch `BROWSER_NAVIGATION`? (There is intentionally **no** popstate debounce or URL-push cooldown anymore — `scrollOperationId` + `cancellingScroll` handle concurrent popstates.) Is `history.scrollRestoration = "manual"` still set?
-7. **State names:** Do the ten states in "State Machine Flow" still match the `states:` keys in `lib/post-stack-machine.ts`? Are there still no `settled`/`settling`/`settlingScroll` states?
+7. **State names:** Do the nine states in "State Machine Flow" still match the `states:` keys in `lib/post-stack-machine.ts`? Are there still no `settled`/`settling`/`settlingScroll`/`goingHome` states?
 8. **Data attributes:** Does `scroll-utils.ts` still query `[data-post-id]` and `[data-post-index]` for DOM targeting?
 
 ## References

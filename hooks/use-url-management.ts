@@ -110,7 +110,6 @@ export function useUrlManagement({
     actor.send({
       type: "BROWSER_NAVIGATION",
       stackIds,
-      direction: "forward",
     });
     Promise.resolve().then(() => {
       isInternalUpdateRef.current = false;

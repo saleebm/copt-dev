@@ -17,9 +17,9 @@ see [Keeping diagrams grounded](#keeping-diagrams-grounded).
 
 ## 1. States at a glance
 
-The machine has **ten** states. There are no `settled`, `settling`, or `settlingScroll`
+The machine has **nine** states. There are no `settled`, `settling`, or `settlingScroll`
 states — older docs described those, but scroll completion is event-driven and lands
-directly in `idle`.
+directly in `idle`. Home navigation is a full-page reload, not a machine state.
 
 | State | Kind | Meaning | Observer / scroll lock |
 |-------|------|---------|------------------------|
@@ -31,8 +31,7 @@ directly in `idle`.
 | `processingNavigation` | transient (`always`) | Browser-nav entry: decide load-vs-restore from cache. | — |
 | `restoringScroll` | event wait | Restoring a post + reading anchor after browser nav. | locked |
 | `cancellingScroll` | transient (`always`) | A browser nav arrived mid-scroll; apply the queued nav. | — |
-| `goingHome` | transient (`always`) | Clear the stack, then return to `idle`. | — |
-| `error` | event wait | Post load failed. | — |
+| `error` | event wait | Post load failed. Recoverable via `CLEAR_ERROR`, `ADD_POST`, or `BROWSER_NAVIGATION`. | — |
 
 "Transient (`always`)" states advance synchronously after their entry actions, so an
 actor snapshot rarely catches the machine sitting in them.
@@ -50,13 +49,11 @@ stateDiagram-v2
   idle --> loadingPost: ADD_POST [uncached, isLoadingNewPost == null]
   idle --> scrolling: SCROLL_TO_POST [post in stack]
   idle --> dismissing: DISMISS_POST [posts.length > 1]
-  idle --> goingHome: GO_HOME
 
   existingPost --> scrolling: always
   loadingPost --> scrolling: POST_LOADED
   loadingPost --> error: POST_LOAD_ERROR
   dismissing --> scrolling: ANIMATION_COMPLETE
-  goingHome --> idle: always
 
   scrolling --> idle: SCROLL_COMPLETE [operationId matches]
   scrolling --> idle: USER_INTERACTION
@@ -65,14 +62,18 @@ stateDiagram-v2
 
   error --> idle: CLEAR_ERROR
   error --> loadingPost: ADD_POST [isLoadingNewPost == null]
+  error --> processingNavigation: BROWSER_NAVIGATION
 ```
+
+Home navigation has no machine state: `goHome()` performs a full-page reload
+(`window.location.href = "/"`).
 
 Notes:
 
 - The `idle` **initial-active-post** `always` guard fires only on first load when
   `isInitialLoad` is true, there is an `activePostId`, the stack has more than one post,
   and the active post is not the first. It kicks off one scroll to the deep-linked post.
-- `SET_ACTIVE_POST`, `URL_UPDATED`, `UPDATE_POST_CONTENT`, and `ENABLE_OBSERVER` are
+- `SET_ACTIVE_POST`, `UPDATE_POST_CONTENT`, and `ENABLE_OBSERVER` are
   **context-only** in `idle` (no state change) — see [Event inventory](#5-event-inventory).
 - `scrolling` also accepts `ADD_POST` (the user can click a new `PostLink` mid-scroll)
   and `UPDATE_POST_CONTENT` / `SET_ACTIVE_POST` as context-only updates.
@@ -84,6 +85,7 @@ Notes:
 ```mermaid
 stateDiagram-v2
   idle --> processingNavigation: BROWSER_NAVIGATION
+  error --> processingNavigation: BROWSER_NAVIGATION
 
   processingNavigation --> loadingPost: always [some visible post missing from cache]
   processingNavigation --> restoringScroll: always [all visible posts cached]
@@ -97,10 +99,13 @@ stateDiagram-v2
   cancellingScroll --> processingNavigation: always [applies pendingNavigation]
 ```
 
-- On `BROWSER_NAVIGATION` from `idle`, the transition action calls `cancelCurrentScroll()`
-  and rebuilds `posts`, `currentStackIds`, `visiblePostIds`, `activePostId`, and
-  `programmaticScrollTarget` from `postCache` using the incoming `stackIds` (the last id
-  becomes active).
+- On `BROWSER_NAVIGATION` from `idle` **or `error`**, the shared `applyBrowserNavigation`
+  action (plus `cancelActiveScroll`) calls `cancelCurrentScroll()` and rebuilds `posts`,
+  `currentStackIds`, `visiblePostIds`, `activePostId`, and `programmaticScrollTarget` from
+  `postCache` using the incoming `stackIds` (the last id becomes active), and clears
+  `error`. The `stackIds` are order-preservingly de-duplicated so the stack-id arrays stay
+  consistent with the post-id-deduped `posts`. `idle` and `error` share one definition so
+  their semantics cannot drift — a failed load no longer strands back/forward navigation.
 - If a browser nav arrives **during** an active programmatic scroll (`scrolling` or
   `restoringScroll`), the machine routes through `cancellingScroll`: it cancels the scroll,
   stores `pendingNavigation`, bumps `scrollOperationId` (so the dying scroll's late
@@ -185,14 +190,8 @@ don't imply a flow that can't fire).
 | `SET_ACTIVE_POST` | `postId` | Context-only: update `activePostId` | `provider` (`setActivePost`), observer |
 | `ENABLE_OBSERVER` | — | Context-only: release `isProgrammaticScroll` (idle but still locked) | `use-user-scroll-interruption` |
 | `UPDATE_POST_CONTENT` | `postId`, `renderedContent`, `isContentReady?` | Context-only: swap in async-rendered MDX in `posts` + `postCache` | `use-post-management` (MDX serialize) |
-| `BROWSER_NAVIGATION` | `stackIds`, `direction` | Browser back/forward; rebuild stack from cache | `use-url-management` (popstate) |
-| `GO_HOME` | — | Clear stack → `goingHome` → `idle` | **not dispatched** (see follow-ups) |
-| `URL_UPDATED` | `stackIds`, `activePostId` | Context-only: set stack + active from URL | **not dispatched** |
-| `CLEAR_ERROR` | — | `error` → `idle` | **not dispatched** (recovery is via `ADD_POST`) |
-
-> The machine docblock mentions a `SCROLL_SUCCESS` event. That is **not** a member of the
-> `PostStackEvent` union — completion is `SCROLL_COMPLETE` only. Treat the docblock
-> mention as stale.
+| `BROWSER_NAVIGATION` | `stackIds` | Browser back/forward; rebuild (deduped) stack from cache; handled by `idle` and `error` | `use-url-management` (popstate) |
+| `CLEAR_ERROR` | — | `error` → `idle` | **not dispatched** (recovery is via `ADD_POST` / `BROWSER_NAVIGATION`; retained for future error UI) |
 
 ---
 
@@ -365,7 +364,7 @@ changes and this doc doesn't. Re-run these checks whenever you touch post-stack 
 
 ### Validation checklist
 
-1. **State names:** Do the ten states in §1 still match the `states:` keys in
+1. **State names:** Do the nine states in §1 still match the `states:` keys in
    `lib/post-stack-machine.ts`? Are there still no `settled`/`settling`/`settlingScroll`?
 2. **Event union:** Do the 16 events in §5 still match the `PostStackEvent` union? If an
    event was added/removed, update the inventory and any diagram that references it.
@@ -397,32 +396,33 @@ changes and this doc doesn't. Re-run these checks whenever you touch post-stack 
 
 ## Follow-up candidates
 
-Suspected behavior gaps found while documenting. These are **not** fixed here and are not
-endorsements of current behavior — they are notes for a future bug-fix/regression plan.
+### Resolved
 
-1. **Hard-coded popstate direction.** `handleBrowserNavigation` in
-   `hooks/use-url-management.ts` always sends `direction: "forward"`, even on back. The
-   machine ignores `direction` today, so it is currently inert — but it is a latent trap
-   if direction-aware logic is ever added. Inspect: `use-url-management.ts`,
-   `lib/url-state-manager.ts` (`_calculateDirection` computes real direction but is unused
-   on the popstate path).
-2. **`GO_HOME` / `goingHome` are unreachable.** The machine defines a `goingHome` state and
-   `GO_HOME` event, but `goHome()` does a full `window.location.href = "/"` reload and
-   never sends `GO_HOME`. The state is currently dead code. Inspect: `use-url-management.ts`
-   (`goHome`), `lib/post-stack-machine.ts` (`goingHome`).
-3. **`URL_UPDATED` and `CLEAR_ERROR` are never dispatched.** Both have handlers but no
-   callers; error recovery happens via `ADD_POST` from the `error` state. Decide whether to
-   wire them up or remove the handlers. Inspect: `lib/post-stack-machine.ts`.
-4. **Stale `SCROLL_SUCCESS` reference in the machine docblock.** The docblock names a
-   `SCROLL_SUCCESS` completion event that does not exist in `PostStackEvent`. Cosmetic, but
-   misleading. Inspect: `lib/post-stack-machine.ts` docblock.
-5. **Duplicate-stack-id risk on browser nav.** `BROWSER_NAVIGATION` and `cancellingScroll`
-   rebuild `posts` by de-duplicating on `post.id`, but `currentStackIds`/`visiblePostIds`
-   are set directly from the incoming `stackIds` without de-duplication. If a stack URL
-   ever contains a repeated id, posts and stack-ids could diverge. Inspect:
-   `lib/post-stack-machine.ts` (`BROWSER_NAVIGATION`, `cancellingScroll`).
-6. **User-interruption during `restoringScroll` skips operation-id check.** `USER_INTERACTION`
-   unconditionally returns to `idle` from both `scrolling` and `restoringScroll` with no
-   `operationId` guard, unlike `SCROLL_COMPLETE`. Likely fine (interruption is inherently
-   "now"), but worth confirming against rapid nav + interrupt sequences. Inspect:
-   `lib/post-stack-machine.ts`, `hooks/use-user-scroll-interruption.ts`.
+The following gaps surfaced during documentation have been fixed (see
+`lib/post-stack-machine.test.ts` and the implementation in `lib/post-stack-machine.ts`):
+
+- **Hard-coded popstate direction → removed.** The unused `direction` field was dropped from
+  the `BROWSER_NAVIGATION` event, `pendingNavigation` context, and the popstate sender. The
+  machine has no direction-dependent logic.
+- **`GO_HOME` / `goingHome` → removed.** `goHome()` does a full `window.location.href = "/"`
+  reload and never dispatched `GO_HOME`; the dead event and state were removed.
+- **`URL_UPDATED` → removed.** It was never dispatched and was fully superseded by
+  `BROWSER_NAVIGATION`.
+- **Stale `SCROLL_SUCCESS` docblock reference → removed.** The docblock now names only
+  `SCROLL_COMPLETE` / `SCROLL_ERROR`.
+- **Duplicate-stack-id risk → fixed.** `currentStackIds` / `visiblePostIds` are now
+  order-preservingly de-duplicated to match the post-id-deduped `posts`.
+- **`error` stranded back/forward → fixed.** `error` now handles `BROWSER_NAVIGATION` via the
+  same shared action as `idle`, so a failed load no longer swallows browser navigation.
+
+`CLEAR_ERROR` is intentionally **retained** (not dispatched today) as the sanctioned
+`error → idle` recovery transition for future error-recovery UI.
+
+### Still open
+
+- **User-interruption during `restoringScroll` skips operation-id check (no change).**
+  `USER_INTERACTION` unconditionally returns to `idle` from both `scrolling` and
+  `restoringScroll` with no `operationId` guard, unlike `SCROLL_COMPLETE`. This is **correct
+  by design** — interruption is inherently "now" (the user physically scrolled), so releasing
+  the lock unconditionally is right; adding a guard risks dropping a legitimate interrupt. No
+  code change. Inspect: `lib/post-stack-machine.ts`, `hooks/use-user-scroll-interruption.ts`.

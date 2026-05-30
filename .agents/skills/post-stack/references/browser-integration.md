@@ -18,7 +18,7 @@ popstate event
   -> read stackIds from history.state.stackIds (preferred) or parse URL (fallback)
   -> set isInternalUpdateRef = true
   -> reset lastPushedRef so a later forward-nav to the same URL isn't deduped
-  -> actor.send({ type: "BROWSER_NAVIGATION", stackIds, direction: "forward" })
+  -> actor.send({ type: "BROWSER_NAVIGATION", stackIds })
   -> microtask (Promise.resolve().then): clear isInternalUpdateRef
 ```
 
@@ -27,9 +27,8 @@ cooldown. The earlier 50ms `popstateDebounceRef` and 500ms `lastBrowserNavTimest
 were removed; concurrent popstates are now handled by `scrollOperationId` versioning plus
 the `cancellingScroll` → `processingNavigation` replay path.
 
-> Known follow-up: `direction` is hard-coded to `"forward"` for every popstate. The
-> machine does not currently branch on direction, so this is harmless today but is a
-> documented follow-up candidate (see the statecharts doc).
+The `BROWSER_NAVIGATION` event carries only `stackIds`; the machine has no
+direction-dependent logic, so no `direction` field is sent or stored.
 
 ## Scroll Cancellation Pipeline
 
